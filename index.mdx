@@ -1,97 +1,237 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Kleros Documentation"
+description: "Decentralized dispute resolution for the world"
 ---
 
-## Setting up
+<div className="hero-gradient">
+# Welcome to Kleros
 
-Get your documentation site up and running in minutes.
+Kleros is a decentralized dispute resolution protocol that uses blockchain and crowdsourced jurors to adjudicate disputes fairly, transparently, and affordably.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
+<CardGroup cols={2}>
+  <Card title="I want to be a juror" icon="scale-balanced" href="/court">
+    Stake PNK, vote on disputes, earn rewards
+  </Card>
+  <Card title="I want to use a product" icon="grid-2" href="#products">
+    Curate, Proof of Humanity, Escrow, and more
+  </Card>
+  <Card title="I want to build with Kleros" icon="code" href="/developers">
+    Integrate dispute resolution into your application
+  </Card>
+  <Card title="I want to understand Kleros" icon="lightbulb" href="/concepts">
+    Learn the mechanics, game theory, and economics
+  </Card>
+</CardGroup>
+
+</div>
+
+---
+
+## Kleros Court
+
+<img
+  src="/images/court-hero.png"
+  alt="Kleros Court Interface"
+  className="rounded-xl"
+/>
+
+The heart of Kleros. Court uses crypto-economic incentives and game theory to crowdsource fair decisions on any adjudicable dispute.
+
+<CardGroup cols={3}>
+  <Card title="How it works" icon="circle-question" href="/court/overview">
+    Understand the dispute resolution process
+  </Card>
+  <Card title="Become a juror" icon="user-plus" href="https://help.kleros.io/jurors/getting-started">
+    Step-by-step guide to staking and voting
+  </Card>
+  <Card title="Integrate Court" icon="plug" href="/developers/arbitrable-apps">
+    Add dispute resolution to your application
+  </Card>
+</CardGroup>
+
+---
+
+## Products
+
+Kleros products are decentralized applications that use Kleros Court for dispute resolution.
+
+<CardGroup cols={2}>
+  <Card title="Curate" icon="list-check" href="/products/curate">
+    <div className="text-sm text-gray-400 mb-2">
+    Decentralized lists & registries</div>
+
+     Create and maintain community-curated registries of anything—tokens, contracts, addresses, or custom data.
+  </Card>
+  <Card title="Proof of Humanity" icon="fingerprint" href="/products/proof-of-humanity">
+    <div className="text-sm text-gray-400 mb-2">
+    Sybil-resistant identity</div>
+
+     A registry of verified humans, combining social vouching with dispute resolution to prevent duplicates and bots.
+  </Card>
+  <Card title="Escrow" icon="handshake" href="/products/escrow">
+    <div className="text-sm text-gray-400 mb-2">
+    Secure transactions</div>
+
+     Hold funds in escrow with built-in dispute resolution if something goes wrong.
+  </Card>
+  <Card title="Scout" icon="shield-check" href="/products/scout">
+    <div className="text-sm text-gray-400 mb-2">
+    Contract & token verification</div>
+
+     Community-curated safety information for smart contracts, tokens, and dApps.
+  </Card>
+  <Card title="Governor" icon="landmark" href="/products/governor">
+    <div className="text-sm text-gray-400 mb-2">
+    DAO governance</div>
+
+     Decentralized governance execution with dispute resolution for contested proposals.
+  </Card>
+  <Card title="Oracle" icon="database" href="/products/oracle">
+    <div className="text-sm text-gray-400 mb-2">
+    Reality.eth + Kleros</div>
+
+     Crowdsourced oracle with Kleros arbitration as the final backstop for disputed answers.
+  </Card>
+</CardGroup>
+
+---
+
+## For Developers
+
+Build trustless applications with decentralized dispute resolution.
+
+<Tabs>
+  <Tab title="New to Kleros?">
+    Start here if you're exploring how to integrate Kleros into your project.
+
+    <Steps>
+      <Step title="Understand the architecture">
+        Learn how the arbitrator (Court) and arbitrable applications work together.
+
+        [Read the overview →](/developers/overview)
+      </Step>
+      <Step title="Try the quick start">
+        Get a basic integration running in 5 minutes.
+
+        [Quick start guide →](/developers/quickstart)
+      </Step>
+      <Step title="Explore examples">
+        See real-world integration patterns.
+
+        [View examples →](/developers/examples)
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Build an arbitrable app">
+    You want your smart contract to use Kleros Court for dispute resolution.
+
+    <CardGroup cols={2}>
+      <Card title="ERC-792: Arbitration Standard" icon="file-contract" href="/developers/arbitrable-apps/erc-792">
+        The interface your contract needs to implement
+      </Card>
+      <Card title="ERC-1497: Evidence Standard" icon="file-lines" href="/developers/arbitrable-apps/erc-1497">
+        How to handle evidence submission
+      </Card>
+      <Card title="Full integration guide" icon="book" href="/developers/arbitrable-apps/guide">
+        Complete walkthrough with code examples
+      </Card>
+      <Card title="Testing tools" icon="flask" href="/developers/arbitrable-apps/testing">
+        Test your integration before going live
+      </Card>
+    </CardGroup>
+  </Tab>
+  <Tab title="Build on a Kleros product">
+    You want to integrate with an existing Kleros product like Curate or PoH.
+
+    <CardGroup cols={2}>
+      <Card title="Curate integration" icon="list-check" href="/developers/products/curate">
+        Query registry data, build on TCRs
+      </Card>
+      <Card title="PoH integration" icon="fingerprint" href="/developers/products/poh">
+        Verify human users in your app
+      </Card>
+      <Card title="Escrow integration" icon="handshake" href="/developers/products/escrow">
+        Add escrow functionality
+      </Card>
+      <Card title="Oracle integration" icon="database" href="/developers/products/oracle">
+        Use Reality.eth + Kleros
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
+
+<div className="mt-6">
+<Card title="Reference: Contract addresses, ABIs, and APIs" icon="book-bookmark" href="/reference">
+  All the technical details you need for integration
 </Card>
 
-## Make it yours
+</div>
 
-Design a docs site that looks great and empowers your users.
+---
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+## Learn the Concepts
 
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={3}>
+  <Card title="How dispute resolution works" icon="scale-balanced" href="/concepts/dispute-resolution">
+    The complete lifecycle of a Kleros dispute
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Game theory & incentives" icon="chess" href="/concepts/game-theory">
+    Why jurors are incentivized to vote honestly
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Court hierarchy" icon="sitemap" href="/concepts/court-hierarchy">
+    Specialized courts and appeals
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="Token economics" icon="coins" href="/concepts/tokenomics">
+    How PNK staking and rewards work
   </Card>
-</Columns>
+  <Card title="Credible neutrality" icon="balance-scale-left" href="/concepts/credible-neutrality">
+    Why Kleros decisions can be trusted
+  </Card>
+  <Card title="Sortition" icon="dice" href="/concepts/sortition">
+    How jurors are randomly selected
+  </Card>
+</CardGroup>
 
-## Need inspiration?
+---
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+## Research & Academia
+
+Kleros is built on peer-reviewed research and collaborates with leading institutions.
+
+<CardGroup cols={2}>
+  <Card title="Published papers" icon="graduation-cap" href="/research/papers">
+    Academic publications about Kleros
+  </Card>
+  <Card title="Case studies" icon="magnifying-glass-chart" href="/research/case-studies">
+    Real disputes and their outcomes
+  </Card>
+</CardGroup>
+
+<Note>
+  **Research partnership?** Kleros collaborates with universities and research institutions. [Get in touch →](/research/partnerships)
+</Note>
+
+---
+
+## Need Help?
+
+<CardGroup cols={3}>
+  <Card title="Help Center" icon="circle-question" href="https://help.kleros.io">
+    Step-by-step guides and troubleshooting
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/kleros">
+    Chat with the community
+  </Card>
+  <Card title="Telegram" icon="telegram" href="https://t.me/kleros">
+    Join the conversation
+  </Card>
+</CardGroup>
+
+---
+
+<div className="text-center text-sm text-gray-500 mt-12">
+**Kleros** — Justice as a service
+
+[Website](https://kleros.io) · [GitHub](https://github.com/kleros) · [Twitter](https://twitter.com/klaboradios) · [Blog](https://blog.kleros.io)
+
+</div>
