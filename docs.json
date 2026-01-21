@@ -25,7 +25,25 @@
     },
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Welcome",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart",
+              "development"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "essentials/settings",
+              "essentials/navigation"
+            ]
+          },
+      {
+        "tab": "User Guides",
         "groups": [
           {
             "group": "Getting started",
@@ -59,6 +77,26 @@
               "ai-tools/windsurf"
             ]
           }
+        ]
+      },
+      {
+        "tab": "Integration Guides",
+        "groups": [
+          {
+            "group": "Getting started",
+            "pages": [
+              "index",
+              "quickstart",
+              "development"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "essentials/settings",
+              "essentials/navigation"
+            ]
+          },
         ]
       },
       {
