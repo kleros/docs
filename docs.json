@@ -31,23 +31,6 @@
   },
   "navigation": {
     "global": {
-      "anchors": [
-        {
-          "anchor": "Website",
-          "icon": "hammer",
-          "href": "https://kleros.builders"
-        },
-        {
-          "anchor": "Help Center",
-          "icon": "circle-question",
-          "href": "https://help.kleros.io"
-        },
-        {
-          "anchor": "GitHub",
-          "icon": "github",
-          "href": "https://github.com/kleros"
-        }
-      ],
       "tabs": [
         {
           "tab": "Documentation",
@@ -60,6 +43,27 @@
         {
           "tab": "Reference",
           "href": "/reference"
+        }
+      ],
+      "anchors": [
+        {
+          "anchor": "Website",
+          "icon": "scale-balanced",
+          "color": {
+            "light": "#5c05e1",
+            "dark": "#5c05e1"
+          },
+          "href": "https://kleros.builders"
+        },
+        {
+          "anchor": "Help Center",
+          "icon": "circle-question",
+          "href": "https://help.kleros.io"
+        },
+        {
+          "anchor": "GitHub",
+          "icon": "github",
+          "href": "https://github.com/kleros"
         }
       ]
     },
