@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "maple",
   "name": "Kleros Documentation",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#9013fe",
+    "light": "#b45fff",
+    "dark": "#f60c36"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -88,8 +88,8 @@
     ]
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/light.svg"
+    "light": "/logo/Kleros logo_updated.svg",
+    "dark": "/logo/Kleros logo_updated.svg"
   },
   "navbar": {
     "links": [
