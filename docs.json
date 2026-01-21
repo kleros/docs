@@ -3,7 +3,7 @@
   "theme": "maple",
   "name": "Kleros Documentation",
   "colors": {
-    "primary": "#9013fe",
+    "primary": "#4d00b4",
     "light": "#b45fff",
     "dark": "#f60c36"
   },
@@ -89,7 +89,7 @@
   },
   "logo": {
     "light": "/logo/Kleros logo_updated.svg",
-    "dark": "/logo/Kleros logo_updated.svg"
+    "dark": "/logo/Kleros logo_updated_white.svg"
   },
   "navbar": {
     "links": [
