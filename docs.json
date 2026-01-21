@@ -33,14 +33,14 @@
     "global": {
       "anchors": [
         {
+          "anchor": "Website",
+          "icon": "hammer",
+          "href": "https://kleros.builders"
+        },
+        {
           "anchor": "Help Center",
           "icon": "circle-question",
           "href": "https://help.kleros.io"
-        },
-        {
-          "anchor": "Discord",
-          "icon": "discord",
-          "href": "https://discord.gg/kleros"
         },
         {
           "anchor": "GitHub",
@@ -155,8 +155,6 @@
             "group": "Building Arbitrable Apps (V2)",
             "pages": [
               "developers/arbitrable-apps/overview",
-              "developers/arbitrable-apps/erc-792",
-              "developers/arbitrable-apps/erc-1497",
               "developers/arbitrable-apps/guide",
               "developers/arbitrable-apps/testing",
               "developers/arbitrable-apps/production-checklist"
@@ -191,6 +189,8 @@
             "group": "V1 Integration (Legacy)",
             "pages": [
               "developers/legacy/v1-overview",
+              "developers/legacy/erc-792",
+              "developers/legacy/erc-1497",
               "developers/legacy/v1-arbitrable-apps",
               "developers/legacy/migrating-to-v2"
             ]
@@ -232,10 +232,10 @@
             ]
           },
           {
-            "group": "Standards",
+            "group": "V1 Standards",
             "pages": [
-              "reference/standards/erc-792",
-              "reference/standards/erc-1497"
+              "reference/standards-v1/erc-792",
+              "reference/standards-v1/erc-1497"
             ]
           }
         ]
