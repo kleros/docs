@@ -2,6 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
   "name": "Kleros Documentation",
+  "description": "Decentralized dispute resolution protocol documentation for developers, jurors, and users",
   "colors": {
     "primary": "#4d00b4",
     "light": "#b45fff",
@@ -85,12 +86,13 @@
           {
             "group": "Products",
             "pages": [
+              "products/overview",
               "products/curate",
-              "products/proof-of-humanity",
               "products/escrow",
-              "products/scout",
               "products/governor",
-              "products/oracle"
+              "products/scout",
+              "products/reality",
+              "products/proof-of-humanity"
             ]
           },
           {
@@ -124,7 +126,15 @@
             "group": "Legacy (V1)",
             "pages": [
               "legacy/overview",
-              "legacy/migration-guide"
+              "legacy/migration-guide",
+              "legacy/court-v1",
+              "legacy/curate-v1",
+              "legacy/escrow-v1",
+              "legacy/governor-v1",
+              "legacy/resolver-v1",
+              "legacy/retired/moderate",
+              "legacy/retired/linguo",
+              "legacy/retired/tokens"
             ]
           }
         ]
@@ -142,7 +152,7 @@
             ]
           },
           {
-            "group": "Building Arbitrable Apps",
+            "group": "Building Arbitrable Apps (V2)",
             "pages": [
               "developers/arbitrable-apps/overview",
               "developers/arbitrable-apps/erc-792",
@@ -157,9 +167,9 @@
             "pages": [
               "developers/products/overview",
               "developers/products/curate",
-              "developers/products/poh",
               "developers/products/escrow",
-              "developers/products/oracle"
+              "developers/products/poh",
+              "developers/products/reality"
             ]
           },
           {
@@ -176,6 +186,14 @@
               "developers/examples/insurance-claim",
               "developers/examples/dao-governance"
             ]
+          },
+          {
+            "group": "V1 Integration (Legacy)",
+            "pages": [
+              "developers/legacy/v1-overview",
+              "developers/legacy/v1-arbitrable-apps",
+              "developers/legacy/migrating-to-v2"
+            ]
           }
         ]
       },
@@ -184,12 +202,19 @@
         "icon": "book-bookmark",
         "groups": [
           {
-            "group": "Smart Contracts",
+            "group": "Smart Contracts (V2)",
             "pages": [
               "reference/contracts/addresses",
               "reference/contracts/kleros-core",
               "reference/contracts/dispute-kit",
               "reference/contracts/sortition-module"
+            ]
+          },
+          {
+            "group": "Smart Contracts (V1)",
+            "pages": [
+              "reference/contracts-v1/addresses",
+              "reference/contracts-v1/kleros-liquid"
             ]
           },
           {

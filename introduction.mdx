@@ -1,0 +1,243 @@
+---
+title: Kleros Documentation
+description: Decentralized dispute resolution for the world
+---
+
+# Welcome to Kleros
+
+Kleros is a decentralized dispute resolution protocol that uses blockchain and crowdsourced jurors to adjudicate disputes fairly, transparently, and affordably.
+
+<CardGroup cols={2}>
+  <Card title="I want to be a juror" icon="scale-balanced" href="/court/overview">
+    Stake PNK, vote on disputes, earn rewards
+  </Card>
+  <Card title="I want to use a product" icon="grid-2" href="/products/overview">
+    Curate, Escrow, Proof of Humanity, and more
+  </Card>
+  <Card title="I want to build with Kleros" icon="code" href="/developers/overview">
+    Integrate dispute resolution into your application
+  </Card>
+  <Card title="I want to understand Kleros" icon="lightbulb" href="/concepts/dispute-resolution">
+    Learn the mechanics, game theory, and economics
+  </Card>
+</CardGroup>
+
+---
+
+## Kleros Court
+
+<Frame>
+  <img src="/images/court-hero.png" alt="Kleros Court Interface" />
+</Frame>
+
+The heart of Kleros. Court uses crypto-economic incentives and game theory to crowdsource fair decisions on any adjudicable dispute.
+
+<CardGroup cols={3}>
+  <Card title="How it works" icon="circle-question" href="/court/how-it-works">
+    Understand the dispute resolution process
+  </Card>
+  <Card title="Become a juror" icon="user-plus" href="https://help.kleros.io/jurors/getting-started">
+    Step-by-step guide to staking and voting
+  </Card>
+  <Card title="Integrate Court" icon="plug" href="/developers/arbitrable-apps/overview">
+    Add dispute resolution to your application
+  </Card>
+</CardGroup>
+
+---
+
+## Products
+
+Kleros products are decentralized applications that use Kleros Court for dispute resolution.
+
+<Note>
+  **Kleros V2 is here.** Most products now support V2, with remaining products migrating soon. See the [Products Overview](/products/overview) for version details.
+</Note>
+
+<CardGroup cols={2}>
+
+  <Card title="Curate" icon="list-check" href="/products/curate">
+    **Decentralized lists & registries**
+    
+    Create and maintain community-curated registries of anything—tokens, contracts, addresses, or custom data.
+    
+    <Badge>V2</Badge>
+  </Card>
+
+  <Card title="Escrow" icon="handshake" href="/products/escrow">
+    **Secure transactions**
+    
+    Hold funds in escrow with built-in dispute resolution if something goes wrong.
+    
+    <Badge>V2</Badge>
+  </Card>
+
+  <Card title="Governor" icon="landmark" href="/products/governor">
+    **DAO governance**
+    
+    Decentralized governance execution with dispute resolution for contested proposals.
+    
+    <Badge>V2</Badge>
+  </Card>
+
+  <Card title="Scout" icon="shield-check" href="/products/scout">
+    **Contract & token verification**
+    
+    Community-curated safety information for smart contracts, tokens, and dApps.
+    
+    <Badge variant="secondary">V1 • V2 coming soon</Badge>
+  </Card>
+
+  <Card title="Reality (Oracle)" icon="database" href="/products/reality">
+    **Reality.eth + Kleros**
+    
+    Crowdsourced oracle with Kleros arbitration as the final backstop for disputed answers. Powers Zodiac/SafeSnap.
+    
+    <Badge variant="secondary">V1 • V2 coming soon</Badge>
+  </Card>
+
+  <Card title="Proof of Humanity" icon="fingerprint" href="/products/proof-of-humanity">
+    **Sybil-resistant identity**
+    
+    A registry of verified humans, combining social vouching with dispute resolution.
+    
+    <Badge variant="secondary">V1 protocol</Badge>
+  </Card>
+
+</CardGroup>
+
+<Card title="Looking for V1 documentation?" icon="clock-rotate-left" href="/legacy/overview">
+  Court V1, Resolver, and retired products (Moderate, Linguo, Tokens) are documented in the Legacy section.
+</Card>
+
+---
+
+## For Developers
+
+Build trustless applications with decentralized dispute resolution.
+
+<Tabs>
+  <Tab title="New to Kleros?">
+    Start here if you're exploring how to integrate Kleros into your project.
+    
+    <Steps>
+      <Step title="Understand the architecture">
+        Learn how the arbitrator (Court) and arbitrable applications work together.
+        
+        [Read the overview →](/developers/architecture)
+      </Step>
+      <Step title="Try the quick start">
+        Get a basic integration running in 5 minutes.
+        
+        [Quick start guide →](/developers/quickstart)
+      </Step>
+      <Step title="Explore examples">
+        See real-world integration patterns.
+        
+        [View examples →](/developers/examples/escrow-contract)
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Build an arbitrable app">
+    You want your smart contract to use Kleros Court for dispute resolution.
+    
+    <CardGroup cols={2}>
+      <Card title="ERC-792: Arbitration Standard" icon="file-contract" href="/developers/arbitrable-apps/erc-792">
+        The interface your contract needs to implement
+      </Card>
+      <Card title="ERC-1497: Evidence Standard" icon="file-lines" href="/developers/arbitrable-apps/erc-1497">
+        How to handle evidence submission
+      </Card>
+      <Card title="Full integration guide" icon="book" href="/developers/arbitrable-apps/guide">
+        Complete walkthrough with code examples
+      </Card>
+      <Card title="Testing tools" icon="flask" href="/developers/arbitrable-apps/testing">
+        Test your integration before going live
+      </Card>
+    </CardGroup>
+  </Tab>
+  
+  <Tab title="Build on a Kleros product">
+    You want to integrate with an existing Kleros product like Curate or PoH.
+    
+    <CardGroup cols={2}>
+      <Card title="Curate integration" icon="list-check" href="/developers/products/curate">
+        Query registry data, build on TCRs
+      </Card>
+      <Card title="PoH integration" icon="fingerprint" href="/developers/products/poh">
+        Verify human users in your app
+      </Card>
+      <Card title="Escrow integration" icon="handshake" href="/developers/products/escrow">
+        Add escrow functionality
+      </Card>
+      <Card title="Reality integration" icon="database" href="/developers/products/reality">
+        Use Reality.eth + Kleros oracle
+      </Card>
+    </CardGroup>
+  </Tab>
+</Tabs>
+
+<Card title="Reference: Contract addresses, ABIs, and APIs" icon="book-bookmark" href="/reference/contracts/addresses">
+  All the technical details you need for integration
+</Card>
+
+---
+
+## Learn the Concepts
+
+<CardGroup cols={3}>
+  <Card title="How dispute resolution works" icon="scale-balanced" href="/concepts/dispute-resolution">
+    The complete lifecycle of a Kleros dispute
+  </Card>
+  <Card title="Game theory & incentives" icon="chess" href="/concepts/game-theory">
+    Why jurors are incentivized to vote honestly
+  </Card>
+  <Card title="Court hierarchy" icon="sitemap" href="/court/court-hierarchy">
+    Specialized courts and appeals
+  </Card>
+  <Card title="Token economics" icon="coins" href="/concepts/tokenomics">
+    How PNK staking and rewards work
+  </Card>
+  <Card title="Credible neutrality" icon="balance-scale-left" href="/concepts/credible-neutrality">
+    Why Kleros decisions can be trusted
+  </Card>
+  <Card title="Sortition" icon="dice" href="/concepts/sortition">
+    How jurors are randomly selected
+  </Card>
+</CardGroup>
+
+---
+
+## Research & Academia
+
+Kleros is built on peer-reviewed research and collaborates with leading institutions.
+
+<CardGroup cols={2}>
+  <Card title="Published papers" icon="graduation-cap" href="/research/papers">
+    Academic publications about Kleros
+  </Card>
+  <Card title="Case studies" icon="magnifying-glass-chart" href="/research/case-studies">
+    Real disputes and their outcomes
+  </Card>
+</CardGroup>
+
+<Note>
+  **Research partnership?** Kleros collaborates with universities and research institutions including Stanford. [Get in touch →](/research/partnerships)
+</Note>
+
+---
+
+## Need Help?
+
+<CardGroup cols={3}>
+  <Card title="Help Center" icon="circle-question" href="https://help.kleros.io">
+    Step-by-step guides and troubleshooting
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/kleros">
+    Chat with the community
+  </Card>
+  <Card title="Telegram" icon="telegram" href="https://t.me/kleros">
+    Join the conversation
+  </Card>
+</CardGroup>

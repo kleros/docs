@@ -1,0 +1,176 @@
+---
+title: Products Overview
+description: Kleros products and their protocol versions
+---
+
+# Kleros Products
+
+Kleros provides a suite of decentralized applications, all powered by Kleros Court for dispute resolution. This page gives an overview of each product and its current protocol version.
+
+<Note>
+  **Kleros V2** is the latest version of the Kleros protocol, featuring improved scalability, lower gas costs, and enhanced dispute resolution mechanics. Most products have migrated or are migrating to V2.
+</Note>
+
+---
+
+## Protocol Version Guide
+
+| Product | Protocol Version | Status |
+|---------|-----------------|--------|
+| [Court](/court/overview) | **V2** | ✅ Live |
+| [Curate](/products/curate) | **V2** | ✅ Live |
+| [Escrow](/products/escrow) | **V2** | ✅ Live |
+| [Governor](/products/governor) | **V2** | ✅ Live |
+| [Scout](/products/scout) | V1 | 🔄 V2 coming soon |
+| [Reality (Oracle)](/products/reality) | V1 | 🔄 V2 coming soon |
+| [Proof of Humanity](/products/proof-of-humanity) | V1 | ⚠️ See note below |
+
+<Warning>
+  **Proof of Humanity note:** PoH has its own "V2" product upgrade (cross-chain support, improved UX), but it still uses the **Kleros V1 protocol** for dispute resolution. Don't confuse "PoH 2.0" (the product) with "Kleros V2" (the protocol).
+</Warning>
+
+---
+
+## V2 Products
+
+These products run on the latest Kleros V2 protocol.
+
+<CardGroup cols={2}>
+
+  <Card title="Court" icon="scale-balanced" href="/court/overview">
+    **The heart of Kleros**
+    
+    Decentralized dispute resolution using crowdsourced jurors, crypto-economic incentives, and game theory.
+    
+    - Stake PNK to become a juror
+    - Vote on disputes and earn rewards
+    - Create disputes via the integrated Resolver
+  </Card>
+
+  <Card title="Curate" icon="list-check" href="/products/curate">
+    **Decentralized registries**
+    
+    Create and maintain community-curated lists with economic incentives and dispute resolution.
+    
+    - Token lists, address tags, contract registries
+    - Challenge incorrect submissions
+    - Query registry data via subgraph
+  </Card>
+
+  <Card title="Escrow" icon="handshake" href="/products/escrow">
+    **Secure transactions**
+    
+    Hold funds in escrow with built-in dispute resolution if parties disagree.
+    
+    - Trustless payments between parties
+    - Automatic release or dispute
+    - Milestone-based payments
+  </Card>
+
+  <Card title="Governor" icon="landmark" href="/products/governor">
+    **DAO governance execution**
+    
+    Execute governance decisions with a dispute resolution backstop for contested actions.
+    
+    - Optimistic execution
+    - Challenge period for proposals
+    - Integration with Snapshot
+  </Card>
+
+</CardGroup>
+
+---
+
+## V1 Products (V2 Migration Planned)
+
+These products currently use Kleros V1 and will migrate to V2.
+
+<CardGroup cols={2}>
+
+  <Card title="Scout" icon="shield-check" href="/products/scout">
+    **Contract & token verification**
+    
+    Community-curated safety information for smart contracts, tokens, and dApps. Integrates with MetaMask Snaps.
+    
+    <Note>
+      Scout is a **frontend application** that displays data from Curate registries. V2 support will come when the underlying registries migrate.
+    </Note>
+  </Card>
+
+  <Card title="Reality (Oracle)" icon="database" href="/products/reality">
+    **Reality.eth + Kleros**
+    
+    Crowdsourced oracle system where Kleros serves as the final arbitration layer for disputed answers.
+    
+    - Powers Zodiac Reality Module
+    - Enables SafeSnap for DAO governance
+    - Kleros as arbitration backstop
+  </Card>
+
+</CardGroup>
+
+---
+
+## V1 Protocol Products
+
+<Card title="Proof of Humanity" icon="fingerprint" href="/products/proof-of-humanity">
+  **Sybil-resistant identity registry**
+  
+  A registry of verified humans combining video verification, social vouching, and dispute resolution.
+  
+  <Warning>
+    **Important:** Proof of Humanity uses the **Kleros V1 protocol** for dispute resolution—even the "PoH 2.0" product version. The "2.0" refers to product improvements (cross-chain support, better UX), not the underlying Kleros protocol version.
+  </Warning>
+  
+  - Register as a verified human
+  - Vouch for others
+  - Challenge suspicious registrations
+  - Cross-chain profile support (Ethereum, Gnosis Chain)
+</Card>
+
+---
+
+## Legacy & Retired Products
+
+These products are documented in the [Legacy section](/legacy/overview).
+
+| Product | Status | Notes |
+|---------|--------|-------|
+| [Court V1](/legacy/court-v1) | Legacy | Superseded by Court V2 |
+| [Resolver V1](/legacy/resolver-v1) | Legacy | Standalone app, now integrated into Court V2 |
+| [Curate V1](/legacy/curate-v1) | Legacy | Superseded by Curate V2 |
+| [Escrow V1](/legacy/escrow-v1) | Legacy | Superseded by Escrow V2 |
+| [Governor V1](/legacy/governor-v1) | Legacy | Superseded by Governor V2 |
+| [Moderate](/legacy/retired/moderate) | Retired | Telegram moderation bot |
+| [Linguo](/legacy/retired/linguo) | Retired | Translation marketplace |
+| [Tokens](/legacy/retired/tokens) | Retired | Replaced by Curate token registry |
+
+---
+
+## Choosing Between V1 and V2
+
+**For new integrations:** Always use V2 products when available. V2 offers:
+- Lower gas costs
+- Improved dispute resolution mechanics
+- Better scalability
+- Active development and support
+
+**For existing V1 integrations:** See the [Migration Guide](/legacy/migration-guide) for steps to upgrade.
+
+**For V1-only products (Scout, Reality, PoH):** Continue using V1 for now. Migration guides will be provided when V2 support is available.
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Use a product" icon="rocket" href="https://help.kleros.io">
+    Step-by-step guides in the Help Center
+  </Card>
+  <Card title="Build on Kleros" icon="code" href="/developers/overview">
+    Integration guides for developers
+  </Card>
+  <Card title="Learn the concepts" icon="lightbulb" href="/concepts/dispute-resolution">
+    Understand how Kleros works
+  </Card>
+</CardGroup>
