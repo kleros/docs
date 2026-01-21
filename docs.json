@@ -18,12 +18,8 @@
             "light": "#5400e3",
             "dark": "#5400e3"
           },
+          "hidden": true,
           "href": "https://kleros.builders"
-        },
-        {
-          "anchor": "Blog",
-          "icon": "newspaper",
-          "href": "https://mintlify.com/blog"
         }
       ]
     },
