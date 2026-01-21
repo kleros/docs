@@ -8,100 +8,209 @@
     "dark": "#f60c36"
   },
   "favicon": "/logo/Kleros logo_updated_white square.svg",
+  "background": {
+    "decoration": "gradient"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Help Center",
+        "href": "https://help.kleros.io"
+      },
+      {
+        "label": "Blog",
+        "href": "https://blog.kleros.io"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Launch Court",
+      "href": "https://court.kleros.io"
+    }
+  },
   "navigation": {
     "global": {
       "anchors": [
         {
-          "anchor": "Website",
-          "icon": "book-open-cover",
-          "color": {
-            "light": "#5400e3",
-            "dark": "#5400e3"
-          },
-          "hidden": true,
-          "href": "https://kleros.builders"
+          "anchor": "Help Center",
+          "icon": "circle-question",
+          "href": "https://help.kleros.io"
+        },
+        {
+          "anchor": "Discord",
+          "icon": "discord",
+          "href": "https://discord.gg/kleros"
+        },
+        {
+          "anchor": "GitHub",
+          "icon": "github",
+          "href": "https://github.com/kleros"
+        }
+      ],
+      "tabs": [
+        {
+          "tab": "Documentation",
+          "href": "/"
+        },
+        {
+          "tab": "Developers",
+          "href": "/developers"
+        },
+        {
+          "tab": "Reference",
+          "href": "/reference"
         }
       ]
     },
-    "tabs": [
+    "dropdowns": [
       {
-        "tab": "Welcome",
+        "dropdown": "Documentation",
+        "icon": "book",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Welcome",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Kleros Court",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "court/overview",
+              "court/how-it-works",
+              "court/court-hierarchy",
+              "court/appeals"
+            ]
+          },
+          {
+            "group": "Products",
+            "pages": [
+              "products/curate",
+              "products/proof-of-humanity",
+              "products/escrow",
+              "products/scout",
+              "products/governor",
+              "products/oracle"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "concepts/dispute-resolution",
+              "concepts/game-theory",
+              "concepts/sortition",
+              "concepts/tokenomics",
+              "concepts/credible-neutrality"
+            ]
+          },
+          {
+            "group": "Research",
+            "pages": [
+              "research/overview",
+              "research/papers",
+              "research/case-studies",
+              "research/partnerships"
+            ]
+          },
+          {
+            "group": "Governance",
+            "pages": [
+              "governance/overview",
+              "governance/kips",
+              "governance/snapshot"
+            ]
+          },
+          {
+            "group": "Legacy (V1)",
+            "pages": [
+              "legacy/overview",
+              "legacy/migration-guide"
             ]
           }
         ]
       },
       {
-        "tab": "User Guides",
+        "dropdown": "Developers",
+        "icon": "code",
         "groups": [
           {
-            "group": "Writing content",
+            "group": "Getting Started",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "developers/overview",
+              "developers/quickstart",
+              "developers/architecture"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Building Arbitrable Apps",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "developers/arbitrable-apps/overview",
+              "developers/arbitrable-apps/erc-792",
+              "developers/arbitrable-apps/erc-1497",
+              "developers/arbitrable-apps/guide",
+              "developers/arbitrable-apps/testing",
+              "developers/arbitrable-apps/production-checklist"
+            ]
+          },
+          {
+            "group": "Building on Kleros Products",
+            "pages": [
+              "developers/products/overview",
+              "developers/products/curate",
+              "developers/products/poh",
+              "developers/products/escrow",
+              "developers/products/oracle"
+            ]
+          },
+          {
+            "group": "Cross-chain",
+            "pages": [
+              "developers/crosschain/vea-bridge",
+              "developers/crosschain/l2-integration"
+            ]
+          },
+          {
+            "group": "Examples",
+            "pages": [
+              "developers/examples/escrow-contract",
+              "developers/examples/insurance-claim",
+              "developers/examples/dao-governance"
             ]
           }
         ]
       },
       {
-        "tab": "Integration Guides",
+        "dropdown": "Reference",
+        "icon": "book-bookmark",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Smart Contracts",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "reference/contracts/addresses",
+              "reference/contracts/kleros-core",
+              "reference/contracts/dispute-kit",
+              "reference/contracts/sortition-module"
             ]
           },
           {
-            "group": "Customization",
+            "group": "APIs",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "reference/api/subgraph",
+              "reference/api/graphql-schema"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Courts",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "reference/courts/parameters",
+              "reference/courts/policies"
+            ]
+          },
+          {
+            "group": "Standards",
+            "pages": [
+              "reference/standards/erc-792",
+              "reference/standards/erc-1497"
             ]
           }
         ]
@@ -112,25 +221,17 @@
     "light": "/logo/Kleros logo_updated.svg",
     "dark": "/logo/Kleros logo_updated_white.svg"
   },
-  "navbar": {
-    "links": [],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
@@ -139,6 +240,63 @@
       "linkedin": "https://www.linkedin.com/company/kleros/",
       "telegram": "https://t.me/kleros",
       "website": "https://kleros.builders"
-    }
+    },
+    "links": [
+      {
+        "header": "Products",
+        "items": [
+          {
+            "label": "Court",
+            "href": "https://court.kleros.io"
+          },
+          {
+            "label": "Curate",
+            "href": "https://curate.kleros.io"
+          },
+          {
+            "label": "Proof of Humanity",
+            "href": "https://proofofhumanity.id"
+          },
+          {
+            "label": "Scout",
+            "href": "https://scout.kleros.io"
+          }
+        ]
+      },
+      {
+        "header": "Resources",
+        "items": [
+          {
+            "label": "Help Center",
+            "href": "https://help.kleros.io"
+          },
+          {
+            "label": "Blog",
+            "href": "https://blog.kleros.io"
+          },
+          {
+            "label": "Research",
+            "href": "/research/overview"
+          }
+        ]
+      },
+      {
+        "header": "Company",
+        "items": [
+          {
+            "label": "About",
+            "href": "https://kleros.io/about"
+          },
+          {
+            "label": "Careers",
+            "href": "https://kleros.io/careers"
+          },
+          {
+            "label": "Brand Assets",
+            "href": "https://kleros.io/brand"
+          }
+        ]
+      }
+    ]
   }
 }
