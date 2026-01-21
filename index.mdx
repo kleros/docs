@@ -3,48 +3,43 @@ title: "Kleros Documentation"
 description: "Decentralized dispute resolution for the world"
 ---
 
-<div className="hero-gradient">
 # Welcome to Kleros
 
 Kleros is a decentralized dispute resolution protocol that uses blockchain and crowdsourced jurors to adjudicate disputes fairly, transparently, and affordably.
 
 <CardGroup cols={2}>
-  <Card title="I want to be a juror" icon="scale-balanced" href="/court">
+  <Card title="I want to be a juror" icon="scale-balanced" href="/court/overview">
     Stake PNK, vote on disputes, earn rewards
   </Card>
   <Card title="I want to use a product" icon="grid-2" href="#products">
     Curate, Proof of Humanity, Escrow, and more
   </Card>
-  <Card title="I want to build with Kleros" icon="code" href="/developers">
+  <Card title="I want to build with Kleros" icon="code" href="/developers/overview">
     Integrate dispute resolution into your application
   </Card>
-  <Card title="I want to understand Kleros" icon="lightbulb" href="/concepts">
+  <Card title="I want to understand Kleros" icon="lightbulb" href="/concepts/dispute-resolution">
     Learn the mechanics, game theory, and economics
   </Card>
 </CardGroup>
-
-</div>
 
 ---
 
 ## Kleros Court
 
-<img
-  src="/images/court-hero.png"
-  alt="Kleros Court Interface"
-  className="rounded-xl"
-/>
+<Frame>
+  ![Kleros Court Interface](/images/court-hero.png)
+</Frame>
 
 The heart of Kleros. Court uses crypto-economic incentives and game theory to crowdsource fair decisions on any adjudicable dispute.
 
 <CardGroup cols={3}>
-  <Card title="How it works" icon="circle-question" href="/court/overview">
+  <Card title="How it works" icon="circle-question" href="/court/how-it-works">
     Understand the dispute resolution process
   </Card>
   <Card title="Become a juror" icon="user-plus" href="https://help.kleros.io/jurors/getting-started">
     Step-by-step guide to staking and voting
   </Card>
-  <Card title="Integrate Court" icon="plug" href="/developers/arbitrable-apps">
+  <Card title="Integrate Court" icon="plug" href="/developers/arbitrable-apps/overview">
     Add dispute resolution to your application
   </Card>
 </CardGroup>
@@ -57,40 +52,34 @@ Kleros products are decentralized applications that use Kleros Court for dispute
 
 <CardGroup cols={2}>
   <Card title="Curate" icon="list-check" href="/products/curate">
-    <div className="text-sm text-gray-400 mb-2">
-    Decentralized lists & registries</div>
+    **Decentralized lists & registries**
 
-     Create and maintain community-curated registries of anything—tokens, contracts, addresses, or custom data.
+    Create and maintain community-curated registries of anything—tokens, contracts, addresses, or custom data.
   </Card>
   <Card title="Proof of Humanity" icon="fingerprint" href="/products/proof-of-humanity">
-    <div className="text-sm text-gray-400 mb-2">
-    Sybil-resistant identity</div>
+    **Sybil-resistant identity**
 
-     A registry of verified humans, combining social vouching with dispute resolution to prevent duplicates and bots.
+    A registry of verified humans, combining social vouching with dispute resolution to prevent duplicates and bots.
   </Card>
   <Card title="Escrow" icon="handshake" href="/products/escrow">
-    <div className="text-sm text-gray-400 mb-2">
-    Secure transactions</div>
+    **Secure transactions**
 
-     Hold funds in escrow with built-in dispute resolution if something goes wrong.
+    Hold funds in escrow with built-in dispute resolution if something goes wrong.
   </Card>
   <Card title="Scout" icon="shield-check" href="/products/scout">
-    <div className="text-sm text-gray-400 mb-2">
-    Contract & token verification</div>
+    **Contract & token verification**
 
-     Community-curated safety information for smart contracts, tokens, and dApps.
+    Community-curated safety information for smart contracts, tokens, and dApps.
   </Card>
   <Card title="Governor" icon="landmark" href="/products/governor">
-    <div className="text-sm text-gray-400 mb-2">
-    DAO governance</div>
+    **DAO governance**
 
-     Decentralized governance execution with dispute resolution for contested proposals.
+    Decentralized governance execution with dispute resolution for contested proposals.
   </Card>
   <Card title="Oracle" icon="database" href="/products/oracle">
-    <div className="text-sm text-gray-400 mb-2">
-    Reality.eth + Kleros</div>
+    **Reality.eth + Kleros**
 
-     Crowdsourced oracle with Kleros arbitration as the final backstop for disputed answers.
+    Crowdsourced oracle with Kleros arbitration as the final backstop for disputed answers.
   </Card>
 </CardGroup>
 
@@ -108,7 +97,7 @@ Build trustless applications with decentralized dispute resolution.
       <Step title="Understand the architecture">
         Learn how the arbitrator (Court) and arbitrable applications work together.
 
-        [Read the overview →](/developers/overview)
+        [Read the overview →](/developers/architecture)
       </Step>
       <Step title="Try the quick start">
         Get a basic integration running in 5 minutes.
@@ -118,7 +107,7 @@ Build trustless applications with decentralized dispute resolution.
       <Step title="Explore examples">
         See real-world integration patterns.
 
-        [View examples →](/developers/examples)
+        [View examples →](/developers/examples/escrow-contract)
       </Step>
     </Steps>
   </Tab>
@@ -160,12 +149,9 @@ Build trustless applications with decentralized dispute resolution.
   </Tab>
 </Tabs>
 
-<div className="mt-6">
-<Card title="Reference: Contract addresses, ABIs, and APIs" icon="book-bookmark" href="/reference">
+<Card title="Reference: Contract addresses, ABIs, and APIs" icon="book-bookmark" href="/reference/contracts/addresses">
   All the technical details you need for integration
 </Card>
-
-</div>
 
 ---
 
@@ -178,7 +164,7 @@ Build trustless applications with decentralized dispute resolution.
   <Card title="Game theory & incentives" icon="chess" href="/concepts/game-theory">
     Why jurors are incentivized to vote honestly
   </Card>
-  <Card title="Court hierarchy" icon="sitemap" href="/concepts/court-hierarchy">
+  <Card title="Court hierarchy" icon="sitemap" href="/court/court-hierarchy">
     Specialized courts and appeals
   </Card>
   <Card title="Token economics" icon="coins" href="/concepts/tokenomics">
@@ -208,7 +194,7 @@ Kleros is built on peer-reviewed research and collaborates with leading institut
 </CardGroup>
 
 <Note>
-  **Research partnership?** Kleros collaborates with universities and research institutions. [Get in touch →](/research/partnerships)
+  **Research partnership?** Kleros collaborates with universities and research institutions including Stanford. [Get in touch →](/research/partnerships)
 </Note>
 
 ---
@@ -226,12 +212,3 @@ Kleros is built on peer-reviewed research and collaborates with leading institut
     Join the conversation
   </Card>
 </CardGroup>
-
----
-
-<div className="text-center text-sm text-gray-500 mt-12">
-**Kleros** — Justice as a service
-
-[Website](https://kleros.io) · [GitHub](https://github.com/kleros) · [Twitter](https://twitter.com/klaboradios) · [Blog](https://blog.kleros.io)
-
-</div>
