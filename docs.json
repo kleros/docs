@@ -168,8 +168,27 @@
             "group": "Building on Kleros Products",
             "pages": [
               "developers/products/overview",
-              "developers/products/curate",
-              "developers/products/escrow",
+
+              {
+      "group": "Curate",
+      "icon": "list-check",
+      "pages": [
+        "developers/products/curate/overview",
+        "developers/products/curate/smart-contracts",
+        "developers/products/curate/integration"
+      ]
+    },
+             {
+      "group": "Escrow",
+      "icon": "shield-check",
+      "pages": [
+        "developers/products/escrow/overview",
+        "developers/products/escrow/smart-contracts",
+        "developers/products/escrow/integration"
+      ]
+    },
+              
+              
               "developers/products/poh",
               "developers/products/reality"
             ]
