@@ -1,0 +1,234 @@
+---
+title: "Court Hierarchy"
+description: "Understanding the hierarchical court structure and specialized domains"
+sidebarTitle: "Court hierarchy"
+icon: "sitemap"
+---
+
+# Court Hierarchy
+
+Kleros courts are organized in a hierarchical tree structure, allowing disputes to be handled by jurors with appropriate expertise while maintaining a clear appeals path.
+
+---
+
+## Court Structure
+
+```
+                    ┌─────────────────┐
+                    │  Forking Court  │  (ID: 0, Reserved)
+                    │    (Future)     │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  General Court  │  (ID: 1, Root)
+                    │                 │
+                    └────────┬────────┘
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+┌───────▼───────┐   ┌───────▼───────┐   ┌───────▼───────┐
+│  Blockchain   │   │   Curation    │   │   English     │
+│  Technical    │   │               │   │   Language    │
+└───────┬───────┘   └───────────────┘   └───────────────┘
+        │
+┌───────▼───────┐
+│  Solidity     │
+│  (Sub-court)  │
+└───────────────┘
+```
+
+---
+
+## Court Types
+
+<Tabs>
+  <Tab title="General Court">
+    **The Root Court (ID: 1)**
+
+    - Currently serves as the root of the court system
+    - Handles appeals from all specialized courts
+    - Has the broadest juror requirements
+    - Includes every juror in the system (due to automatic parent staking)
+
+    <Info>
+    When you stake in any specialized court, you are automatically staked in all parent courts up to the General Court.
+    </Info>
+  </Tab>
+
+  <Tab title="Specialized Courts">
+    **Domain-Specific Expertise**
+
+    - Focus on specific domains (blockchain technical, English language, art curation, etc.)
+    - Require specific expertise from jurors
+    - Allow for more specialized resolution of complex disputes
+    - Have their own policy documents defining rules and requirements
+
+    **Examples:**
+    - **Blockchain Technical**: Smart contract disputes, technical implementations
+    - **Curation**: Token lists, address tags, registry disputes
+    - **English Language**: Translation quality, content disputes
+  </Tab>
+
+  <Tab title="Forking Court">
+    **Reserved for Future Use (ID: 0)**
+
+    - Reserved for protocol-level disputes
+    - Will handle fundamental governance decisions
+    - Will serve as the ultimate escalation point
+    - Currently cannot be used
+
+    <Warning>
+    Court ID 0 is reserved and cannot be used for regular disputes.
+    </Warning>
+  </Tab>
+
+  <Tab title="Automated Curation">
+    **AI-Optimized Resolution**
+
+    - New court type designed for AI agents
+    - Optimized dispute resolution parameters
+    - Suitable for high-volume, lower-stakes curation tasks
+  </Tab>
+</Tabs>
+
+---
+
+## Court Parameters
+
+Each court has specific parameters that define how it operates:
+
+| Parameter | Description | Example |
+| --- | --- | --- |
+| **Minimum Stake** | Minimum PNK required to participate | 2,300 PNK |
+| **Alpha** | Controls how much PNK is locked per vote (basis points) | 10000 (100%) |
+| **Fee For Juror** | Payment per juror per case | 0.05 ETH |
+| **Jurors For Court Jump** | Threshold that triggers escalation to parent court | 511 jurors |
+| **Hidden Votes** | Whether commit-reveal voting is used | true/false |
+| **Time Per Period** | Duration of each dispute phase | Varies |
+
+### Understanding Alpha
+
+The `alpha` parameter determines how much of your stake is locked when drawn as a juror:
+
+```
+pnkAtStakePerJuror = (minStake × alpha) / 10000
+```
+
+<Accordion title="Alpha Example">
+**With minStake = 2,300 PNK and alpha = 10000 (100%)**
+
+Your locked amount per vote = 2,300 PNK
+
+If alpha were 5000 (50%), your locked amount would be 1,150 PNK per vote.
+</Accordion>
+
+### Time Periods
+
+Each dispute progresses through four key periods:
+
+1. **Evidence Period**: Time for parties to submit evidence
+2. **Commit Period**: Time for jurors to commit votes (if hidden votes = true)
+3. **Vote Period**: Time for voting or revealing votes
+4. **Appeal Period**: Time to fund appeals
+
+<Info>
+Periods can now end early when no more interactions are needed, speeding up dispute resolution.
+</Info>
+
+---
+
+## Automatic Parent Staking
+
+<Warning>
+**Critical Concept**: When you stake in a specialized court, you are automatically staked in all parent courts up to the General Court.
+</Warning>
+
+**What this means:**
+
+- Staking in the Blockchain court = also eligible for General Court cases
+- Staking in the Solidity sub-court = eligible for Blockchain AND General Court cases
+- The General Court includes every juror in the entire system
+
+**Why this matters:**
+
+- You may be drawn for cases in any parent court
+- Ensures sufficient juror availability at each level
+- Maintains a proper appeals path
+
+---
+
+## Court Policies
+
+Each court has a policy document that defines:
+
+| Section | Description |
+| --- | --- |
+| **Purpose** | What types of disputes the court handles |
+| **Rules** | Guidelines jurors must follow when evaluating evidence |
+| **Required Skills** | Knowledge or expertise jurors should possess |
+| **Special Procedures** | Any court-specific requirements |
+
+<Warning>
+**Critical for Jurors**: Always read the court policy before staking or voting! Failing to follow court policies might result in incoherent votes and lost PNK.
+</Warning>
+
+<Card title="Explore Court Policies" icon="book" href="https://court.kleros.io">
+  Visit Kleros Court, click on "Courts" and review the policy for any court that interests you.
+</Card>
+
+---
+
+## Multi-Court Staking
+
+You can stake in multiple courts, but there are important considerations:
+
+### Court Limit
+
+- Maximum of **4 courts** per juror
+- This is a technical limitation for gas efficiency
+- Plan your court selection strategically
+
+### PNK Distribution
+
+- Your total staked PNK is distributed across the court path
+- The UI simplifies this by showing your stake for each court
+- Parent courts automatically include your stake from child courts
+
+### Choosing Courts
+
+Consider these factors when selecting courts:
+
+1. **Your Expertise**: Match courts to your knowledge areas
+2. **Minimum Stake**: Ensure you meet requirements
+3. **Activity Level**: More active courts = more earning opportunities
+4. **Policy Alignment**: Understand and agree with court rules
+
+---
+
+## Court Transparency Features
+
+The V2 interface provides enhanced transparency:
+
+- **Top Jurors Staked**: See who has the largest stakes in each court
+- **Latest Stakes**: Monitor real-time staking activity
+- **Court Statistics**: View dispute history and resolution rates
+
+---
+
+## What's Next?
+
+<CardGroup cols={3}>
+
+<Card title="Appeals" icon="scale-balanced" href="/court/appeals">
+  Learn how cases escalate through the hierarchy
+</Card>
+
+<Card title="How It Works" icon="cogs" href="/court/how-it-works">
+  Understand the full dispute resolution process
+</Card>
+
+<Card title="Staking Guide" icon="coins" href="https://help.kleros.io/court/staking">
+  Step-by-step guide to staking in courts
+</Card>
+
+</CardGroup>

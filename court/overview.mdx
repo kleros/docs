@@ -1,0 +1,173 @@
+---
+title: "Overview"
+description: "Decentralized dispute resolution powered by crypto-economic incentives and game theory"
+sidebarTitle: "Overview"
+icon: "gavel"
+---
+
+![Kleros Court Interface](https://mintlify.s3.us-west-1.amazonaws.com/kleros/images/court-hero.png)
+
+# Kleros Court
+
+<Badge>V2</Badge>
+
+**Kleros Court** is a decentralized dispute resolution protocol that provides arbitration services for smart contracts and decentralized applications. It works by randomly selecting jurors from a pool who are incentivized to resolve disputes honestly through a crypto-economic mechanism based on game theory.
+
+Think of it as a decentralized judiciary for Web3. When a dispute arises, jurors are randomly drawn, they review evidence, vote on the outcome, and the majority decision is enforced—all without centralized intermediaries.
+
+<Note>
+Looking for V1 documentation? See [Court V1 (Legacy)](/legacy/court-v1).
+</Note>
+
+---
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+
+<Card title="Random Juror Selection" icon="shuffle">
+  Jurors are randomly drawn from stakers, weighted by their PNK stake
+</Card>
+
+<Card title="Crypto-Economic Incentives" icon="coins">
+  Honest voting is rewarded; incoherent votes result in stake slashing
+</Card>
+
+<Card title="Hierarchical Courts" icon="sitemap">
+  Specialized courts for different dispute types with appeals to parent courts
+</Card>
+
+<Card title="Modular Dispute Kits" icon="puzzle-piece">
+  Pluggable resolution mechanisms including ranked choice and privacy voting
+</Card>
+
+<Card title="Cross-Chain Support" icon="link">
+  Disputes from any EVM chain resolved on Arbitrum via Vea bridge
+</Card>
+
+<Card title="Trustless Execution" icon="shield-check">
+  Rulings are enforced automatically by smart contracts
+</Card>
+
+</CardGroup>
+
+---
+
+## How It Works
+
+At its core, Kleros works through a simple yet powerful process:
+
+<Steps>
+
+<Step title="Dispute Creation">
+  An application encounters a contentious situation and creates a dispute in Kleros, paying arbitration fees.
+</Step>
+
+<Step title="Juror Selection">
+  Jurors are randomly drawn from those who have staked PNK in the relevant court. Selection probability is proportional to stake.
+</Step>
+
+<Step title="Evidence & Voting">
+  Jurors review evidence submitted by both parties and cast their votes during the voting period.
+</Step>
+
+<Step title="Resolution">
+  The majority decision is enforced. Coherent jurors are rewarded; incoherent jurors lose a portion of their stake.
+</Step>
+
+</Steps>
+
+### The Incentive Structure
+
+The system is designed so **you don't need to trust anyone**:
+
+- **Jurors** are incentivized to vote honestly (or lose their staked PNK)
+- **Disputants** pay fees only for resolution, with no protocol commission
+- **Appellants** can challenge rulings by funding additional rounds
+
+This creates a self-policing system where dishonest behavior is economically punished.
+
+---
+
+## Core Components
+
+| Component | Purpose |
+| --- | --- |
+| **KlerosCore** | The main arbitrator contract that coordinates disputes and enforces rulings |
+| **Sortition Module** | Handles juror selection using a three-phase system to prevent manipulation |
+| **Dispute Kits** | Modular resolution mechanisms (Classic, Shutter, Ranked Choice, etc.) |
+| **Vea Bridge** | Enables cross-chain dispute resolution from foreign chains |
+
+---
+
+## Who Uses Kleros Court?
+
+- **DeFi Protocols** resolve oracle disputes, liquidation challenges, and governance conflicts
+- **Prediction Markets** settle market outcomes with decentralized arbitration
+- **Escrow Services** release funds based on impartial third-party rulings
+- **DAOs** handle contributor disputes and proposal challenges
+- **Insurance Protocols** adjudicate claims without centralized authority
+- **NFT Marketplaces** resolve authenticity and ownership disputes
+
+---
+
+## V2 Improvements
+
+Kleros Court V2 represents a significant evolution from V1:
+
+| Feature | V1 | V2 |
+| --- | --- | --- |
+| **Network** | Ethereum Mainnet | Arbitrum (lower gas costs) |
+| **Cross-Chain** | Single chain only | Multi-chain via Vea bridge |
+| **Dispute Kits** | Single mechanism | Modular, pluggable kits |
+| **Vote Privacy** | Basic commit-reveal | Shutter encryption (in testing) |
+| **Staking** | PNK stays in wallet | PNK transfers to contract |
+| **RNG** | Single source | Enhanced with fallback mechanisms |
+
+<Note>
+Kleros V2 is currently in beta with 100+ disputes successfully processed. The system is undergoing internal review and preparing for external audits.
+</Note>
+
+---
+
+## What's Next?
+
+<CardGroup cols={3}>
+
+<Card title="How It Works" icon="cogs" href="/court/how-it-works">
+  Deep dive into the dispute resolution process
+</Card>
+
+<Card title="Court Hierarchy" icon="sitemap" href="/court/court-hierarchy">
+  Understand the court structure and specialization
+</Card>
+
+<Card title="Appeals" icon="scale-balanced" href="/court/appeals">
+  Learn how appeals and escalation work
+</Card>
+
+</CardGroup>
+
+---
+
+## Quick Links
+
+<CardGroup cols={2}>
+
+<Card title="Launch Court" icon="rocket" href="https://court.kleros.io">
+  Open the Kleros Court application
+</Card>
+
+<Card title="Become a Juror" icon="user-plus" href="https://help.kleros.io/court/juror-guide">
+  Step-by-step guide to staking and voting
+</Card>
+
+<Card title="Contract Addresses" icon="file-contract" href="/reference/contracts/addresses">
+  Court V2 deployment addresses
+</Card>
+
+<Card title="Kleros SDK" icon="code" href="/developers/sdk">
+  Integrate Kleros into your application
+</Card>
+
+</CardGroup>

@@ -1,0 +1,263 @@
+---
+title: "Appeals"
+description: "How to challenge rulings and escalate disputes through the court system"
+sidebarTitle: "Appeals"
+icon: "scale-balanced"
+---
+
+# Appeals
+
+The appeals system is a core feature of Kleros Court that ensures fairness and allows for error correction. Any party—or even third parties—can challenge a ruling by funding an appeal.
+
+---
+
+## How Appeals Work
+
+<Steps>
+
+<Step title="Initial Ruling">
+  After jurors vote, a preliminary ruling is reached based on majority decision. This ruling enters the **Appeal Period**.
+</Step>
+
+<Step title="Appeal Funding">
+  During the appeal period, anyone can fund an appeal:
+  - **Challenger**: Funds to overturn the ruling (2× appeal cost)
+  - **Winner**: Funds to defend the ruling (1× appeal cost)
+</Step>
+
+<Step title="Counter-Funding">
+  If one side funds, the other side has the opportunity to counter-fund. If only one side funds fully, that side wins by default.
+</Step>
+
+<Step title="New Round">
+  If both sides fund, a new round begins with more jurors. The process repeats until appeals are exhausted or unfunded.
+</Step>
+
+<Step title="Final Ruling">
+  When no more appeals are funded (or the appeal period expires), the current ruling becomes final and is executed.
+</Step>
+
+</Steps>
+
+---
+
+## Appeal Funding Requirements
+
+The appeal system uses asymmetric funding to create proper incentives:
+
+| Side | Funding Required | Rationale |
+| --- | --- | --- |
+| **Challenging Side** | 2× appeal cost | Higher barrier discourages frivolous appeals |
+| **Winning Side** | 1× appeal cost | Lower cost to defend legitimate rulings |
+
+### Calculating Appeal Cost
+
+```
+appealCost = feeForJuror × ((currentJurors × 2) + 1)
+```
+
+<Accordion title="Appeal Cost Example">
+**Scenario:** Current round has 3 jurors at 0.05 ETH each.
+
+Next round will have: (3 × 2) + 1 = **7 jurors**
+
+**Appeal costs:**
+- Challenger: 0.05 ETH × 7 × 2 = **0.70 ETH**
+- Winner: 0.05 ETH × 7 × 1 = **0.35 ETH**
+</Accordion>
+
+---
+
+## Funding Deadlines
+
+<Warning>
+Timing is critical for appeals. Miss the deadline and your opportunity is lost.
+</Warning>
+
+| Party | Deadline |
+| --- | --- |
+| **Challenger** | First half of appeal period only |
+| **Winner** | Entire appeal period |
+
+This asymmetry creates urgency for challengers while giving winners adequate time to respond.
+
+---
+
+## Juror Progression
+
+With each appeal round, the number of jurors increases:
+
+```
+Round 1:  3 jurors
+Round 2:  7 jurors    (3×2 + 1)
+Round 3:  15 jurors   (7×2 + 1)
+Round 4:  31 jurors   (15×2 + 1)
+Round 5:  63 jurors   (31×2 + 1)
+...
+```
+
+This exponential growth ensures that:
+- Important cases receive thorough review
+- The cost of repeated appeals increases substantially
+- Eventually, a large enough jury reaches a stable consensus
+
+---
+
+## Court Jumps
+
+When the number of jurors exceeds a threshold, the dispute "jumps" to a parent court:
+
+### How Court Jumps Work
+
+<Steps>
+
+<Step title="Threshold Reached">
+  The dispute requires more jurors than the `jurorsForCourtJump` parameter (e.g., 511 jurors).
+</Step>
+
+<Step title="Escalation">
+  The dispute automatically moves to the parent court in the hierarchy.
+</Step>
+
+<Step title="New Parameters">
+  The dispute adopts the parent court's parameters and juror pool.
+</Step>
+
+<Step title="Continued Resolution">
+  Jurors from the broader parent court now handle the case.
+</Step>
+
+</Steps>
+
+### V2 Enhancements
+
+Kleros V2 introduces significant improvements to court jumps:
+
+<CardGroup cols={2}>
+
+<Card title="Dispute Kit Jumps" icon="puzzle-piece">
+  If a parent court doesn't support the current dispute kit, the dispute can switch to a compatible kit—including complex question types.
+</Card>
+
+<Card title="Dynamic Juror Adjustment" icon="sliders">
+  Juror numbers adjust dynamically based on the new court's parameters and dispute kit requirements.
+</Card>
+
+</CardGroup>
+
+<Info>
+These jumps ensure that complex or contentious cases receive appropriate handling by a broader, less specialized jury.
+</Info>
+
+---
+
+## Appeal Rewards
+
+Successfully funding appeals can be profitable:
+
+### If Your Side Wins
+
+When you fund the winning side of an appeal:
+
+- Your funding is returned
+- You receive a portion of the losing side's funding as profit
+- Rewards are proportional to your contribution
+
+### If Your Side Loses
+
+- Your funding is forfeited
+- It's distributed to the winning side's funders
+
+<Tip>
+Appeal funding is a form of crowdfunding justice. Multiple contributors can fund a side together, sharing in the rewards or losses proportionally.
+</Tip>
+
+---
+
+## Strategic Considerations
+
+### For Disputants
+
+- **Evaluate Strength**: Only appeal if you have strong evidence the ruling was wrong
+- **Consider Costs**: Each round is more expensive than the last
+- **Time Your Funding**: Challengers must act in the first half of the appeal period
+
+### For Third-Party Funders
+
+- **Review Evidence**: Study the case before funding either side
+- **Assess Probability**: Consider how likely the ruling is to change
+- **Diversify Risk**: Fund multiple appeals to spread risk
+
+### For Jurors
+
+- **Expect Appeals**: Large-stake disputes often get appealed
+- **Court Jumps**: You may be drawn for cases that jumped from sub-courts
+- **Increased Complexity**: Appealed cases are often more contentious
+
+---
+
+## Appeal Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     INITIAL RULING                          │
+│                    (3 jurors vote)                          │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     APPEAL PERIOD                           │
+│   Challenger funds (2×) ◄──────► Winner funds (1×)          │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
+            ┌─────────────┼─────────────┐
+            │             │             │
+            ▼             ▼             ▼
+     ┌──────────┐  ┌──────────┐  ┌──────────┐
+     │  Both    │  │  Only    │  │ Neither  │
+     │  Fund    │  │ One Funds│  │  Funds   │
+     └────┬─────┘  └────┬─────┘  └────┬─────┘
+          │             │             │
+          ▼             ▼             ▼
+     ┌──────────┐  ┌──────────┐  ┌──────────┐
+     │  NEW     │  │ Funded   │  │ Current  │
+     │  ROUND   │  │ Side     │  │ Ruling   │
+     │(7 jurors)│  │  Wins    │  │ Executed │
+     └──────────┘  └──────────┘  └──────────┘
+```
+
+---
+
+## What's Next?
+
+<CardGroup cols={3}>
+
+<Card title="Court Hierarchy" icon="sitemap" href="/court/court-hierarchy">
+  Understand how courts are organized
+</Card>
+
+<Card title="How It Works" icon="cogs" href="/court/how-it-works">
+  Full dispute resolution process
+</Card>
+
+<Card title="Fund an Appeal" icon="hand-holding-dollar" href="https://court.kleros.io">
+  Browse active cases with open appeals
+</Card>
+
+</CardGroup>
+
+---
+
+## Quick Links
+
+<CardGroup cols={2}>
+
+<Card title="Appeal Calculator" icon="calculator" href="https://court.kleros.io">
+  Estimate appeal costs for active disputes
+</Card>
+
+<Card title="Active Appeals" icon="gavel" href="https://court.kleros.io">
+  View disputes currently in appeal period
+</Card>
+
+</CardGroup>
