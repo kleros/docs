@@ -1,0 +1,5 @@
+/* Target code blocks to set a monospace font for ASCII art */
+.code-block pre,
+.code-block code {
+  font-family: "Courier New", Menlo, Monaco, Courier, monospace !important;
+}
