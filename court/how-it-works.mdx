@@ -1,0 +1,251 @@
+---
+title: "How It Works"
+description: "The complete dispute resolution process from creation to execution"
+sidebarTitle: "How it works"
+icon: "cogs"
+---
+
+# How Kleros Court Works
+
+Kleros Court resolves disputes through a structured process that ensures fairness, transparency, and economic alignment. This page walks through each stage from dispute creation to final execution.
+
+---
+
+## The Dispute Lifecycle
+
+<Steps>
+
+<Step title="Dispute Creation">
+  An arbitrable application encounters a contentious situation and needs resolution.
+
+  - The application creates a dispute in Kleros, providing case details
+  - Arbitration fees are paid to incentivize jurors (the protocol takes no commission)
+  - Court selection is specified through the `extraData` parameter
+  - The dispute enters the **Evidence Period**
+</Step>
+
+<Step title="Evidence Period">
+  Both parties submit evidence to support their case.
+
+  - Evidence can include text explanations, documents, images, or other materials
+  - All evidence is stored permanently and transparently on-chain
+  - Deposit requirements prevent spam submissions
+  - The dispute template defines what information is needed
+</Step>
+
+<Step title="Juror Selection">
+  Jurors are randomly drawn from those who have staked PNK in the relevant court.
+
+  - Selection probability is proportional to the amount of PNK staked
+  - The Sortition Module uses a three-phase system to prevent manipulation
+  - Selected jurors receive notification of their drawing
+  - A portion of each juror's stake is locked as collateral
+  - All required jurors must be drawn before proceeding
+</Step>
+
+<Step title="Voting Period">
+  Jurors review evidence and cast their votes.
+
+  **Current Implementation (Commit-Reveal):**
+  - Jurors commit a hash of their vote during the Commit Period
+  - Votes remain hidden until the Reveal Period
+  - Jurors must return to reveal their vote with justification
+  - Failure to reveal results in stake loss
+
+  **Coming Soon (Shutter Integration):**
+  - Single-transaction encrypted voting
+  - Automatic decryption via threshold cryptography
+  - No manual reveal required
+</Step>
+
+<Step title="Appeal Period">
+  Parties can challenge the outcome if dissatisfied.
+
+  - Anyone can fund an appeal to support a particular side
+  - The opposing side can counter-fund to defend the original outcome
+  - Appeals increase the number of jurors (typically doubling plus one)
+  - Large or contentious cases may jump to a parent court
+</Step>
+
+<Step title="Execution">
+  Once appeals are exhausted, the ruling becomes final.
+
+  - The arbitrator contract calls back the original application
+  - Coherent jurors (who voted with the majority) receive rewards
+  - Incoherent jurors lose a portion of their staked PNK
+  - The ruling is enforced automatically by the smart contract
+</Step>
+
+</Steps>
+
+---
+
+## The Phase System
+
+The Sortition Module uses a three-phase cycle to prevent manipulation of juror selection:
+
+```
+┌─────────────┐          ┌─────────────┐          ┌─────────────┐
+│             │          │             │          │             │
+│   Staking   │──────────▶  Generating │──────────▶   Drawing   │
+│             │          │             │          │             │
+└─────────────┘          └─────────────┘          └─────────────┘
+       ▲                                                 │
+       │                                                 │
+       └─────────────────────────────────────────────────┘
+```
+
+<Tabs>
+  <Tab title="Staking Phase">
+    **Best time to adjust your stakes**
+
+    - Stake changes take effect immediately
+    - Jurors can update their stakes in various courts
+    - Duration varies based on dispute activity
+  </Tab>
+
+  <Tab title="Generating Phase">
+    **Random number being generated**
+
+    - A random number is requested and becomes visible on-chain
+    - Stake changes are recorded but won't apply until next Staking phase
+    - Duration depends on the randomness source
+  </Tab>
+
+  <Tab title="Drawing Phase">
+    **Jurors being selected**
+
+    - Jurors are drawn using the random number and current stake distribution
+    - Stake changes remain delayed
+    - Continues until all disputes have jurors or maximum time elapses
+  </Tab>
+</Tabs>
+
+<Warning>
+If you stake during Generating or Drawing phases, your changes won't affect current selection chances. The Court UI shows whether your stakes are "Current" or "Delayed."
+</Warning>
+
+---
+
+## Dispute Kits
+
+Kleros V2 introduces modular dispute resolution through pluggable Dispute Kits:
+
+| Kit | Description | Use Case |
+| --- | --- | --- |
+| **Classic** | Traditional majority voting where the option with most votes wins | Standard disputes |
+| **Ranked Choice** | Jurors rank multiple options by preference | Nuanced multi-option decisions |
+| **Complex Question** | Advanced mechanisms for sophisticated decision-making | Multi-faceted disputes |
+| **Shutter-Enabled** | Threshold encryption for enhanced vote privacy | Privacy-sensitive cases |
+| **PoH-Gated** | Requires Proof of Humanity verification | Sybil-resistant voting |
+
+Each court is compatible with specific dispute kits. When creating disputes, arbitrables can select desired features rather than specific kits, simplifying integration.
+
+---
+
+## Voting Mechanics
+
+### Current: Commit-Reveal
+
+<Steps>
+<Step title="Commit Phase">
+  Choose your vote, generate a salt, and submit your commitment transaction. Keep your vote secret and remember your salt.
+</Step>
+
+<Step title="Reveal Phase">
+  Return to reveal your vote with justification. Failure to reveal means losing your locked PNK.
+</Step>
+</Steps>
+
+### Future: Shutter Encrypted Voting
+
+<Note>
+Shutter Network integration is completed on testnet and currently resolving implementation issues before production deployment.
+</Note>
+
+- Single-transaction private voting
+- Votes encrypted using threshold cryptography
+- Automatic decryption at the appropriate time
+- No manual reveal required
+- Prevention of vote copying and bandwagon effects
+
+---
+
+## Rewards and Penalties
+
+### For Coherent Jurors (voted with majority)
+
+You receive rewards from two sources:
+
+1. **Arbitration Fees**: ETH or whitelisted ERC20 tokens paid by dispute creators, divided among coherent jurors
+2. **PNK Redistribution**: Penalties from incoherent jurors, divided among coherent jurors
+
+**Reward Formula:**
+```
+jurorReward = (totalFees / numberOfCoherentVotes) × degreeOfCoherence
+pnkReward = (totalPenalties / numberOfCoherentVotes) × degreeOfCoherence
+```
+
+### For Incoherent Jurors (voted against majority)
+
+- Lose a portion of staked PNK (determined by the `alpha` parameter)
+- Forfeit arbitration fee rewards
+
+<Accordion title="Reward Example">
+**Scenario:** Case has 5 jurors with 0.05 ETH fee per juror (total: 0.25 ETH). 3 jurors vote coherently, 2 incoherently.
+
+**Each coherent juror receives:**
+- ETH: 0.25 ÷ 3 = ~0.083 ETH
+- PNK: (2 × locked PNK amount) ÷ 3
+</Accordion>
+
+---
+
+## Staking Rewards (KIP-66)
+
+<Info>
+Staking rewards are fully implemented in the smart contracts and will be enabled once V2 officially exits beta. This community-approved governance proposal provides additional incentives separate from traditional arbitration fees.
+</Info>
+
+---
+
+## Security Features
+
+### Enhanced RNG System
+
+The random number generation system includes comprehensive fallback mechanisms:
+
+- **Primary**: Chainlink-based random number generation
+- **Fallback**: Alternative entropy sources when primary fails
+- **Verification**: Multi-source randomness verification
+- **Reliability**: Ensures juror selection proceeds even during external service disruptions
+
+### Juror Fraud Protection
+
+- Pre-reveal protection: Revealing votes early allows anyone to report you and claim a portion of your stake
+- Cartel protection: Coordinated voting can be detected and penalized
+- Evidence of coordination can be reported with serious stake penalties
+
+<Warning>
+Never share your vote choice before the reveal phase, and never coordinate with other jurors. This maintains system integrity and protects your PNK.
+</Warning>
+
+---
+
+## What's Next?
+
+<CardGroup cols={3}>
+
+<Card title="Court Hierarchy" icon="sitemap" href="/court/court-hierarchy">
+  Understand court structure and specialization
+</Card>
+
+<Card title="Appeals" icon="scale-balanced" href="/court/appeals">
+  Learn how appeals and escalation work
+</Card>
+
+<Card title="Become a Juror" icon="user-plus" href="https://help.kleros.io/court/juror-guide">
+  Step-by-step staking and voting guide
+</Card>
+
+</CardGroup>

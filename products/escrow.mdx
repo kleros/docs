@@ -1,0 +1,320 @@
+---
+title: "Escrow"
+description: "Decentralized escrow securing blockchain transactions between untrusted parties"
+sidebarTitle: "Escrow"
+icon: "handshake"
+---
+
+![Kleros Escrow Interface](https://mintlify.s3.us-west-1.amazonaws.com/kleros/images/escrow-hero.png)
+
+# Escrow
+
+<Note>
+**V2** - Looking for V1 documentation? See [Escrow V1 (Legacy)](/legacy/escrow-v1).
+</Note>
+
+**Kleros Escrow** is a decentralized escrow platform that secures blockchain transactions between untrusted parties. It combines smart contract automation with Kleros' decentralized arbitration system to provide trustless transaction security for digital commerce.
+
+Traditional online transactions require trust between strangers, creating opportunities for fraud and disputes. Kleros Escrow eliminates this trust requirement by securing funds in smart contracts, allowing structured settlement negotiations, and delivering decentralized arbitration through Kleros Court when agreements fail.
+
+---
+
+## Key Capabilities
+
+<CardGroup cols={2}>
+
+<Card title="Smart Contract Security" icon="lock">
+  Funds secured in smart contracts before service delivery
+</Card>
+
+<Card title="Settlement Negotiation" icon="comments-dollar">
+  Structured negotiation process for partial disputes
+</Card>
+
+<Card title="Multi-Token Support" icon="coins">
+  Pay with ETH, USDC, USDT, DAI, or any ERC20 token
+</Card>
+
+<Card title="Decentralized Arbitration" icon="gavel">
+  Kleros Court resolves disputes when agreements fail
+</Card>
+
+<Card title="Zero Platform Fees" icon="badge-percent">
+  Completely free to use—only pay network gas fees
+</Card>
+
+<Card title="Automatic Enforcement" icon="robot">
+  Smart contracts automatically execute rulings
+</Card>
+
+</CardGroup>
+
+---
+
+## How It Works
+
+<Steps>
+
+<Step title="Creation">
+  Buyer creates escrow transaction specifying seller, amount, deadline, and terms.
+</Step>
+
+<Step title="Fund Locking">
+  Payment is secured in the smart contract using ETH or chosen token.
+</Step>
+
+<Step title="Delivery Period">
+  Seller provides agreed service/product before the specified deadline.
+</Step>
+
+<Step title="Resolution">
+  Transaction concludes through payment, settlement, manual deadline execution, or arbitration.
+</Step>
+
+</Steps>
+
+---
+
+## Resolution Mechanisms
+
+Kleros Escrow V2 provides multiple ways to resolve transactions:
+
+<Tabs>
+  <Tab title="Direct Payment">
+    **When parties fully agree**
+
+    - **Full Payment**: Buyer releases entire amount to seller when satisfied
+    - **Full Refund**: Seller returns entire amount to buyer if unable to deliver
+    - **Partial Transactions**: Either party can process partial amounts for completed portions
+  </Tab>
+
+  <Tab title="Settlement">
+    **When parties partially disagree**
+
+    The structured negotiation process:
+
+    1. **Proposal**: Either party proposes a settlement amount
+    2. **Counter-Proposal**: Other party can propose a different amount
+    3. **Agreement**: When one party accepts, funds distribute automatically
+    4. **Escalation**: If no agreement after timeout, either party can raise a dispute
+
+    <Warning>
+    Proposing a settlement does NOT transfer funds. Money only moves when one party explicitly accepts the other party's proposal.
+    </Warning>
+  </Tab>
+
+  <Tab title="Deadline Execution">
+    **When deadline passes**
+
+    After the deadline, anyone can trigger execution to transfer remaining funds to the seller if:
+    - No active disputes exist
+    - No settlement negotiations are pending
+    - The deadline has elapsed
+
+    <Info>
+    This requires a manual transaction call—it is NOT automatic. Any address can trigger it once conditions are met.
+    </Info>
+  </Tab>
+
+  <Tab title="Dispute Resolution">
+    **When settlement fails**
+
+    1. **Fee Payment**: Both parties pay arbitration fees within timeout
+    2. **Evidence Submission**: Parties submit supporting evidence
+    3. **Jury Selection**: Kleros randomly selects impartial jurors
+    4. **Ruling**: Jury decides outcome based on evidence
+    5. **Enforcement**: Smart contract automatically executes ruling
+
+    Arbitration fees are reimbursed to the winning party. If one party fails to pay fees within the timeout, the paying party wins automatically.
+  </Tab>
+</Tabs>
+
+---
+
+## V2 Improvements
+
+| Feature | Description |
+| --- | --- |
+| **Universal Token Support** | ETH, popular tokens (USDC, USDT, DAI), or any ERC20 token |
+| **Automatic Safety Checks** | System validates token compatibility |
+| **Structured Settlement** | Formal proposal/acceptance with clear transfer rules |
+| **Settlement Protection** | Timeout period prevents rushed arbitration |
+| **Streamlined Disputes** | Automatic refunds for overpayment, clear timeout logic |
+
+### Token Selection
+
+<Steps>
+<Step title="Choose Payment Type">
+  Select ETH, pick from popular tokens, or enter a custom token address
+</Step>
+<Step title="Verification">
+  System verifies the token works with Escrow
+</Step>
+<Step title="Set Amount">
+  Enter your amount and proceed with the transaction
+</Step>
+</Steps>
+
+<Note>
+Token transactions may have maximum amount caps set by governance for risk management.
+</Note>
+
+---
+
+## Use Cases
+
+<AccordionGroup>
+
+<Accordion title="Service Contracting" icon="briefcase">
+A marketing agency and client use escrow for a social media campaign. If the client is partially satisfied, they can propose a settlement amount. The agency can accept, counter-propose, or proceed to dispute resolution.
+</Accordion>
+
+<Accordion title="Cryptocurrency Trading" icon="bitcoin">
+Traders exchanging ETH for assets on other blockchains use escrow for security. One party locks ETH while the other transfers external assets. If issues arise, parties can negotiate or use dispute resolution.
+</Accordion>
+
+<Accordion title="Freelance Projects" icon="laptop-code">
+A company hires a developer for a web application. The developer works knowing payment is secured, while the company can test the deliverable and release payment, negotiate, or dispute if necessary.
+</Accordion>
+
+<Accordion title="Physical Product Sales" icon="box">
+An artist sells custom artwork to a collector through escrow. The buyer has until the deadline to inspect. If there are quality concerns, the buyer can propose partial payment or raise a dispute.
+</Accordion>
+
+</AccordionGroup>
+
+---
+
+## Cost Structure
+
+| Cost Type | Amount |
+| --- | --- |
+| **Platform Fees** | **Free** - Kleros Escrow V2 has no platform fees |
+| **Network Fees** | Standard blockchain gas fees for transactions |
+| **Dispute Costs** | Arbitration fees only if you raise a dispute (refunded if you win) |
+
+<Tip>
+The settlement negotiation feature often prevents disputes entirely by enabling parties to reach partial agreements, saving on potential arbitration costs.
+</Tip>
+
+---
+
+## Benefits
+
+<Tabs>
+  <Tab title="For Buyers">
+    - **Payment Protection**: Funds remain secure until delivery confirmation
+    - **Quality Assurance**: Clear recourse for non-delivery or substandard work
+    - **Flexible Resolution**: Settlement negotiation for partial completion
+    - **Fair Arbitration**: Access to impartial Kleros Court
+    - **Partial Payments**: Release funds incrementally as work progresses
+  </Tab>
+
+  <Tab title="For Sellers">
+    - **Payment Guarantee**: Verified fund availability before work begins
+    - **Deadline Execution**: Trigger payment release after deadline passes
+    - **Dispute Fairness**: Equal standing with evidence-based decisions
+    - **Settlement Rights**: Equal ability to propose settlement amounts
+    - **Partial Payments**: Negotiate compensation for completed portions
+  </Tab>
+
+  <Tab title="For Ecosystem">
+    - **Trust Infrastructure**: Enables commerce between unknown parties globally
+    - **Fraud Reduction**: Smart contract security deters scammers
+    - **Decentralized Arbitration**: Reduces reliance on centralized services
+    - **Market Efficiency**: Lower barriers for digital commerce
+    - **Transparency**: Open-source contracts and public dispute records
+  </Tab>
+</Tabs>
+
+---
+
+## Best Practices
+
+<CardGroup cols={2}>
+
+<Card title="For Buyers" icon="user">
+  - Set realistic deadlines (execution requires manual triggering)
+  - Define clear deliverables
+  - Keep communication records for potential disputes
+  - Consider milestone payments for large projects
+</Card>
+
+<Card title="For Sellers" icon="user-tie">
+  - Verify escrow funding before starting work
+  - Document progress and communications
+  - Communicate proactively about delays
+  - Understand deadline implications
+</Card>
+
+</CardGroup>
+
+**For Both Parties:**
+- Use detailed descriptions with clear terms and success criteria
+- Keep all communication records as evidence
+- Understand that settlement proposals don't transfer funds until accepted
+- Consider settlement before escalating to disputes
+
+---
+
+## Getting Started
+
+<Steps>
+
+<Step title="Connect Wallet">
+  Use MetaMask, Rabby, or any compatible Web3 wallet
+</Step>
+
+<Step title="Choose Payment">
+  Select ETH or your preferred token
+</Step>
+
+<Step title="Create Transaction">
+  Specify counterparty, amount, terms, and realistic deadline
+</Step>
+
+<Step title="Fund Escrow">
+  Transfer payment to the secure smart contract
+</Step>
+
+<Step title="Track & Resolve">
+  Monitor status, then release payment, negotiate settlement, or dispute
+</Step>
+
+</Steps>
+
+---
+
+## What's Next?
+
+<CardGroup cols={3}>
+
+<Card title="Create Escrow" icon="plus" href="https://escrow.kleros.io">
+  Start a new escrow transaction
+</Card>
+
+<Card title="Integration Guide" icon="code" href="/developers/products/escrow">
+  Build escrow into your application
+</Card>
+
+<Card title="Dispute Resolution" icon="gavel" href="/concepts/dispute-resolution">
+  Learn how Kleros Court works
+</Card>
+
+</CardGroup>
+
+---
+
+## Quick Links
+
+<CardGroup cols={2}>
+
+<Card title="Launch Escrow" icon="rocket" href="https://escrow.kleros.io">
+  Open the Escrow application
+</Card>
+
+<Card title="Contract Addresses" icon="file-contract" href="/reference/contracts/addresses">
+  Escrow V2 deployment addresses
+</Card>
+
+</CardGroup>
