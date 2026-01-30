@@ -1,0 +1,298 @@
+---
+title: "Production Checklist"
+description: "Pre-deployment verification for arbitrable contracts"
+---
+
+## Before You Deploy
+
+Use this checklist before deploying to mainnet. Each item has bitten someone before.
+
+---
+
+## Smart Contract Security
+
+### Access Control
+
+<CheckboxGroup>
+- [ ] `rule()` only callable by arbitrator
+  ```solidity
+  require(msg.sender == address(arbitrator), "Only arbitrator");
+  ```
+- [ ] Dispute creation restricted to valid parties
+- [ ] Evidence submission restricted appropriately
+- [ ] Admin functions protected (if any)
+</CheckboxGroup>
+
+### State Management
+
+<CheckboxGroup>
+- [ ] Disputes cannot be ruled twice
+  ```solidity
+  require(status == Status.Disputed, "Invalid state");
+  status = Status.Resolved; // Update BEFORE external calls
+  ```
+- [ ] Invalid ruling values rejected
+  ```solidity
+  require(_ruling <= numberOfChoices, "Invalid ruling");
+  ```
+- [ ] Ruling `0` (refuse to arbitrate) handled explicitly
+- [ ] All state transitions are valid (no skipping states)
+</CheckboxGroup>
+
+### Reentrancy Protection
+
+<CheckboxGroup>
+- [ ] State updated before external calls in `rule()`
+- [ ] Use checks-effects-interactions pattern
+- [ ] Consider `ReentrancyGuard` for complex logic
+  ```solidity
+  // BAD: external call before state update
+  payable(winner).transfer(amount);
+  status = Status.Resolved;
+  
+  // GOOD: state update before external call  
+  status = Status.Resolved;
+  payable(winner).transfer(amount);
+  ```
+</CheckboxGroup>
+
+### Fund Safety
+
+<CheckboxGroup>
+- [ ] No funds can be permanently locked
+- [ ] Failed transfers don't brick the contract
+- [ ] Consider pull-over-push for withdrawals
+- [ ] Test with contracts as recipients (not just EOAs)
+</CheckboxGroup>
+
+---
+
+## Arbitration Configuration
+
+### Court Selection
+
+| Check | Status |
+|-------|--------|
+| Court ID exists on target network | ▢ |
+| Court handles your dispute type | ▢ |
+| Minimum stake is acceptable | ▢ |
+| Court timing fits your use case | ▢ |
+
+### Extra Data
+
+<CheckboxGroup>
+- [ ] `extraData` correctly encodes court ID and juror count
+  ```solidity
+  bytes memory extraData = abi.encodePacked(
+      uint96(1),   // courtID
+      uint256(3)   // minJurors
+  );
+  ```
+- [ ] Juror count is odd (avoids ties)
+- [ ] Juror count appropriate for dispute value
+</CheckboxGroup>
+
+### Fee Handling
+
+<CheckboxGroup>
+- [ ] Always fetch fresh `arbitrationCost()` before creating dispute
+- [ ] Handle fee increases between check and execution
+- [ ] Refund excess fees to sender
+- [ ] Document who pays arbitration fees
+</CheckboxGroup>
+
+---
+
+## Dispute Template
+
+### Content Quality
+
+<CheckboxGroup>
+- [ ] Question is clear and unambiguous
+- [ ] All ruling options are mutually exclusive
+- [ ] Ruling descriptions explain consequences
+- [ ] No option can be interpreted multiple ways
+- [ ] "Refuse to arbitrate" scenario documented
+</CheckboxGroup>
+
+### Technical
+
+<CheckboxGroup>
+- [ ] Template JSON is valid
+- [ ] Template stored on permanent storage (IPFS pinned / Arweave)
+- [ ] Template URI accessible and resolves correctly
+- [ ] `policyURI` points to valid policy document
+- [ ] `arbitratorAddress` matches deployment
+- [ ] `arbitratorChainID` matches deployment
+</CheckboxGroup>
+
+### Example Template Validation
+
+```json
+{
+  "title": "Clear, specific title",           // ✓ Not generic
+  "description": "Full context...",           // ✓ Sufficient detail
+  "question": "Single, answerable question?", // ✓ Yes/no or clear options
+  "answers": [
+    {"id": "0x1", "title": "Option A", "description": "What happens if chosen"},
+    {"id": "0x2", "title": "Option B", "description": "What happens if chosen"}
+  ],
+  "policyURI": "/ipfs/Qm...",                // ✓ Accessible
+  "arbitratorChainID": "42161",              // ✓ Correct chain
+  "arbitratorAddress": "0x33d..."            // ✓ Correct address
+}
+```
+
+---
+
+## Events & Indexing
+
+<CheckboxGroup>
+- [ ] `DisputeRequest` emitted with correct parameters
+- [ ] `Ruling` emitted after executing ruling
+- [ ] `Evidence` events use correct `evidenceGroupID`
+- [ ] Events are indexed for efficient querying
+- [ ] Subgraph indexes your contract (if using one)
+</CheckboxGroup>
+
+---
+
+## Gas Optimization
+
+### Benchmarks
+
+| Function | Target | Your Contract |
+|----------|--------|---------------|
+| `createDispute()` | < 200k gas | ▢ |
+| `rule()` | < 100k gas | ▢ |
+| `submitEvidence()` | < 50k gas | ▢ |
+
+### Optimizations Applied
+
+<CheckboxGroup>
+- [ ] Use `immutable` for arbitrator address
+- [ ] Pack structs efficiently
+- [ ] Avoid redundant storage reads
+- [ ] Use `calldata` instead of `memory` where possible
+</CheckboxGroup>
+
+---
+
+## Deployment
+
+### Contract Verification
+
+<CheckboxGroup>
+- [ ] Source code verified on block explorer
+- [ ] Constructor arguments documented
+- [ ] All dependencies verified
+- [ ] License specified in source
+</CheckboxGroup>
+
+### Address Verification
+
+| Contract | Expected | Deployed |
+|----------|----------|----------|
+| KlerosCore | `0x33d0b8879...` | ▢ Match |
+| Your Arbitrable | — | ▢ Verified |
+| Dispute Template | — | ▢ Accessible |
+
+### Initialization
+
+<CheckboxGroup>
+- [ ] Arbitrator address is correct for network
+- [ ] Extra data encodes correct court
+- [ ] Template URI resolves correctly
+- [ ] Any admin roles assigned correctly
+- [ ] Contract funded if required
+</CheckboxGroup>
+
+---
+
+## Operational Readiness
+
+### Monitoring
+
+<CheckboxGroup>
+- [ ] Alert on `DisputeRequest` events
+- [ ] Alert on `Ruling` events
+- [ ] Monitor arbitration fee changes
+- [ ] Track dispute resolution times
+- [ ] Dashboard for active disputes
+</CheckboxGroup>
+
+### Documentation
+
+<CheckboxGroup>
+- [ ] User guide for creating disputes
+- [ ] Evidence submission instructions
+- [ ] Explanation of ruling outcomes
+- [ ] FAQ for common questions
+- [ ] Support contact for issues
+</CheckboxGroup>
+
+### Incident Response
+
+<CheckboxGroup>
+- [ ] Plan for paused arbitrator scenario
+- [ ] Plan for unexpected ruling
+- [ ] Emergency contact at Kleros (if needed)
+- [ ] Upgrade path documented (if upgradeable)
+</CheckboxGroup>
+
+---
+
+## Final Sign-Off
+
+| Review | Completed By | Date |
+|--------|--------------|------|
+| Code review | ▢ | |
+| Security audit | ▢ | |
+| Testnet deployment | ▢ | |
+| Testnet dispute test | ▢ | |
+| Gas benchmarks | ▢ | |
+| Documentation | ▢ | |
+
+---
+
+## Quick Reference
+
+### Mainnet Contract Addresses (Arbitrum One)
+
+```
+KlerosCore:           0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA
+DisputeKitClassic:    [verify on GitHub]
+DisputeTemplateReg:   [verify on GitHub]
+```
+
+<Warning>
+Always verify addresses from the [official repository](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) before mainnet deployment.
+</Warning>
+
+### Useful Links
+
+- [Kleros Court UI](https://court.kleros.io) — Monitor disputes
+- [GitHub Deployments](https://github.com/kleros/kleros-v2) — Contract addresses
+- [Kleros Discord](https://discord.gg/kleros) — Developer support
+
+---
+
+## Common Last-Minute Issues
+
+<AccordionGroup>
+  <Accordion title="Wrong network addresses">
+    Double-check you're not using testnet addresses on mainnet or vice versa.
+  </Accordion>
+  
+  <Accordion title="Template not pinned">
+    IPFS content disappears if not pinned. Use Pinata, Infura, or Arweave for permanence.
+  </Accordion>
+  
+  <Accordion title="Hardcoded fees">
+    Never hardcode arbitration fees. Always fetch dynamically.
+  </Accordion>
+  
+  <Accordion title="Missing refund logic">
+    If user overpays arbitration fee, refund the excess.
+  </Accordion>
+</AccordionGroup>

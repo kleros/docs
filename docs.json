@@ -158,10 +158,10 @@
           {
             "group": "Building Arbitrable Apps (V2)",
             "pages": [
-              "developers/arbitrable-apps/overview",
-              "developers/arbitrable-apps/guide",
-              "developers/arbitrable-apps/testing",
-              "developers/arbitrable-apps/production-checklist"
+              "developers/arbitrable-apps/arbitrable-overview",
+              "developers/arbitrable-apps/arbitrable-guide",
+              "developers/arbitrable-apps/arbitrable-testing",
+              "developers/arbitrable-apps/arbitrable-production"
             ]
           },
           {
