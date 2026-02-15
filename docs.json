@@ -171,7 +171,7 @@
 
               {
       "group": "Curate",
-      "icon": "list-check",
+     
       "pages": [
         "developers/products/curate/overview",
         "developers/products/curate/smart-contracts",
@@ -180,17 +180,29 @@
     },
              {
       "group": "Escrow",
-      "icon": "shield-check",
+    
       "pages": [
         "developers/products/escrow/overview",
         "developers/products/escrow/smart-contracts",
         "developers/products/escrow/integration"
       ]
     },
-              
-              
-              "developers/products/poh",
-              "developers/products/reality"
+        {
+      "group": "proofofhumanity",
+      "pages": [
+        "developers/products/poh/overview",
+        "developers/products/poh/smart-contracts",
+        "developers/products/poh/integration"
+      ]
+    },
+    {
+      "group": "Reality",
+      "pages": [
+        "developers/products/reality/overview",
+        "developers/products/reality/smart-contracts",
+        "developers/products/reality/integration"
+      ]
+    }             
             ]
           },
           {

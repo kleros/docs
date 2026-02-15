@@ -26,17 +26,17 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 ### State Management
 
 <CheckboxGroup>
-- [ ] Disputes cannot be ruled twice
+[ ] Disputes cannot be ruled twice
   ```solidity
   require(status == Status.Disputed, "Invalid state");
   status = Status.Resolved; // Update BEFORE external calls
   ```
-- [ ] Invalid ruling values rejected
+[ ] Invalid ruling values rejected
   ```solidity
   require(_ruling <= numberOfChoices, "Invalid ruling");
   ```
-- [ ] Ruling `0` (refuse to arbitrate) handled explicitly
-- [ ] All state transitions are valid (no skipping states)
+[ ] Ruling `0` (refuse to arbitrate) handled explicitly
+[ ] All state transitions are valid (no skipping states)
 </CheckboxGroup>
 
 ### Reentrancy Protection
@@ -78,6 +78,22 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 | Minimum stake is acceptable | ▢ |
 | Court timing fits your use case | ▢ |
 
+**Kleros V2 Court IDs (Arbitrum One):**
+
+| Court ID | Name | Typical Use |
+|----------|------|-------------|
+| 1 | General Court | Default for most disputes. Good starting point. |
+| 2 | Blockchain | Technical blockchain/smart contract disputes |
+| 3 | Non-Technical | Business, marketing, and content disputes |
+| 4 | Token Listing | Token curation and listing decisions |
+| 5+ | Specialized | Check [court.kleros.io](https://court.kleros.io) for the current tree |
+
+<Warning>
+Court IDs on Arbitrum Sepolia (testnet) differ from Arbitrum One (mainnet). Always verify IDs from the [kleros-v2 deployments](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) for your target network.
+</Warning>
+
+Court parameters (minStake, feeForJuror, session timings) are governed and can change via governance proposals. Query them from the `courts(courtID)` getter on KlerosCore rather than hardcoding.
+
 ### Extra Data
 
 <CheckboxGroup>
@@ -99,6 +115,16 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 - [ ] Handle fee increases between check and execution
 - [ ] Refund excess fees to sender
 - [ ] Document who pays arbitration fees
+</CheckboxGroup>
+
+**Kleros-specific fee details:**
+
+<CheckboxGroup>
+- [ ] If paying in ERC20: verify the token is in `acceptedFeeTokens` on KlerosCore
+- [ ] If paying in ERC20: call `arbitrationCost(extraData, feeToken)` (not the ETH overload)
+- [ ] If paying in ERC20: approve KlerosCore to spend the fee amount before `createDispute()`
+- [ ] Account for appeal costs — each appeal round roughly doubles the juror count and cost
+- [ ] For cross-chain disputes: the Foreign Gateway mirrors `arbitrationCost()` locally, but sync may lag after governance changes — add a buffer or retry mechanism
 </CheckboxGroup>
 
 ---
@@ -142,6 +168,42 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
   "arbitratorAddress": "0x33d..."            // ✓ Correct address
 }
 ```
+
+### Policy Document
+
+Every dispute should reference a policy document that jurors use to make decisions. This is distinct from the template — the template defines the UI; the policy defines the rules.
+
+<CheckboxGroup>
+- [ ] Policy document clearly states criteria for each ruling option
+- [ ] Policy covers edge cases (partial fulfillment, ambiguous evidence)
+- [ ] Policy states what happens on "Refuse to Arbitrate" (ruling 0)
+- [ ] Policy is written for a non-technical audience (jurors are general public)
+- [ ] Policy is hosted on pinned IPFS or Arweave (not a URL that can change)
+- [ ] Policy has been reviewed for ambiguity by someone unfamiliar with your protocol
+</CheckboxGroup>
+
+<Tip>
+Study existing Kleros policies from live products. Escrow V2 and Curate V2 policies are good models. You can find them on IPFS via the dispute template's `policyURI` field — inspect live disputes on [court.kleros.io](https://court.kleros.io) to see examples.
+</Tip>
+
+### Dispute Lifecycle Timing
+
+Kleros disputes follow a fixed phase sequence. Understand the timing impact on your application:
+
+| Phase | Duration (General Court) | Notes |
+|-------|--------------------------|-------|
+| Evidence | ~3 days | Either party can submit evidence |
+| Voting | ~3 days | Jurors cast encrypted votes (Shutter) |
+| Appeal | ~5 days | Losing party can fund an appeal |
+| **Total (no appeal)** | **~11 days** | Minimum time to ruling |
+| **Per appeal round** | **+~11 days** | Each round adds roughly the same |
+
+<CheckboxGroup>
+- [ ] Your application tolerates the dispute resolution timeline (1–4 weeks typical)
+- [ ] Funds or state remain locked during the dispute without creating issues
+- [ ] Users are informed about expected timelines in your UI
+- [ ] You handle the case where appeals extend the timeline significantly
+</CheckboxGroup>
 
 ---
 
@@ -221,6 +283,16 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 - [ ] Dashboard for active disputes
 </CheckboxGroup>
 
+**Kleros-specific monitoring:**
+
+<CheckboxGroup>
+- [ ] Monitor `AppealDecision` events from KlerosCore — appeals change timeline and cost
+- [ ] Subscribe to court parameter changes via `CourtModified` events — fee changes affect your cost calculations
+- [ ] Track your disputes on [court.kleros.io](https://court.kleros.io) — filter by your contract's address
+- [ ] If cross-chain: monitor Vea bridge claim/challenge status on [veascan.io](https://veascan.io)
+- [ ] Set up alerts for the KlerosCore `Paused` event — a paused arbitrator blocks new disputes and rulings
+</CheckboxGroup>
+
 ### Documentation
 
 <CheckboxGroup>
@@ -239,6 +311,34 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 - [ ] Emergency contact at Kleros (if needed)
 - [ ] Upgrade path documented (if upgradeable)
 </CheckboxGroup>
+
+**Kleros-specific failure scenarios:**
+
+<CheckboxGroup>
+- [ ] **Arbitrator paused:** KlerosCore has an emergency pause mechanism controlled by the Guardian role. If paused, no new disputes can be created and no rulings can be delivered. Your contract should handle a `createDispute()` revert gracefully and inform users.
+- [ ] **Ruling 0 (Refuse to Arbitrate):** This ruling means jurors found the dispute invalid. Your contract must handle this case explicitly — do not treat it the same as any party winning.
+- [ ] **Tied vote:** In the current DisputeKitClassic, a tied vote defaults to ruling 0 (refuse to arbitrate) unless overridden by appeal. Design your ruling-0 handler to produce a reasonable fallback (e.g., refund both parties).
+- [ ] **Contract address change:** V2 contracts are upgradeable proxies. After security audits, addresses may be preserved but implementation changes. If you store the arbitrator address as `immutable`, you cannot adapt — consider using a governor-updatable address.
+- [ ] **Vea bridge delay (cross-chain only):** In the unhappy path, ruling delivery can take ~7 days via the native Arbitrum bridge. Ensure your locked state can persist for at least 2 weeks without causing user issues.
+</CheckboxGroup>
+
+---
+
+## V2 Beta Considerations
+
+Kleros V2 is in beta. These items are specific to the current beta period:
+
+<CheckboxGroup>
+- [ ] **Access gating:** Verify your users can access the Court V2 interface. Beta access is currently limited to V2 testnet participants, V1 jurors, and PoH V1 registrants. General availability timing is TBD.
+- [ ] **Contract upgrades:** V2 contracts use UUPS proxy patterns and may be upgraded post-audit. Subscribe to the [Kleros blog](https://blog.kleros.io) and [Discord](https://discord.gg/kleros) for upgrade announcements.
+- [ ] **Subgraph stability:** The V2 subgraph schema may change during beta. Pin to a specific subgraph version and test after upgrades.
+- [ ] **SDK status:** The `@kleros/kleros-v2-sdk` package is under development. For production use, interact with contracts directly via ABIs from `@kleros/kleros-v2-contracts` or the [kleros-v2 repository](https://github.com/kleros/kleros-v2).
+- [ ] **Testnet first:** Always deploy and test a full dispute lifecycle on Arbitrum Sepolia before mainnet. Testnet disputes may take longer to resolve due to limited juror participation.
+</CheckboxGroup>
+
+<Warning>
+During the beta period, contact the Kleros team via [Discord](https://discord.gg/kleros) or `integrations@kleros.io` before deploying a production integration. The team can advise on the latest contract status and assist with dispute template design.
+</Warning>
 
 ---
 
@@ -259,14 +359,38 @@ Use this checklist before deploying to mainnet. Each item has bitten someone bef
 
 ### Mainnet Contract Addresses (Arbitrum One)
 
-```
-KlerosCore:           0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA
-DisputeKitClassic:    [verify on GitHub]
-DisputeTemplateReg:   [verify on GitHub]
+| Contract | Address |
+|----------|---------|
+| KlerosCore (proxy) | `0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA` |
+| SortitionModule | Verify from [deployments](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments/arbitrum) |
+| DisputeKitClassic | Verify from deployments |
+| DisputeTemplateRegistry | Verify from deployments |
+| HomeGateway | Verify from deployments |
+
+```solidity
+// Querying court parameters on-chain
+IKlerosCore core = IKlerosCore(0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA);
+
+// Get arbitration cost for General Court (ID 1) with 3 jurors
+bytes memory extraData = abi.encodePacked(uint96(1), uint256(3));
+uint256 cost = core.arbitrationCost(extraData);
+
+// Get court parameters
+(
+    uint96 parent,
+    bool hiddenVotes,
+    uint256 minStake,
+    uint256 alpha,
+    uint256 feeForJuror,
+    uint256 jurorsForCourtJump,
+    uint256[4] memory timesPerPeriod,
+    ,
+    ,
+) = core.courts(1); // courtID = 1
 ```
 
 <Warning>
-Always verify addresses from the [official repository](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) before mainnet deployment.
+Always verify addresses from the [official repository](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) before mainnet deployment. During beta, addresses may be updated through proxy upgrades.
 </Warning>
 
 ### Useful Links
@@ -281,18 +405,30 @@ Always verify addresses from the [official repository](https://github.com/kleros
 
 <AccordionGroup>
   <Accordion title="Wrong network addresses">
-    Double-check you're not using testnet addresses on mainnet or vice versa.
+    Double-check you're not using testnet addresses on mainnet or vice versa. KlerosCore on Arbitrum Sepolia has a different address than on Arbitrum One.
   </Accordion>
   
   <Accordion title="Template not pinned">
-    IPFS content disappears if not pinned. Use Pinata, Infura, or Arweave for permanence.
+    IPFS content disappears if not pinned. Use Pinata, Infura, or Arweave for permanence. Kleros hosts a pinning service at `cdn.kleros.link` but you should pin independently as well.
   </Accordion>
   
   <Accordion title="Hardcoded fees">
-    Never hardcode arbitration fees. Always fetch dynamically.
+    Never hardcode arbitration fees. Always fetch dynamically. Fees change through governance and vary per court.
   </Accordion>
   
   <Accordion title="Missing refund logic">
     If user overpays arbitration fee, refund the excess.
+  </Accordion>
+
+  <Accordion title="Wrong extraData encoding">
+    V2 uses `abi.encodePacked(uint96(courtID), uint256(jurorCount))` — note the `uint96` for court ID, not `uint256` as in V1. Using `uint256` will encode a different court than intended.
+  </Accordion>
+
+  <Accordion title="Odd vs even juror count">
+    Always use an odd number of jurors (3, 5, 7) to avoid tied votes. Tied votes in DisputeKitClassic default to ruling 0 (refuse to arbitrate), which may not be what your users expect.
+  </Accordion>
+
+  <Accordion title="Dispute template not registered">
+    If using `templateId`, make sure `setDisputeTemplate()` was called on the `DisputeTemplateRegistry` and you stored the returned `templateId`. If the ID is wrong, the Court UI won't display your dispute correctly and jurors will see missing context.
   </Accordion>
 </AccordionGroup>
