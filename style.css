@@ -3,3 +3,13 @@
 .code-block code {
   font-family: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, 'Consolas', 'Courier New', Courier, monospace !important;
 }
+
+.max-w-xl {
+  max-width: 50rem;
+}
+
+#content-side-layout {
+ padding-right: 40rem;
+}
+
+
