@@ -12,9 +12,6 @@
   "background": {
     "decoration": "gradient"
   },
-  "styling": {
-    "contentWidth": "full"
-  },
   "navbar": {
     "links": [
       {
