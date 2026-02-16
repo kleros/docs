@@ -51,17 +51,23 @@ Choice `0` is reserved for "Refuse to Arbitrate" — jurors select this when the
 
 Arbitration costs ETH. Your contract decides who pays:
 
+```mermaid
+graph LR
+    subgraph Fee Payment Patterns
+        A["Claimant pays"] -->|Effect| A1["Discourages frivolous claims"]
+        B["Loser pays"] -->|Effect| B1["Requires deposits upfront<br/>Used by Escrow V2, Curate V2"]
+        C["Split 50/50"] -->|Effect| C1["Fair but complex"]
+        D["Protocol pays"] -->|Effect| D1["Subsidized disputes"]
+    end
+    style A fill:#7b5ea7,color:#fff
+    style B fill:#7b5ea7,color:#fff
+    style C fill:#9b8ec4,color:#fff
+    style D fill:#9b8ec4,color:#fff
 ```
-┌─────────────────────────────────────────────────┐
-│  Fee Payment Patterns                           │
-├─────────────────────────────────────────────────┤
-│  Claimant pays     → Discourages frivolous claims│
-│  Defendant pays    → Rare, risky for abuse       │
-│  Split 50/50       → Fair but complex           │
-│  Loser pays        → Requires deposits upfront  │
-│  Protocol pays     → Subsidized disputes        │
-└─────────────────────────────────────────────────┘
-```
+
+<Note>
+Most Kleros products use **loser pays** — both parties deposit the arbitration fee upfront, and the winner is reimbursed. This is the pattern used by Escrow V2 and Curate V2.
+</Note>
 
 ### 3. Dispute Triggers
 
@@ -113,31 +119,68 @@ interface IArbitrableV2 {
 
 Your contract is the arbitrable. Simplest approach.
 
-```
-User → YourContract → KlerosCore
-                ↑
-          rule() callback
+```mermaid
+sequenceDiagram
+    participant User
+    participant YourContract as Your Contract<br/>(IArbitrableV2)
+    participant Kleros as KlerosCore
+
+    User->>YourContract: trigger dispute
+    YourContract->>Kleros: createDispute{value: fee}()
+    Kleros-->>YourContract: disputeID
+    Note over Kleros: Jurors drawn, vote, appeal...
+    Kleros->>YourContract: rule(disputeID, ruling)
+    YourContract->>YourContract: enforce ruling
 ```
 
 ### Pattern B: Proxy/Resolver
 
 Use `DisputeResolver` as intermediary. Good for upgradability.
 
-```
-User → YourContract → DisputeResolver → KlerosCore
-              ↑              ↑
-        your logic    rule() callback
+```mermaid
+sequenceDiagram
+    participant User
+    participant YourContract as Your Contract
+    participant DR as DisputeResolver
+    participant Kleros as KlerosCore
+    participant TR as TemplateRegistry
+
+    User->>YourContract: trigger dispute
+    YourContract->>DR: createDisputeForTemplate()
+    DR->>TR: setDisputeTemplate()
+    TR-->>DR: templateId
+    DR->>Kleros: createDispute{value: fee}()
+    Kleros-->>DR: disputeID
+    Note over Kleros: Jurors drawn, vote, appeal...
+    Kleros->>DR: rule(disputeID, ruling)
+    DR->>YourContract: forward ruling
 ```
 
 ### Pattern C: Cross-Chain
 
 Arbitrable on mainnet, resolution on Arbitrum.
 
-```
-[Mainnet]                    [Arbitrum]
-User → YourContract → ForeignGateway ──bridge──→ HomeGateway → KlerosCore
-              ↑                                        │
-        rule() ←──────────────bridge──────────────────┘
+```mermaid
+sequenceDiagram
+    box Foreign Chain (e.g. Ethereum)
+        participant User
+        participant App as Your Contract
+        participant FG as ForeignGateway
+    end
+    box Arbitrum (Home Chain)
+        participant HG as HomeGateway
+        participant Kleros as KlerosCore
+    end
+
+    User->>App: trigger dispute
+    App->>FG: createDispute{value: fee}()
+    FG-->>App: localDisputeID
+    FG->>HG: Vea bridge (Simple Bridge)
+    HG->>Kleros: createDispute()
+    Note over Kleros: Jurors drawn, vote, appeal...
+    Kleros->>HG: rule(disputeID, ruling)
+    HG->>FG: Vea bridge (Fast Bridge)
+    FG->>App: rule(localDisputeID, ruling)
 ```
 
 ## Cost Considerations

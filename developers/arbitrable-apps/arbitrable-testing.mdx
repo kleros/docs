@@ -7,15 +7,20 @@ description: "Test your arbitrable integration before mainnet"
 
 Testing arbitrable contracts requires simulating the full dispute lifecycle. You can't just unit test — you need to interact with Kleros contracts.
 
-```
-┌────────────────────────────────────────────────────────┐
-│                    Testing Layers                      │
-├────────────────────────────────────────────────────────┤
-│  1. Unit Tests      → Your contract logic in isolation │
-│  2. Integration     → With mock arbitrator             │
-│  3. Testnet         → With real Kleros on Sepolia      │
-│  4. Mainnet Fork    → Simulate with production state   │
-└────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Testing Layers
+        direction TB
+        L1["1. Unit Tests<br/>Your contract logic in isolation<br/>with MockArbitrator"]
+        L2["2. Integration Tests<br/>With mock arbitrator + dispute lifecycle"]
+        L3["3. Testnet<br/>With real Kleros on Arbitrum Sepolia"]
+        L4["4. Mainnet Fork<br/>Simulate with production KlerosCore state"]
+    end
+    L1 --> L2 --> L3 --> L4
+    style L1 fill:#e8e0f0,stroke:#7b5ea7
+    style L2 fill:#d8ccf0,stroke:#7b5ea7
+    style L3 fill:#c4b0e8,stroke:#7b5ea7
+    style L4 fill:#7b5ea7,color:#fff,stroke:#5a3d8a
 ```
 
 ## Unit Testing with Mock Arbitrator
