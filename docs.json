@@ -110,7 +110,7 @@
             ]
           },
           {
-            "group": "research",
+            "group": "Research",
             "pages": [
               "research/overview",
               "research/papers",
@@ -119,7 +119,7 @@
             ]
           },
           {
-            "group": "governance",
+            "group": "Governance",
             "pages": [
               "governance/overview",
               "governance/kips",
