@@ -1,0 +1,45 @@
+---
+title: "Deployment Addresses"
+description: "Smart contract addresses for Kleros V2 on all supported networks"
+---
+
+# Deployment Addresses
+
+<Warning>
+Always verify addresses against the [official kleros-v2 repository](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) before use. Addresses change with protocol upgrades.
+</Warning>
+
+## Arbitrum One (Chain ID: 42161)
+
+| Contract | Notes |
+|---|---|
+| KlerosCore (Proxy) | Check [deployments/arbitrum](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) |
+| SortitionModule (Proxy) | Check deployments |
+| DisputeKitClassic (Proxy) | Check deployments |
+| DisputeTemplateRegistry | Check deployments |
+| PolicyRegistry | Check deployments |
+| PNK Token | Bridged from Ethereum |
+
+## Ethereum Mainnet (Chain ID: 1)
+
+| Contract | Address |
+|---|---|
+| PNK Token (L1) | `0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d` |
+| ForeignGateway | Check deployments |
+
+## Gnosis Chain (Chain ID: 100)
+
+| Contract | Notes |
+|---|---|
+| ForeignGateway | Check deployments |
+
+## Finding Current Addresses
+
+The most reliable source is the repository:
+```bash
+git clone https://github.com/kleros/kleros-v2.git
+cd kleros-v2/contracts/deployments
+cat arbitrum/KlerosCore.json | jq '.address'
+```
+
+All V2 core contracts use UUPS proxy pattern. Proxy addresses remain stable across upgrades.

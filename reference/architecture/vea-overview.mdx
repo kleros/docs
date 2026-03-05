@@ -1,0 +1,50 @@
+---
+title: "Vea Bridge"
+description: "Cross-chain message bridge architecture for Kleros V2"
+---
+
+# Vea Bridge
+
+Vea is the cross-chain messaging bridge that enables Kleros to serve Arbitrable contracts on foreign chains while KlerosCore runs on Arbitrum.
+
+## Design
+
+Vea uses an **optimistic verification** model:
+
+1. A **bridger** (claimer) posts a message batch claim on the receiving chain with a deposit
+2. After a challenge period, if unchallenged, the claim is accepted and messages are relayed
+3. If challenged, the dispute is resolved (using Kleros itself as backstop)
+
+## Happy Path
+
+<Steps>
+  <Step title="Messages Sent">
+    Messages accumulate on the sending chain (e.g., Arbitrum).
+  </Step>
+  <Step title="Snapshot">
+    A snapshot of the message batch is taken.
+  </Step>
+  <Step title="Claim">
+    A bridger posts the claim on the receiving chain with a deposit.
+  </Step>
+  <Step title="Challenge Period">
+    Anyone can challenge if the claim is incorrect.
+  </Step>
+  <Step title="Execution">
+    If unchallenged, messages are relayed to their recipients.
+  </Step>
+</Steps>
+
+## Unhappy Path
+
+If a claim is challenged:
+1. The challenger posts a counter-deposit
+2. The dispute is resolved using the native bridge as the source of truth (slower but trustless)
+3. The dishonest party loses their deposit
+
+## Supported Routes
+
+| From | To | Status |
+|---|---|---|
+| Arbitrum → Ethereum | Ethereum → Arbitrum | Active |
+| Arbitrum → Gnosis | Gnosis → Arbitrum | Active |

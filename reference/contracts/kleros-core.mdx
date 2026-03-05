@@ -1,0 +1,52 @@
+---
+title: "KlerosCore"
+description: "Core arbitrator contract — disputes, appeals, juror management, rulings"
+---
+
+# KlerosCore
+
+Central arbitrator contract of Kleros V2. Manages dispute creation, juror drawing, period transitions, appeals, and ruling execution.
+
+**Version**: 0.8.0 | **Proxy**: UUPS Upgradeable
+
+## Key Methods
+
+### `createDispute(uint256 _numberOfChoices, bytes _extraData) payable → uint256`
+Creates a new dispute. Caller must send sufficient ETH for arbitration cost.
+
+### `arbitrationCost(bytes _extraData) view → uint256`
+Returns current arbitration fee for the specified court/juror configuration.
+
+### `appeal(uint256 _disputeID, uint256 _numberOfChoices, bytes _extraData) payable`
+Handles appeals including court jumps and dispute kit jumps.
+
+### `execute(uint256 _disputeID, uint256 _round, uint256 _iterations)`
+Distributes PNK stakes and fees to jurors based on vote coherence.
+
+### `executeRuling(uint256 _disputeID)`
+Finalizes dispute and calls `rule()` on the Arbitrable contract.
+
+### `currentRuling(uint256 _disputeID) view → (uint256 ruling, bool tied, bool overridden)`
+Gets current ruling state.
+
+### `setStake(uint96 _courtID, uint256 _newStake)`
+Juror staking — requires prior PNK approval.
+
+## Governance Roles
+
+- **Governor** — Pause/unpause, change parameters, upgrade, change roles
+- **Guardian** — Can only pause (emergency response)
+
+When paused: staking and rewards blocked. Dispute creation, voting, and appeals continue.
+
+## Events
+
+| Event | Description |
+|---|---|
+| `DisputeCreation` | New dispute created |
+| `AppealDecision` | Dispute appealed |
+| `CourtJump` | Dispute escalated to parent court |
+| `Ruling` | Final ruling executed |
+| `TokenAndETHShift` | Reward/penalty applied to juror |
+
+[View Source](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/KlerosCore.sol)

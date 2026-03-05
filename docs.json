@@ -74,9 +74,7 @@
         "groups": [
           {
             "group": "Welcome",
-            "pages": [
-              "introduction"
-            ]
+            "pages": ["welcome/introduction", "welcome/faq"]
           },
           {
             "group": "Kleros Court",
@@ -88,10 +86,21 @@
             ]
           },
           {
+            "group": "V2 Deep Dive",
+            "pages": [
+              "v2-deep-dive/overview",
+              "v2-deep-dive/architecture",
+              "v2-deep-dive/dispute-lifecycle",
+              "v2-deep-dive/commit-reveal"
+            ]
+          },
+          
+          {
             "group": "Products",
             "pages": [
               "products/overview",
               "products/curate",
+              "products/stake curate",
               "products/escrow",
               "products/governor",
               "products/scout",
@@ -140,6 +149,15 @@
               "legacy/retired/moderate",
               "legacy/retired/linguo",
               "legacy/retired/tokens"
+            ]
+          },
+          {
+            "group": "Community & Ecosystem",
+            "pages": [
+              "Community & Ecosystem/overview",
+              "Community & Ecosystem/escrowly",
+              "Community & Ecosystem/lockler",
+              "Community & Ecosystem/klerosboard"
             ]
           }
         ]
@@ -238,42 +256,46 @@
         "icon": "book-bookmark",
         "groups": [
           {
-            "group": "Smart Contracts (V2)",
-            "pages": [
-              "reference/contracts/addresses",
-              "reference/contracts/kleros-core",
-              "reference/contracts/dispute-kit",
-              "reference/contracts/sortition-module"
-            ]
-          },
-          {
-            "group": "Smart Contracts (V1)",
-            "pages": [
-              "reference/contracts-v1/addresses",
-              "reference/contracts-v1/kleros-liquid"
-            ]
-          },
-          {
-            "group": "APIs",
-            "pages": [
-              "reference/api/subgraph",
-              "reference/api/graphql-schema"
-            ]
-          },
-          {
-            "group": "Courts",
-            "pages": [
-              "reference/courts/parameters",
-              "reference/courts/policies"
-            ]
-          },
-          {
-            "group": "V1 Standards",
-            "pages": [
-              "reference/standards-v1/erc-792",
-              "reference/standards-v1/erc-1497"
-            ]
-          }
+      "group": "Overview",
+      "pages": ["reference/overview"]
+    },
+    {
+      "group": "Contracts",
+      "pages": [
+        "reference/contracts/deployment-addresses",
+        "reference/contracts/kleros-core",
+        "reference/contracts/dispute-kit-classic",
+        "reference/contracts/sortition-module",
+        "reference/contracts/gateways",
+        "reference/contracts/kleros-governor",
+        "reference/contracts/policy-registry",
+        "reference/contracts/dispute-template-registry",
+        "reference/contracts/moderated-evidence-module"
+      ]
+    },
+    {
+      "group": "Data Formats",
+      "pages": [
+        "reference/data-formats/dispute-templates",
+        "reference/data-formats/evidence-format",
+        "reference/data-formats/policy-format",
+        "reference/data-formats/court-specification",
+        "reference/data-formats/cross-chain-evidence"
+      ]
+    },
+    {
+      "group": "Architecture",
+      "pages": [
+        "reference/architecture/v2-architecture",
+        "reference/architecture/arbitrator-v2",
+        "reference/architecture/sortition-module-spec",
+        "reference/architecture/vea-overview"
+      ]
+    },
+    {
+      "group": "SDK",
+      "pages": ["reference/sdk/kleros-sdk"]
+    }
         ]
       }
     ]
