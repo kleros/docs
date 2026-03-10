@@ -1,6 +1,6 @@
 ---
 title: "KlerosCore"
-description: "Core arbitrator contract — disputes, appeals, juror management, rulings"
+description: "Core arbitrator contract disputes, appeals, juror management, rulings"
 ---
 
 # KlerosCore
@@ -30,12 +30,12 @@ Finalizes dispute and calls `rule()` on the Arbitrable contract.
 Gets current ruling state.
 
 ### `setStake(uint96 _courtID, uint256 _newStake)`
-Juror staking — requires prior PNK approval.
+Juror staking  requires prior PNK approval.
 
 ## Governance Roles
 
-- **Governor** — Pause/unpause, change parameters, upgrade, change roles
-- **Guardian** — Can only pause (emergency response)
+- **Governor**  Pause/unpause, change parameters, upgrade, change roles
+- **Guardian**  Can only pause (emergency response)
 
 When paused: staking and rewards blocked. Dispute creation, voting, and appeals continue.
 

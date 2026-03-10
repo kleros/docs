@@ -11,14 +11,14 @@ Kleros is designed so that honest voting is the **dominant strategy** for jurors
 
 ## The Schelling Point Mechanism
 
-Kleros draws on Thomas Schelling's insight that people who cannot communicate tend to coordinate on "focal points" — the most obvious or natural answer to a question.
+Kleros draws on Thomas Schelling's insight that people who cannot communicate tend to coordinate on "focal points", the most obvious or natural answer to a question.
 
 In Kleros, jurors are randomly selected, cannot communicate, and must vote independently. They know that:
 - Other jurors are also trying to answer honestly
 - Voting with the majority earns rewards
 - Voting against the majority loses PNK
 
-Given these conditions, the rational strategy for each juror is to vote for what they believe to be the **objectively correct answer** — because that's the answer they expect other honest jurors to also pick. The honest answer becomes the Schelling point.
+Given these conditions, the rational strategy for each juror is to vote for what they believe to be the **objectively correct answer**, because that's the answer they expect other honest jurors to also pick. The honest answer becomes the Schelling point.
 
 ---
 
@@ -54,21 +54,21 @@ For an attacker to control the outcome of a dispute, they would need to control 
 
 This is expensive for three reasons:
 
-**Market liquidity defense** — PNK is a purpose-built token. As an attacker buys PNK, supply becomes scarce and the price rises sharply. Unlike attacking with ETH (which has deep global liquidity), buying enough PNK to dominate a court becomes progressively more expensive.
+**Market liquidity defense** PNK is a purpose-built token. As an attacker buys PNK, supply becomes scarce and the price rises sharply. Unlike attacking with ETH (which has deep global liquidity), buying enough PNK to dominate a court becomes progressively more expensive.
 
-**Appeals escalation** — Even if an attacker wins one round, the honest side can appeal. Each appeal roughly doubles the jury, requiring the attacker to control an ever-larger majority. The cost of sustaining an attack grows exponentially with each round.
+**Appeals escalation** Even if an attacker wins one round, the honest side can appeal. Each appeal roughly doubles the jury, requiring the attacker to control an ever-larger majority. The cost of sustaining an attack grows exponentially with each round.
 
-**The "Lone Voice of Reason" effect** — If every other juror in a round voted dishonestly, a single honest juror who voted correctly would receive *all* the penalties and fees from that round. This creates a strong incentive for at least some participants to vote honestly even under attack conditions.
+**The "Lone Voice of Reason" effect** If every other juror in a round voted dishonestly, a single honest juror who voted correctly would receive *all* the penalties and fees from that round. This creates a strong incentive for at least some participants to vote honestly even under attack conditions.
 
 ### Vote Buying and Collusion
 
 Kleros V2 addresses vote manipulation through several mechanisms:
 
-**Hidden votes** — Commit-reveal voting prevents jurors from proving how they voted, making vote buying unenforceable (the bribed juror can simply lie about their committed vote).
+**Hidden votes** Commit-reveal voting prevents jurors from proving how they voted, making vote buying unenforceable (the bribed juror can simply lie about their committed vote).
 
-**Juror fraud protection** — Anyone who detects that a juror revealed their vote before the reveal phase can challenge them and claim a portion of their stake.
+**Juror fraud protection** Anyone who detects that a juror revealed their vote before the reveal phase can challenge them and claim a portion of their stake.
 
-**Random selection** — Because jurors are drawn randomly, an attacker cannot predict or control which jurors are selected, making targeted bribery difficult.
+**Random selection** Because jurors are drawn randomly, an attacker cannot predict or control which jurors are selected, making targeted bribery difficult.
 
 ---
 
@@ -80,7 +80,7 @@ An honest juror who consistently votes for the truthful answer will, over many d
 - The fees and PNK redistributed from incoherent jurors flow to coherent ones
 - The expected return from honest voting exceeds the expected return from random or strategic voting
 
-This doesn't mean honest jurors never lose — they may be in the minority in any single round. But the appeals system ensures that persistent minorities can escalate until the truthful answer prevails.
+This doesn't mean honest jurors never lose they may be in the minority in any single round. But the appeals system ensures that persistent minorities can escalate until the truthful answer prevails.
 
 ---
 

@@ -82,16 +82,8 @@
               "court/overview",
               "court/how-it-works",
               "court/court-hierarchy",
-              "court/appeals"
-            ]
-          },
-          {
-            "group": "V2 Deep Dive",
-            "pages": [
-              "v2-deep-dive/overview",
-              "v2-deep-dive/architecture",
-              "v2-deep-dive/dispute-lifecycle",
-              "v2-deep-dive/commit-reveal"
+              "court/appeals",
+              "court/architecture"
             ]
           },
           
@@ -106,7 +98,7 @@
               "products/scout",
               "products/reality",
               "products/proof-of-humanity",
-              "products/futarchy"
+              "products/foresight"
             ]
           },
           {
@@ -207,7 +199,7 @@
       ]
     },
         {
-      "group": "proofofhumanity",
+      "group": "Proof of Humanity",
       "pages": [
         "developers/products/poh/overview",
         "developers/products/poh/smart-contracts",
@@ -228,6 +220,8 @@
             "group": "Cross-chain",
             "pages": [
               "developers/crosschain/vea-bridge",
+              "developers/crosschain/vea-getting-started",
+    "developers/crosschain/vea-deployment-addresses",
               "developers/crosschain/l2-integration"
             ]
           },
@@ -260,6 +254,16 @@
       "pages": ["reference/overview"]
     },
     {
+      "group": "Architecture",
+      "pages": [
+        "reference/architecture/v2-architecture",
+        "reference/architecture/arbitrator-v2",
+        "reference/architecture/sortition-module-spec",
+        "reference/architecture/vea-overview"
+      ]
+    },
+
+    {
       "group": "Contracts",
       "pages": [
         "reference/contracts/deployment-addresses",
@@ -283,15 +287,7 @@
         "reference/data-formats/cross-chain-evidence"
       ]
     },
-    {
-      "group": "Architecture",
-      "pages": [
-        "reference/architecture/v2-architecture",
-        "reference/architecture/arbitrator-v2",
-        "reference/architecture/sortition-module-spec",
-        "reference/architecture/vea-overview"
-      ]
-    },
+    
     {
       "group": "SDK",
       "pages": ["reference/sdk/kleros-sdk"]

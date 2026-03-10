@@ -7,9 +7,9 @@ description: "Integrate the Reality.eth + Kleros oracle into your smart contract
 
 There are two ways to integrate with the Reality.eth + Kleros oracle:
 
-**Smart contract integration** — Your contract calls Reality.eth functions directly to ask questions and read finalized answers. This is the recommended approach for on-chain applications.
+**Smart contract integration**: Your contract calls Reality.eth functions directly to ask questions and read finalized answers. This is the recommended approach for on-chain applications.
 
-**Frontend-only integration** — Use the [Reality.eth web interface](https://reality.eth.limo/) to submit questions and retrieve answers manually, without contract changes.
+**Frontend-only integration**: Use the [Reality.eth web interface](https://reality.eth.limo/) to submit questions and retrieve answers manually, without contract changes.
 
 ---
 
@@ -22,7 +22,7 @@ import {IRealityETH} from "./interfaces/IRealityETH.sol";
 
 contract OracleConsumer {
     IRealityETH public immutable realityETH;
-    // Kleros Arbitrator Proxy — General Court on Mainnet
+    // Kleros Arbitrator Proxy General Court on Mainnet
     address public constant ARBITRATOR = 0x728cba71a3723caab33ea416cb46e2cc9215a596;
     uint32 public constant TIMEOUT = 86400; // 24 hours
 

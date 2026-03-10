@@ -46,7 +46,7 @@ flowchart LR
 
     - Evidence can include text explanations, documents, images, or other materials
     - Evidence metadata (name, description, file URI) is emitted as an **`Evidence` event** on-chain, with the actual files stored on **IPFS** via the Atlas provider
-    - Anyone can submit evidence during this period — not just the disputing parties
+    - Anyone can submit evidence during this period not just the disputing parties
     - The dispute template defines what information jurors need to see
 
     <Note>Evidence URIs are recorded on-chain via events for transparency, but the files themselves are stored off-chain on IPFS. This keeps gas costs manageable while maintaining a permanent, verifiable record.</Note>
@@ -74,7 +74,7 @@ flowchart LR
 
     - Jurors vote directly in a single transaction. Votes are visible immediately.
 
-    The winning option is determined by **plurality** — the choice with the most votes wins.
+    The winning option is determined by **plurality** the choice with the most votes wins.
   </Step>
 
   <Step title="Appeal Period">
@@ -130,7 +130,7 @@ stateDiagram-v2
 
     - A random number is requested from the RNG provider
     - The random number becomes available after `rngLookahead` blocks
-    - Stake changes made during this phase are **delayed** — they won't apply until the next Staking phase
+    - Stake changes made during this phase are **delayed** they won't apply until the next Staking phase
   </Tab>
   <Tab title="Drawing Phase">
     **Jurors being selected**
@@ -152,8 +152,8 @@ Kleros V2 introduces modular dispute resolution through pluggable Dispute Kits. 
 
 | Kit | Description | Status |
 | --- | --- | --- |
-| **Classic** | Plurality voting where the option with the most votes wins. Universal fallback — every court must support it. | Live |
-| **Shutter-Enabled** | Threshold encryption for enhanced vote privacy. Single-transaction voting with automatic decryption. | In development |
+| **Classic** | Plurality voting where the option with the most votes wins. Universal fallback every court must support it. | Live |
+| **Shutter-Enabled** | Threshold encryption for enhanced vote privacy. Single-transaction voting with automatic decryption. | In testing |
 
 <Note>The dispute kit architecture is designed to be extensible. Additional kits (ranked choice, PoH-gated, etc.) can be added through governance as the protocol evolves. When creating disputes, arbitrable applications specify a dispute kit ID in `extraData`.</Note>
 
@@ -167,7 +167,7 @@ Courts with `hiddenVotes = true` use the commit-reveal pattern to prevent jurors
 
 <Steps>
   <Step title="Commit Phase">
-    Choose your vote, generate a random salt, and submit `keccak256(choiceID, salt, justification)` as your commitment. Keep your salt safe — you'll need it to reveal.
+    Choose your vote, generate a random salt, and submit `keccak256(choiceID, salt, justification)` as your commitment. Keep your salt safe you'll need it to reveal.
   </Step>
   <Step title="Reveal Phase">
     Return and submit your actual vote, salt, and justification. The contract verifies the hash matches your commitment. Failure to reveal means losing your locked PNK.
@@ -179,7 +179,7 @@ Courts with `hiddenVotes = true` use the commit-reveal pattern to prevent jurors
 Shutter Network integration will replace the two-transaction commit-reveal with a single-transaction encrypted voting flow:
 
 - Jurors submit encrypted votes in one transaction
-- Votes are encrypted using **threshold cryptography** — no single party can decrypt early
+- Votes are encrypted using **threshold cryptography** no single party can decrypt early
 - Automatic decryption occurs when the voting period ends
 - No manual reveal required, eliminating the risk of forgetting to reveal
 - Prevents vote copying and bandwagon effects more robustly than commit-reveal

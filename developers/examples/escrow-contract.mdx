@@ -124,7 +124,7 @@ contract SimpleEscrow is IArbitrableV2 {
         } else if (_ruling == RECEIVER_WINS) {
             tx_.receiver.transfer(tx_.amount);
         } else {
-            // Refuse to rule or no ruling — split equally
+            // Refuse to rule or no ruling split equally
             uint256 half = tx_.amount / 2;
             tx_.sender.transfer(half);
             tx_.receiver.transfer(tx_.amount - half);
@@ -139,11 +139,11 @@ contract SimpleEscrow is IArbitrableV2 {
 
 ## Key Integration Points
 
-**`createDispute()`** — Sends the arbitration fee to KlerosCore and receives a `disputeID`. The `arbitratorExtraData` encodes the court ID and juror count.
+**`createDispute()`**: Sends the arbitration fee to KlerosCore and receives a `disputeID`. The `arbitratorExtraData` encodes the court ID and juror count.
 
-**`rule()`** — KlerosCore calls this when the dispute is resolved. The ruling is enforced immediately by transferring funds.
+**`rule()`**: KlerosCore calls this when the dispute is resolved. The ruling is enforced immediately by transferring funds.
 
-**`DisputeRequest` event** — Emitted to link the dispute with a display template in the Court V2 UI. The `templateId` references a template registered in the `DisputeTemplateRegistry`.
+**`DisputeRequest` event**: Emitted to link the dispute with a display template in the Court V2 UI. The `templateId` references a template registered in the `DisputeTemplateRegistry`.
 
 ---
 

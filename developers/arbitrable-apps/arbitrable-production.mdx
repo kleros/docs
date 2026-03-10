@@ -110,8 +110,8 @@ Court parameters (minStake, feeForJuror, session timings) are governed and can c
 - [ ] If paying in ERC20: verify the token is in `acceptedFeeTokens` on KlerosCore
 - [ ] If paying in ERC20: call `arbitrationCost(extraData, feeToken)` (not the ETH overload)
 - [ ] If paying in ERC20: approve KlerosCore to spend the fee amount before `createDispute()`
-- [ ] Account for appeal costs — each appeal round roughly doubles the juror count and cost
-- [ ] For cross-chain disputes: the Foreign Gateway mirrors `arbitrationCost()` locally, but sync may lag after governance changes — add a buffer or retry mechanism
+- [ ] Account for appeal costs each appeal round roughly doubles the juror count and cost
+- [ ] For cross-chain disputes: the Foreign Gateway mirrors `arbitrationCost()` locally, but sync may lag after governance changes add a buffer or retry mechanism
 
 ---
 
@@ -153,7 +153,7 @@ Court parameters (minStake, feeForJuror, session timings) are governed and can c
 
 ### Policy Document
 
-Every dispute should reference a policy document that jurors use to make decisions. This is distinct from the template — the template defines the UI; the policy defines the rules.
+Every dispute should reference a policy document that jurors use to make decisions. This is distinct from the template the template defines the UI; the policy defines the rules.
 
 - [ ] Policy document clearly states criteria for each ruling option
 - [ ] Policy covers edge cases (partial fulfillment, ambiguous evidence)
@@ -163,7 +163,7 @@ Every dispute should reference a policy document that jurors use to make decisio
 - [ ] Policy has been reviewed for ambiguity by someone unfamiliar with your protocol
 
 <Tip>
-Study existing Kleros policies from live products. Escrow V2 and Curate V2 policies are good models. You can find them on IPFS via the dispute template's `policyURI` field — inspect live disputes on [court.kleros.io](https://court.kleros.io) to see examples.
+Study existing Kleros policies from live products. Escrow V2 and Curate V2 policies are good models. You can find them on IPFS via the dispute template's `policyURI` field inspect live disputes on [court.kleros.io](https://court.kleros.io) to see examples.
 </Tip>
 
 ### Dispute Lifecycle Timing
@@ -253,11 +253,11 @@ Kleros disputes follow a fixed phase sequence. Understand the timing impact on y
 
 **Kleros-specific monitoring:**
 
-- [ ] Monitor `AppealDecision` events from KlerosCore — appeals change timeline and cost
-- [ ] Subscribe to court parameter changes via `CourtModified` events — fee changes affect your cost calculations
-- [ ] Track your disputes on [court.kleros.io](https://court.kleros.io) — filter by your contract's address
+- [ ] Monitor `AppealDecision` events from KlerosCore appeals change timeline and cost
+- [ ] Subscribe to court parameter changes via `CourtModified` events fee changes affect your cost calculations
+- [ ] Track your disputes on [court.kleros.io](https://court.kleros.io) filter by your contract's address
 - [ ] If cross-chain: monitor Vea bridge claim/challenge status on [veascan.io](https://veascan.io)
-- [ ] Set up alerts for the KlerosCore `Paused` event — a paused arbitrator blocks new disputes and rulings
+- [ ] Set up alerts for the KlerosCore `Paused` event a paused arbitrator blocks new disputes and rulings
 
 ### Documentation
 
@@ -277,9 +277,9 @@ Kleros disputes follow a fixed phase sequence. Understand the timing impact on y
 **Kleros-specific failure scenarios:**
 
 - [ ] **Arbitrator paused:** KlerosCore has an emergency pause mechanism controlled by the Guardian role. If paused, no new disputes can be created and no rulings can be delivered. Your contract should handle a `createDispute()` revert gracefully and inform users.
-- [ ] **Ruling 0 (Refuse to Arbitrate):** This ruling means jurors found the dispute invalid. Your contract must handle this case explicitly — do not treat it the same as any party winning.
+- [ ] **Ruling 0 (Refuse to Arbitrate):** This ruling means jurors found the dispute invalid. Your contract must handle this case explicitly do not treat it the same as any party winning.
 - [ ] **Tied vote:** In the current DisputeKitClassic, a tied vote defaults to ruling 0 (refuse to arbitrate) unless overridden by appeal. Design your ruling-0 handler to produce a reasonable fallback (e.g., refund both parties).
-- [ ] **Contract address change:** V2 contracts are upgradeable proxies. After security audits, addresses may be preserved but implementation changes. If you store the arbitrator address as `immutable`, you cannot adapt — consider using a governor-updatable address.
+- [ ] **Contract address change:** V2 contracts are upgradeable proxies. After security audits, addresses may be preserved but implementation changes. If you store the arbitrator address as `immutable`, you cannot adapt consider using a governor-updatable address.
 - [ ] **Vea bridge delay (cross-chain only):** In the unhappy path, ruling delivery can take ~7 days via the native Arbitrum bridge. Ensure your locked state can persist for at least 2 weeks without causing user issues.
 
 ---
@@ -353,9 +353,9 @@ Always verify addresses from the [official repository](https://github.com/kleros
 
 ### Useful Links
 
-- [Kleros Court UI](https://court.kleros.io) — Monitor disputes
-- [GitHub Deployments](https://github.com/kleros/kleros-v2) — Contract addresses
-- [Kleros Discord](https://discord.gg/kleros) — Developer support
+- [Kleros Court UI](https://court.kleros.io) Monitor disputes
+- [GitHub Deployments](https://github.com/kleros/kleros-v2) Contract addresses
+- [Kleros Discord](https://discord.gg/kleros) Developer support
 
 ---
 
@@ -379,7 +379,7 @@ Always verify addresses from the [official repository](https://github.com/kleros
   </Accordion>
 
   <Accordion title="Wrong extraData encoding">
-    V2 uses `abi.encodePacked(uint96(courtID), uint256(jurorCount))` — note the `uint96` for court ID, not `uint256` as in V1. Using `uint256` will encode a different court than intended.
+    V2 uses `abi.encodePacked(uint96(courtID), uint256(jurorCount))` note the `uint96` for court ID, not `uint256` as in V1. Using `uint256` will encode a different court than intended.
   </Accordion>
 
   <Accordion title="Odd vs even juror count">

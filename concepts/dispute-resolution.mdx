@@ -5,7 +5,7 @@ description: "How Kleros resolves disputes using decentralized crowdsourced juro
 
 # Dispute Resolution
 
-Kleros provides a general-purpose dispute resolution protocol. Any smart contract can use it as an arbitrator — when a disagreement occurs, the contract sends a dispute to Kleros, jurors vote on the outcome, and the ruling is enforced automatically.
+Kleros provides a general-purpose dispute resolution protocol. Any smart contract can use it as an arbitrator when a disagreement occurs, the contract sends a dispute to Kleros, jurors vote on the outcome, and the ruling is enforced automatically.
 
 This page explains the core mechanism and why it produces reliable outcomes.
 
@@ -36,7 +36,7 @@ graph LR
     style B fill:#9b59b6,color:#fff
 ```
 
-The **Arbitrable** is any smart contract that might need dispute resolution — an escrow, a marketplace, a registry. It creates disputes and implements a callback function to receive rulings.
+The **Arbitrable** is any smart contract that might need dispute resolution an escrow, a marketplace, a registry. It creates disputes and implements a callback function to receive rulings.
 
 The **Arbitrator** is Kleros Court. It handles juror selection, voting, appeals, and ruling delivery. The arbitrable contract never needs to understand the internal mechanics of how jurors are selected or how votes are counted.
 
@@ -64,11 +64,11 @@ If anyone believes a ruling is wrong, they can fund an appeal. Each appeal round
 
 ## What Disputes Can Kleros Resolve?
 
-Kleros works best for disputes that are **adjudicable** — meaning a reasonable person, given sufficient evidence, can determine the correct outcome. Examples:
+Kleros works best for disputes that are **adjudicable**, meaning a reasonable person, given sufficient evidence, can determine the correct outcome. Examples:
 
-- **"Did the freelancer deliver the work described in the contract?"** — Yes, with evidence
-- **"Does this token logo match the submission guidelines?"** — Yes, with policy criteria
-- **"Is this address tag accurate?"** — Yes, with on-chain verification
+- **"Did the freelancer deliver the work described in the contract?"**  Yes, with evidence
+- **"Does this token logo match the submission guidelines?"**  Yes, with policy criteria
+- **"Is this address tag accurate?"** Yes, with on-chain verification
 
 Kleros is not designed for disputes that are purely subjective with no evaluation criteria, or for disputes requiring physical enforcement.
 

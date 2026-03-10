@@ -89,7 +89,7 @@ function raiseDispute(uint256 _txID) external payable {
     tx.disputeID = disputeID;
     disputeToTx[disputeID] = _txID;
     
-    // Emit required event — using template URI
+    // Emit required event using template URI
     emit DisputeRequest(
         arbitrator,
         disputeID,

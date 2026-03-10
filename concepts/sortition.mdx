@@ -5,7 +5,7 @@ description: "How jurors are randomly selected using stake-weighted sortition"
 
 # Sortition
 
-**Sortition** — the selection of decision-makers by lottery — is one of the oldest democratic institutions. Ancient Athens used it to select juries and magistrates, preventing power concentration. Kleros applies this principle to decentralized dispute resolution.
+**Sortition** the selection of decision-makers by lottery is one of the oldest democratic institutions. Ancient Athens used it to select juries and magistrates, preventing power concentration. Kleros applies this principle to decentralized dispute resolution.
 
 In Kleros, jurors are drawn randomly from a pool of stakers, with selection probability proportional to each person's staked PNK. This page explains why sortition is used and how it works at the protocol level.
 
@@ -15,13 +15,13 @@ In Kleros, jurors are drawn randomly from a pool of stakers, with selection prob
 
 Sortition solves several problems that plague alternative selection methods:
 
-**Resistance to manipulation** — Because selection is random, no one can predict or control which jurors are drawn. This makes targeted bribery and collusion difficult.
+**Resistance to manipulation** Because selection is random, no one can predict or control which jurors are drawn. This makes targeted bribery and collusion difficult.
 
-**Sybil resistance** — Drawing probability is proportional to PNK staked, not to the number of accounts. An attacker splitting tokens across multiple wallets gains no advantage over holding them in one.
+**Sybil resistance** Drawing probability is proportional to PNK staked, not to the number of accounts. An attacker splitting tokens across multiple wallets gains no advantage over holding them in one.
 
-**Scalability** — Only a small subset of stakers is needed for each dispute. The system can handle many disputes simultaneously without requiring every participant to review every case.
+**Scalability** Only a small subset of stakers is needed for each dispute. The system can handle many disputes simultaneously without requiring every participant to review every case.
 
-**Self-selection for expertise** — Jurors choose which courts to stake in, naturally matching themselves to disputes they're qualified to evaluate.
+**Self-selection for expertise** Jurors choose which courts to stake in, naturally matching themselves to disputes they're qualified to evaluate.
 
 ---
 
@@ -63,11 +63,11 @@ graph LR
     style D fill:#9b59b6,color:#fff
 ```
 
-**Staking Phase** — Jurors can freely adjust their stakes. The sortition tree is updated in real-time. This phase lasts until a minimum staking time has elapsed and at least one dispute needs jurors.
+**Staking Phase**: Jurors can freely adjust their stakes. The sortition tree is updated in real-time. This phase lasts until a minimum staking time has elapsed and at least one dispute needs jurors.
 
-**Generating Phase** — A random number is requested from the RNG source. Stake changes submitted during this phase are recorded but delayed — they won't affect the current drawing round. This prevents last-minute stake manipulation after the random seed is known.
+**Generating Phase**: A random number is requested from the RNG source. Stake changes submitted during this phase are recorded but delayed, they won't affect the current drawing round. This prevents last-minute stake manipulation after the random seed is known.
 
-**Drawing Phase** — Jurors are drawn using the random number and the stake distribution from the end of the Staking phase. Delayed stakes remain queued. Drawing continues until all pending disputes have their jurors, or a maximum drawing time elapses.
+**Drawing Phase**: Jurors are drawn using the random number and the stake distribution from the end of the Staking phase. Delayed stakes remain queued. Drawing continues until all pending disputes have their jurors, or a maximum drawing time elapses.
 
 <Warning>
 If you stake during the Generating or Drawing phases, your changes won't affect your chances for the current round. They'll take effect in the next Staking phase. The Court interface shows whether your stakes are "Current" or "Delayed."
@@ -77,17 +77,17 @@ If you stake during the Generating or Drawing phases, your changes won't affect 
 
 ## Random Number Generation
 
-Secure randomness is critical — if anyone can predict or influence the random number, they can manipulate juror selection.
+Secure randomness is critical, if anyone can predict or influence the random number, they can manipulate juror selection.
 
 Kleros V2 uses **Chainlink VRF** as the primary random number source, with a fallback mechanism to prevent the system from freezing if Chainlink becomes unavailable. The fallback produces `hash(c)` where `c` is the number of times the fallback has been triggered.
 
-The RNG request is made with a configurable **lookahead** parameter — the random number depends on a future block, not the current one. This prevents the requester from knowing the outcome at request time.
+The RNG request is made with a configurable **lookahead** parameter, the random number depends on a future block, not the current one. This prevents the requester from knowing the outcome at request time.
 
 ---
 
 ## Historical Context
 
-Sortition has a long history in democratic governance. The Athenian *kleroterion* — a stone randomization device — selected jurors for trials and citizens for public office. The word "Kleros" (κλῆρος) itself means "lot" or "allotment" in Greek.
+Sortition has a long history in democratic governance. The Athenian *kleroterion*, a stone randomization device, selected jurors for trials and citizens for public office. The word "Kleros" (κλῆρος) itself means "lot" or "allotment" in Greek.
 
 The PNK token name, *pinakion*, references the bronze plaque that Athenian citizens used as identification tokens for jury selection. The parallel is intentional: Kleros applies ancient democratic principles to modern decentralized systems.
 

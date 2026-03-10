@@ -11,8 +11,8 @@ description: "How to build an arbitrable contract using Kleros V1 standards (ERC
 
 A V1 arbitrable contract must:
 
-1. Implement `IArbitrable` — receive rulings from the arbitrator
-2. Implement `IEvidence` (ERC-1497) — emit MetaEvidence, Evidence, and Dispute events
+1. Implement `IArbitrable` receive rulings from the arbitrator
+2. Implement `IEvidence` (ERC-1497) emit MetaEvidence, Evidence, and Dispute events
 3. Call `createDispute()` on KlerosLiquid and pay the arbitration fee
 4. Enforce the ruling in the `rule()` callback
 

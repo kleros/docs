@@ -5,11 +5,11 @@ description: "Crowdsourced oracle with Kleros arbitration as the final dispute b
 
 # Reality (Oracle)
 
-<img src="/images/reality-hero.png" alt="Reality Interface" />
+
 
 <Note>Reality Module currently uses **Kleros V1** for arbitration. V2 integration is planned.</Note>
 
-**Reality.eth** is a crowdsourced oracle system where anyone can post questions and answers with economic bonds. Kleros serves as the **final arbitration layer** — when an answer on Reality.eth is disputed and the bond escalation reaches its limit, the dispute is sent to Kleros Court for resolution.
+**Reality.eth** is a crowdsourced oracle system where anyone can post questions and answers with economic bonds. Kleros serves as the **final arbitration layer** when an answer on Reality.eth is disputed and the bond escalation reaches its limit, the dispute is sent to Kleros Court for resolution.
 
 This combination is widely used in DAO governance through the **Zodiac Reality Module** (formerly SafeSnap), which allows DAOs to execute on-chain transactions based on Snapshot vote outcomes.
 
@@ -50,7 +50,7 @@ sequenceDiagram
     If the bond escalation reaches the arbitration threshold, the dispute is sent to Kleros Court. Jurors evaluate the question and provided answers, then vote on the correct outcome.
   </Step>
   <Step title="Answer Finalized">
-    The winning answer — whether determined by bond escalation or Kleros ruling — becomes the final oracle output.
+    The winning answer whether determined by bond escalation or Kleros ruling becomes the final oracle output.
   </Step>
 </Steps>
 
@@ -68,11 +68,11 @@ This is used by multiple DAOs to bridge off-chain governance (Snapshot votes) to
 
 ## Use Cases
 
-**DAO Governance Execution** — Execute Snapshot proposal outcomes on-chain with a dispute resolution safety net.
+**DAO Governance Execution**: Execute Snapshot proposal outcomes on-chain with a dispute resolution safety net.
 
-**Prediction Market Resolution** — Settle market outcomes using crowdsourced answers with Kleros as the final backstop.
+**Prediction Market Resolution**: Settle market outcomes using crowdsourced answers with Kleros as the final backstop.
 
-**Cross-Protocol Oracles** — Provide verified data to smart contracts with economic guarantees and decentralized dispute resolution.
+**Cross-Protocol Oracles**: Provide verified data to smart contracts with economic guarantees and decentralized dispute resolution.
 
 ---
 

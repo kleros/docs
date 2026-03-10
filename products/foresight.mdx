@@ -1,19 +1,19 @@
 ---
-title: "Futarchy"
+title: "Foresight"
 description: "Prediction-market-based decision making with Kleros dispute resolution"
 ---
 
-# Futarchy
+# Foresight
 
 <img src="/images/futarchy-hero.png" alt="Kleros Futarchy Interface" /> 
 
-<Note>**Experimental** — Kleros Futarchy is currently running its first public experiments. The platform is under active development and features may change.</Note>
+<Note>**Experimental** Kleros Foresight is currently running its first public experiments. The platform is under active development and features may change.</Note>
 
-**Kleros Futarchy** is a prediction market platform built on [Seer](https://seer.pm), where Kleros Court handles dispute resolution when market outcomes are contested. It allows communities and organizations to make better decisions by harnessing the collective intelligence of participants who put real stakes behind their predictions.
+**Kleros Foresight** is a prediction market platform built on [Seer](https://seer.pm), where Kleros Court handles dispute resolution when market outcomes are contested. It allows communities and organizations to make better decisions by harnessing the collective intelligence of participants who put real stakes behind their predictions.
 
-The concept of futarchy, originally proposed by economist Robin Hanson, uses prediction markets to guide decisions: instead of voting directly on policies, participants bet on which option will lead to better outcomes. The resulting market prices reflect the crowd's best estimate of what's most likely to work. Kleros Futarchy brings this idea on-chain, with Kleros jurors as the final backstop for disputed results.
+The concept of futarchy, originally proposed by economist Robin Hanson, uses prediction markets to guide decisions: instead of voting directly on policies, participants bet on which option will lead to better outcomes. The resulting market prices reflect the crowd's best estimate of what's most likely to work. Kleros Foresight brings this idea on-chain, with Kleros jurors as the final backstop for disputed results.
 
-This approach connects to Vitalik Buterin's concept of **Distilled Human Judgment** — using prediction markets to aggregate crowd wisdom around subjective outcomes, where the full set of questions is too large for any individual to evaluate, but a randomly selected subset can be verified by human judges.
+This approach connects to Vitalik Buterin's concept of **Distilled Human Judgment** using prediction markets to aggregate crowd wisdom around subjective outcomes, where the full set of questions is too large for any individual to evaluate, but a randomly selected subset can be verified by human judges.
 
 ---
 
@@ -35,7 +35,7 @@ This approach connects to Vitalik Buterin's concept of **Distilled Human Judgmen
 
 ## How It Works
 
-Kleros Futarchy combines three layers of decentralized infrastructure:
+Kleros Foresight combines three layers of decentralized infrastructure:
 
 ```mermaid
 flowchart LR
@@ -60,7 +60,7 @@ flowchart LR
     A session opens with a set of items to predict on (e.g., movies to rate, assets to evaluate). Participants deposit collateral (sDAI or xDAI) and make predictions by moving market estimates toward their beliefs. This period typically lasts about a month.
   </Step>
   <Step title="Selection">
-    When the trading period ends, a subset of items is selected for evaluation. Not every item gets judged — only the selected ones determine profits and losses. Items not selected redeem at neutral value (no profit, no loss).
+    When the trading period ends, a subset of items is selected for evaluation. Not every item gets judged only the selected ones determine profits and losses. Items not selected redeem at neutral value (no profit, no loss).
   </Step>
   <Step title="Evaluation">
     The selected items are evaluated (e.g., a judge watches and rates the movies). The results are submitted to Reality.eth as oracle answers.
@@ -74,7 +74,7 @@ flowchart LR
 
 ## Token Mechanics at a Glance
 
-When you deposit collateral into a Futarchy session, you receive **Item Tokens** for each item in the session. When you make a prediction, your Item Tokens convert into **UP** or **DOWN** tokens depending on whether you predict higher or lower than the current market estimate.
+When you deposit collateral into a Foresight session, you receive **Item Tokens** for each item in the session. When you make a prediction, your Item Tokens convert into **UP** or **DOWN** tokens depending on whether you predict higher or lower than the current market estimate.
 
 At resolution, tokens redeem based on the final evaluated score:
 
@@ -83,7 +83,7 @@ At resolution, tokens redeem based on the final evaluated score:
 | UP | Score ÷ Max | 65 ÷ 100 = **$0.65** |
 | DOWN | (Max − Score) ÷ Max | (100 − 65) ÷ 100 = **$0.35** |
 
-Your profit or loss depends on the difference between what you paid for your tokens and what they redeem for. UP + DOWN always equals $1.00 at resolution — the market is zero-sum between the two sides.
+Your profit or loss depends on the difference between what you paid for your tokens and what they redeem for. UP + DOWN always equals $1.00 at resolution the market is zero-sum between the two sides.
 
 ---
 
@@ -91,7 +91,7 @@ Your profit or loss depends on the difference between what you paid for your tok
 
 ### Movie Score Predictions (Session 1)
 
-The first Kleros Futarchy experiment asks participants to predict what percentile score a judge will give to movies after watching them. There are 16 movies in the session, but only 5 are selected for evaluation at the end of the trading period. This is a direct implementation of Distilled Human Judgment: the crowd evaluates every item through market prices, but only a small subset needs actual human assessment.
+The first Kleros Foresight experiment asks participants to predict what percentile score a judge will give to movies after watching them. There are 16 movies in the session, but only 5 are selected for evaluation at the end of the trading period. This is a direct implementation of Distilled Human Judgment: the crowd evaluates every item through market prices, but only a small subset needs actual human assessment.
 
 Participants need a Web3 wallet on Gnosis Chain with xDAI or sDAI to get started. Verified humans on [Proof of Humanity](/products/proof-of-humanity) or Seer community members can also use monthly Seer credits to participate.
 
@@ -101,7 +101,7 @@ A follow-up experiment with [RealT](https://realt.co) is in preparation, applyin
 
 ---
 
-## Futarchy in Kleros Governance
+## Foresight in Kleros Governance
 
 Kleros uses its own futarchy tooling for protocol governance. [**KIP-76**](https://forum.kleros.io/t/kip-76-futarchy-based-governance-rule-for-pnk-minting/1347/1) introduced a rule requiring futarchy evaluation for any proposal that would increase PNK token supply. This means that before PNK can be minted, a prediction market must indicate that the minting would not harm PNK's value. [**KIP-84**](https://forum.kleros.io/c/votes/5) further refined the evaluation parameters.
 
@@ -111,7 +111,7 @@ This makes Kleros one of the first protocols to use prediction markets as a cons
 
 ## Getting Started
 
-To participate in a Futarchy session, you'll need:
+To participate in a Foresight session, you'll need:
 
 - A Web3 wallet (Rabby, MetaMask, or similar) connected to **Gnosis Chain**
 - **xDAI** for gas fees (transactions on Gnosis are cheap but not free)
@@ -140,7 +140,7 @@ Keep a small amount of xDAI reserved specifically for gas. If you convert everyt
 ## What's Next?
 
 <CardGroup cols={3}>
-  <Card title="Open Futarchy" icon="arrow-right" href="https://movies.futarchy.kleros.io/">
+  <Card title="Open Kleros Foresight" icon="arrow-right" href="https://movies.foresight.kleros.io/">
     Start making predictions in the current session
   </Card>
   <Card title="Seer Docs" icon="book" href="https://seer-3.gitbook.io/seer-documentation">

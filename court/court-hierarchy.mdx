@@ -68,7 +68,7 @@ graph TD
   <Tab title="General Court">
     **The Root Court (ID: 1)**
 
-    The General Court currently serves as the root of the entire court system. It handles appeals from all specialized courts and has the broadest juror pool — because staking in any specialized court automatically stakes you in all parent courts up to the General Court.
+    The General Court currently serves as the root of the entire court system. It handles appeals from all specialized courts and has the broadest juror pool because staking in any specialized court automatically stakes you in all parent courts up to the General Court.
 
     Every juror in the Kleros system is, by definition, a General Court juror.
   </Tab>
@@ -101,7 +101,7 @@ graph TD
 
 ## Court Parameters
 
-Each court has parameters that define how it operates. These are set during court creation and **can be changed by governance** — so always check [court.kleros.io](https://court.kleros.io) for current live values.
+Each court has parameters that define how it operates. These are set during court creation and **can be changed by governance** so always check [court.kleros.io](https://court.kleros.io) for current live values.
 
 | Parameter | Description | Spec Example |
 | --- | --- | --- |
@@ -127,7 +127,7 @@ pnkAtStakePerJuror = (minStake × alpha) / 10000
 
 Your locked amount per vote = 2,300 PNK
 
-If alpha were 5000 (50%), your locked amount would be 1,150 PNK per vote. The `alpha` parameter effectively sets the economic risk of participating as a juror — higher alpha means more PNK at stake per vote.
+If alpha were 5000 (50%), your locked amount would be 1,150 PNK per vote. The `alpha` parameter effectively sets the economic risk of participating as a juror higher alpha means more PNK at stake per vote.
 </Accordion>
 
 ### Time Periods
@@ -161,7 +161,7 @@ You can stake in multiple courts, but there are important constraints:
 
 ### Court Limit
 
-There is a `MAX_STAKE_PATHS` limit on how many courts a single juror can stake in simultaneously. This exists for gas efficiency — many sortition operations scale linearly with the number of staked courts.
+There is a `MAX_STAKE_PATHS` limit on how many courts a single juror can stake in simultaneously. This exists for gas efficiency many sortition operations scale linearly with the number of staked courts.
 
 <Note>Verify the current `MAX_STAKE_PATHS` value on-chain or in the [Sortition Module contract](https://github.com/kleros/kleros-v2). If you attempt to stake in more courts than allowed, the transaction will revert with `CannotStakeInMoreCourts`.</Note>
 
@@ -169,7 +169,7 @@ There is a `MAX_STAKE_PATHS` limit on how many courts a single juror can stake i
 
 Consider these factors when selecting courts:
 
-1. **Your Expertise**: Match courts to your knowledge areas — read each court's policy before staking
+1. **Your Expertise**: Match courts to your knowledge areas, read each court's policy before staking
 2. **Minimum Stake**: Ensure you meet the court's `minStake` requirement (check live values)
 3. **Activity Level**: More active courts = more earning opportunities
 4. **Policy Alignment**: Understand and agree with court rules before committing PNK
@@ -187,7 +187,7 @@ Each court has a policy document stored on IPFS that defines:
 | **Required Skills** | Knowledge or expertise jurors should possess |
 | **Special Procedures** | Any court-specific requirements |
 
-Policies are managed through the `PolicyRegistry` contract and can be updated by governance. Child courts inherit policies from their parent courts — so General Court policies apply everywhere.
+Policies are managed through the `PolicyRegistry` contract and can be updated by governance. Child courts inherit policies from their parent courts so General Court policies apply everywhere.
 
 <Warning>**Critical for Jurors**: Always read the court policy before staking or voting. Failing to follow court policies may result in incoherent votes and lost PNK.</Warning>
 

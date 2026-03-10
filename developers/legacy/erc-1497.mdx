@@ -11,8 +11,8 @@ description: "The V1 standard for sharing dispute context, evidence, and meta-ev
 
 ERC-1497 standardizes how DApps share context and evidence during dispute resolution. It defines two categories of information:
 
-- **MetaEvidence** — The context of a dispute: the agreement, parties involved, ruling options, and the question jurors need to answer. Each dispute has one piece of MetaEvidence, created at the same time as the agreement.
-- **Evidence** — Proof submitted by any party to support their position in a dispute.
+- **MetaEvidence**: The context of a dispute: the agreement, parties involved, ruling options, and the question jurors need to answer. Each dispute has one piece of MetaEvidence, created at the same time as the agreement.
+- **Evidence**: Proof submitted by any party to support their position in a dispute.
 
 Both are stored off-chain (typically on IPFS) and referenced on-chain through event logs.
 
@@ -155,9 +155,9 @@ contract SimpleEscrowWithERC1497 is IArbitrable, IEvidence {
 
 In V2, ERC-1497 is replaced by:
 
-- **Dispute Templates** — Registered in `DisputeTemplateRegistry` with Mustache-style variable interpolation. Templates define the dispute question, ruling options, and policy reference.
-- **`DisputeRequest` event** — Replaces the `Dispute` event, linking disputes to templates by `templateId`.
-- **Cross-chain evidence** — Evidence can be submitted on either the home or foreign chain, with the Court UI consolidating from both.
+- **Dispute Templates**: Registered in `DisputeTemplateRegistry` with Mustache-style variable interpolation. Templates define the dispute question, ruling options, and policy reference.
+- **`DisputeRequest` event**: Replaces the `Dispute` event, linking disputes to templates by `templateId`.
+- **Cross-chain evidence**: Evidence can be submitted on either the home or foreign chain, with the Court UI consolidating from both.
 
 See the [Migration Guide](/developers/legacy/migrating-to-v2) for the specific changes.
 
@@ -167,4 +167,4 @@ See the [Migration Guide](/developers/legacy/migrating-to-v2) for the specific c
 
 - [ERC-1497 on GitHub](https://github.com/ethereum/EIPs/issues/1497)
 - [Reference implementation](https://github.com/kleros/erc-792/blob/master/contracts/erc-1497/IEvidence.sol)
-- [Archon library](https://github.com/kleros/archon) — JavaScript library for fetching and validating evidence
+- [Archon library](https://github.com/kleros/archon)  JavaScript library for fetching and validating evidence
