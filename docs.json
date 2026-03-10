@@ -129,18 +129,48 @@
             ]
           },
           {
+            "group": "Enterprise",
+            "pages": [
+              
+              "enterprise/enterprise",
+              "enterprise/ecosystem"
+            ]
+          },
+          {
             "group": "Legacy (V1)",
             "pages": [
               "legacy/overview",
               "legacy/migration-guide",
+              {
+      "group": "Integration",
+     
+      "pages": [
+        "legacy/integrate/overview",
+        "legacy/integrate/types-of-integration",
+        "legacy/integrate/centralized-arbitrator",
+              "legacy/integrate/dispute-resolver",
+              "legacy/integrate/zodiac-integration",
+              
+              "legacy/integrate/policy-guide"
+              
+      ]
+    },
+              
               "legacy/court-v1",
               "legacy/curate-v1",
               "legacy/escrow-v1",
               "legacy/governor-v1",
               "legacy/resolver-v1",
-              "legacy/retired/moderate",
+               {
+      "group": "Retired",
+     
+      "pages": [
+       "legacy/retired/moderate",
               "legacy/retired/linguo",
-              "legacy/retired/tokens"
+              "legacy/retired/tokens"    
+      ]
+    }
+              
             ]
           },
           {
@@ -151,7 +181,17 @@
               "Community & Ecosystem/lockler",
               "Community & Ecosystem/klerosboard"
             ]
-          }
+          },
+          {
+           "group": "Contributing",
+            "pages": [
+              "contributing/overview",
+              "contributing/dev-workflow",
+              "contributing/smart-contract-workflow",
+              "contributing/code-style",
+              "contributing/license"
+  ]
+}
         ]
       },
       {
@@ -234,17 +274,30 @@
             ]
           },
           {
+  "group": "Subgraph & Data",
+  "pages": [
+    "developers/subgraph/overview",
+    "developers/subgraph/endpoints",
+    "developers/subgraph/queries"
+  ]
+},
+          {
             "group": "V1 Integration (Legacy)",
             "pages": [
               "developers/legacy/v1-overview",
               "developers/legacy/erc-792",
               "developers/legacy/erc-1497",
               "developers/legacy/v1-arbitrable-apps",
-              "developers/legacy/migrating-to-v2"
+              "developers/legacy/migrating-to-v2", 
+              "developers/legacy/arbitrable-proxy",
+              "developers/legacy/curate-classic",
+             "developers/legacy/light-curate",
+              "developers/legacy/v1-deployment-addresses",
+              "developers/legacy/centralized-arbitrator"
             ]
-          }
-        ]
-      },
+            }
+    ]
+          },
       {
         "dropdown": "Reference",
         "icon": "book-bookmark",
