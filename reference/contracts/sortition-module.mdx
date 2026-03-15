@@ -7,6 +7,8 @@ description: "Juror selection via weighted random draws based on staked PNK"
 
 Manages juror selection through stake-weighted random drawing. Uses a sum tree data structure for efficient proportional selection.
 
+**Version**: 0.9.0 | **Proxy**: UUPS Upgradeable
+
 ## Phase System
 
 The sortition module operates in phases:
@@ -14,6 +16,8 @@ The sortition module operates in phases:
 1. **Staking**: Jurors can update stakes. No draws happening.
 2. **Generating**: RNG is requested from the random number source.
 3. **Drawing**: Jurors are drawn for disputes using the generated random number.
+
+Stakes submitted during Generating or Drawing phases are queued and applied when Staking phase resumes.
 
 ## Key Methods
 
