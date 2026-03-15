@@ -30,7 +30,7 @@ Finalizes dispute and calls `rule()` on the Arbitrable contract.
 Gets current ruling state.
 
 ### `setStake(uint96 _courtID, uint256 _newStake)`
-Juror staking  — requires prior PNK approval. In the Neo deployment, staking also requires the juror to hold the `KlerosV2NeoEarlyUser` NFT.
+Juror staking — requires prior PNK approval. In the Neo deployment, staking also requires the juror to hold the `KlerosV2NeoEarlyUser` NFT.
  
 ## Initialization Parameters
  
@@ -48,8 +48,8 @@ The contract is initialized with the following key parameters (relevant for inte
 
 ## Governance Roles
 
-- **Governor** — Pause/unpause, change parameters, upgrade, change roles
-- **Guardian** — Can only pause (emergency response)
+- **Governor** Pause/unpause, change parameters, upgrade, change roles
+- **Guardian** Can only pause (emergency response)
 
 When paused: staking and rewards blocked. Dispute creation, voting, and appeals continue.
 

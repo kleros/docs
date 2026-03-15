@@ -121,12 +121,14 @@ emit DisputeRequest(arbitrator, disputeID, externalDisputeID, templateId, "");
 </Tabs>
 
 Key changes:
-- **Court IDs are renumbered**: V1 uses 0-based court IDs (General Court = `0`). V2 uses 1-based IDs (General Court = `1`, Forking Court = `0` — reserved). Hardcoded V1 court IDs will silently route disputes to the wrong court.
+- **Court IDs are renumbered**: V1 uses 0-based court IDs (General Court = `0`). 
+V2 uses 1-based IDs (General Court = `1`, Forking Court = `0` — reserved). Hardcoded V1 court IDs will silently route disputes to the wrong court.
 - `courtID` is encoded as `uint96` instead of `uint256`
 
 <Warning>
 **Breaking change for hardcoded court IDs.** If your V1 contract hardcoded `subcourtID = 0` for General Court, you must change this to `courtID = 1` for V2. Using `courtID = 0` on V2 targets the reserved Forking Court and will revert.
 </Warning>
+
 ---
 
 ## Event Changes
@@ -165,6 +167,7 @@ arbitrator.createDispute(choices, extraData, feeToken, cost);
 <Warning>
 ERC-20 fees are **not available** when using the `ForeignGateway` for cross-chain arbitration. The gateway's ERC-20 `createDispute` overload reverts with `"Not supported"`. Cross-chain arbitrables must always pay fees in ETH.
 </Warning>
+
 ---
 
 ## Migration Checklist
