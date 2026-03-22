@@ -1,0 +1,61 @@
+---
+title: "Escrow V1 (Legacy)"
+description: "Legacy Kleros Escrow V1 documentation and migration information"
+sidebarTitle: "Escrow V1"
+icon: "handshake"
+---
+
+# Escrow V1 (Legacy)
+
+<Warning>
+Escrow V1 is a legacy product. For the latest features and improvements, use [Escrow V2](/products/escrow).
+</Warning>
+
+Kleros Escrow V1 was the original decentralized escrow platform that enabled secure transactions between untrusted parties using smart contracts and Kleros Court for dispute resolution.
+
+---
+
+## Token support
+
+Escrow V1 supports ETH and standard ERC-20 tokens. However, there are important limitations on token compatibility.
+
+<Danger>
+**Non-standard ERC-20 tokens are not supported.** Tokens such as USDT, BNB, and OMG are **not compatible** with Kleros Escrow V1. These tokens use non-standard transfer implementations that may cause transactions to fail or funds to become stuck.
+</Danger>
+
+Non-standard ERC-20 tokens typically have one or more of the following characteristics:
+
+- **No return value on `transfer`/`transferFrom`** (e.g., USDT, BNB, OMG)
+- **Fee-on-transfer** mechanisms that reduce the received amount
+- **Rebasing** supply adjustments
+- **Pausable** transfers that can be frozen by an admin
+
+If you need to use non-standard tokens, consider migrating to [Escrow V2](/products/escrow), which includes `SafeERC20` handling and automatic safety checks for broader token compatibility.
+
+---
+
+## Migration to V2
+
+Escrow V2 introduces significant improvements over V1, including:
+
+- **Universal token support** with automatic compatibility checks
+- **Structured settlement** negotiation with formal proposal/acceptance
+- **Streamlined dispute** resolution with clear timeout logic
+
+For migration details, see the [migration guide](/legacy/migration-guide).
+
+---
+
+## Quick links
+
+<CardGroup cols={2}>
+
+<Card title="Escrow V2" icon="arrow-up" href="/products/escrow">
+  Upgrade to the latest escrow platform
+</Card>
+
+<Card title="Migration Guide" icon="route" href="/legacy/migration-guide">
+  Steps to migrate from V1 to V2
+</Card>
+
+</CardGroup>
