@@ -58,7 +58,7 @@ graph TD
     style HC fill:#a569bd,color:#fff
 ```
 
-<Info>This diagram reflects the court tree from the Kleros yellow paper (Figure 5). The live court tree on [court.kleros.io](https://court.kleros.io) may differ as courts are added or modified through governance.</Info>
+<Info>This diagram reflects the court tree from the Kleros yellow paper (Figure 5). The live court tree on [v2.kleros.builders](https://v2.kleros.builders) may differ as courts are added or modified through governance.</Info>
 
 ---
 
@@ -101,7 +101,7 @@ graph TD
 
 ## Court Parameters
 
-Each court has parameters that define how it operates. These are set during court creation and **can be changed by governance** so always check [court.kleros.io](https://court.kleros.io) for current live values.
+Each court has parameters that define how it operates. These are set during court creation and **can be changed by governance** so always check [v2.kleros.builders](https://v2.kleros.builders/) for current live values.
 
 | Parameter | Description | Spec Example |
 | --- | --- | --- |
@@ -112,11 +112,11 @@ Each court has parameters that define how it operates. These are set during cour
 | **Hidden Votes** (`hiddenVotes`) | Whether commit-reveal voting is used | true / false |
 | **Times Per Period** (`timesPerPeriod`) | Duration of each dispute phase in seconds | [280800, 583200, 583200, 388800] |
 
-<Warning>Court parameters are adjusted through governance and may differ from any static source. Always verify current values at [court.kleros.io](https://court.kleros.io).</Warning>
+<Warning>Court parameters are adjusted through governance and may differ from any static source. Always verify current values at [v2.kleros.builders](https://v2.kleros.builders/).</Warning>
 
 ### Mainnet Court Parameters (Arbitrum One)
  
-The following table shows the production court configuration as deployed. Values are governance-controlled and may have changed since this was written — always cross-check with [court.kleros.io](https://court.kleros.io).
+The following table shows the production court configuration as deployed. Values are governance-controlled and may have changed since this was written — always cross-check with [v2.kleros.builders](https://v2.kleros.builders/).
  
 | ID | Name | Parent | minStake (PNK) | feeForJuror (ETH) | jurorsForJump | hiddenVotes |
 |---|---|---|---|---|---|---|
@@ -247,7 +247,7 @@ Policies are managed through the `PolicyRegistry` contract and can be updated by
 
 <Warning>**Critical for Jurors**: Always read the court policy before staking or voting. Failing to follow court policies may result in incoherent votes and lost PNK.</Warning>
 
-<Card title="Explore Court Policies" icon="building-columns" href="https://court.kleros.io">
+<Card title="Explore Court Policies" icon="building-columns" href="https://v2.kleros.builders/">
   Visit Kleros Court, click on "Courts" and review the policy for any court that interests you.
 </Card>
 
