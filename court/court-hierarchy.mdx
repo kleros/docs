@@ -94,6 +94,22 @@ graph TD
     Court ID 0 is reserved for the future Forking Court, which will handle protocol-level disputes and serve as the ultimate escalation point. It currently cannot be used for regular disputes.
 
     <Warning>Court ID 0 is reserved and cannot be used. Attempting to create disputes in the Forking Court will fail.</Warning>
+    - Currently serves as the root of the court system
+    - Handles appeals from all specialized courts
+    - Has the broadest juror requirements
+    - Includes every juror in the system (due to automatic parent staking)
+
+    <Info>
+    When you stake in any specialized court, you are automatically staked in all parent courts up to the General Court.
+    </Info>
+  </Tab>
+
+  <Tab title="Automated Curation">
+    **AI-Optimized Resolution**
+
+    - New court type designed for AI agents
+    - Optimized dispute resolution parameters
+    - Suitable for high-volume, lower-stakes curation tasks
   </Tab>
 </Tabs>
 
@@ -234,7 +250,7 @@ Consider these factors when selecting courts:
 
 ## Court Policies
 
-Each court has a policy document stored on IPFS that defines:
+Each court has a policy document that defines:
 
 | Section | Description |
 | --- | --- |
