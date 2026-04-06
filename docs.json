@@ -226,7 +226,8 @@
       "pages": [
         "developers/products/curate/overview",
         "developers/products/curate/smart-contracts",
-        "developers/products/curate/integration"
+        "developers/products/curate/integration",
+        "developers/products/curate/registries"
       ]
     },
              {
@@ -352,6 +353,14 @@
   "logo": {
     "light": "/logo/Kleros logo_updated.svg",
     "dark": "/logo/Kleros logo_updated_white.svg"
+  },
+
+  "seo": {
+    "indexing": "all",
+    "metatags": {
+      "og:site_name": "Kleros Documentation",
+      "og:type": "website"
+    }
   },
   "contextual": {
     "options": [
