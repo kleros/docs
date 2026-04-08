@@ -1,0 +1,90 @@
+---
+title: "Vea Deployment Addresses"
+description: "Contract addresses for Vea bridge deployments on each supported route"
+---
+
+
+
+<Warning>
+Always verify addresses against the [official Vea repository](https://github.com/kleros/vea) before use. The canonical source is the [Vea GitHub deployment artifacts](https://github.com/kleros/vea/tree/master/contracts/deployments).
+</Warning>
+
+---
+
+## Testnet Deployments (Arbitrum Sepolia)
+
+The Vea testnet runs on **Arbitrum Sepolia → Chiado (Gnosis testnet)** and **Arbitrum Sepolia → Ethereum Sepolia**. These replace the deprecated Goerli-based devnets.
+
+<Note>
+Goerli-based deployments (Arbitrum Goerli → Chiado, Arbitrum Goerli → Goerli) are **deprecated** as Goerli was sunset in September 2024. Migrate to Sepolia equivalents.
+</Note>
+
+**Testnet operator address:** `0x407DDEC61d69b212498B140a26da70AE1C879f5a`
+
+### Arbitrum Sepolia → Chiado (Gnosis Testnet)
+
+| Contract | Address |
+| --- | --- |
+| VeaInbox (ArbToGnosisDevnet) | `0x660daB9A6436A814a6ae3a6f27b309356a4bE78c` |
+| Router (ArbToGnosisDevnet) | `0xD4847f86Ed2E9D03839B15fd0818759861c063a8` |
+| VeaOutbox (ArbToGnosisDevnet) | `0xdFd7aDEb43d46FA3f16FB3e27F7fe85c3f5BD89D` |
+
+For the Arbitrum Sepolia → Ethereum Sepolia route, check the [Vea repository deployments folder](https://github.com/kleros/vea/tree/master/contracts/deployments).
+
+
+
+
+
+
+---
+
+## Mainnet Deployments
+
+<Info>
+Vea mainnet deployments (Arbitrum One → Ethereum Mainnet, Arbitrum One → Gnosis Chain) are currently in the process of being finalized. The Kleros V2 cross-chain arbitration system uses foreign gateways that communicate via Vea.
+</Info>
+
+For the latest mainnet addresses once live:
+- Check [Vea GitHub repository](https://github.com/kleros/vea) deployment artifacts
+- Check [Kleros V2 deployment addresses](/reference/contracts/deployment-addresses) for the Foreign Gateway addresses that use Vea
+
+---
+
+## Kleros Gateway Addresses
+
+The Kleros cross-chain arbitration gateways are separate from Vea itself. See the full address list:
+
+<Card title="Kleros V2 Deployment Addresses" icon="file-contract" href="/reference/contracts/deployment-addresses">
+  KlerosCore, SortitionModule, DisputeKit, Gateway contract addresses on Arbitrum One and testnets
+</Card>
+
+---
+
+## Finding Addresses Programmatically
+
+Clone the Vea repository to inspect deployment artifacts:
+
+```bash
+git clone https://github.com/kleros/vea.git
+cd vea/contracts
+# Per-chain deployment JSONs are in deployments/<networkName>/
+ls deployments/
+```
+
+Each deployment JSON (e.g. `VeaInboxArbToEth.json`) contains the `address` field with the deployed contract address and the ABI.
+
+---
+
+## Related
+
+<CardGroup cols={2}>
+
+
+
+  <Card title="Vea Bridge Architecture" icon="sitemap" href="/developers/crosschain/vea-bridge">
+    How Vea works, epoch system, and supported routes
+  </Card>
+  <Card title="Getting Started with Vea" icon="rocket" href="/developers/crosschain/vea-getting-started">
+    Integration guide and example contracts
+  </Card>
+</CardGroup>
