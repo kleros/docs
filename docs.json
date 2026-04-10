@@ -26,7 +26,7 @@
     "primary": {
       "type": "button",
       "label": "Launch Court",
-      "href": "https://court.kleros.io"
+      "href": "https://v2.kleros.builders/"
     }
   },
   "navigation": {
