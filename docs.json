@@ -43,6 +43,10 @@
         {
           "tab": "Reference",
           "href": "/reference"
+        },
+        {
+          "tab": "Changelog",
+          "href": "/changelog"
         }
       ],
       "anchors": [
@@ -346,6 +350,16 @@
       "group": "SDK",
       "pages": ["reference/sdk/kleros-sdk"]
     }
+         ]
+      },
+      {
+        "dropdown": "Changelog",
+        "icon": "clock-rotate-left",
+        "groups": [
+          {
+            "group": "Changelog",
+            "pages": ["changelog/2026-04-13"]
+          }
         ]
       }
     ]
