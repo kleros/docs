@@ -1,0 +1,43 @@
+---
+title: "April 13, 2026"
+description: "New identity features in Court, smart contract audit improvements, and Escrow usability updates."
+---
+
+## New features
+
+### Ethereum identity on juror profiles
+
+Juror profile pages in [Kleros Court](/court/overview) now display linked Ethereum identities across multiple chains, including Arbitrum, Base, and Optimism. You can see a juror's cross-chain presence and follow them via the Ethereum Follow Protocol (EFP) directly from their profile.
+
+### University dispute kit support
+
+Court now supports the Classic University dispute kit, expanding the range of specialized dispute resolution mechanisms available. Court administrators can select this kit when configuring court parameters, and jurors can commit, vote, reveal, and appeal using the University kit workflow.
+
+### Argentina Consumer Protection dispute kit
+
+A new gated dispute kit for Argentina Consumer Protection cases is now available. This enables dispute resolution tailored to Argentine consumer law, with role-based access controls for qualified participants.
+
+## Updates
+
+### Block explorer links in Escrow timeline
+
+The [Escrow](/products/escrow) transaction timeline now includes direct links to the relevant block explorer for each event. You can click through to verify on-chain activity for payments, disputes, and settlements without leaving the interface.
+
+### Escrow policy viewer
+
+Escrow now features a policies dropdown that lets you browse and view dispute resolution policies directly in the app. The file viewer has also been improved for better readability.
+
+### Scout always visible in navigation
+
+[Scout](/products/scout) is now always shown in the Court navigation bar, making it easier to access community-curated safety information while browsing cases.
+
+### SBT token redeployment on Arbitrum
+
+The SBT (Soulbound Token) contracts for the Argentina Consumer Protection experience and lawyer credentials have been redeployed on Arbitrum with improvements.
+
+## Bug fixes
+
+- **Escrow value formatting** — Small token amounts now display correctly instead of rounding to zero.
+- **Escrow seller role checks** — The UI now properly reflects seller-specific actions and conditions.
+- **Court smart contract audit fixes** — Several improvements from a security audit have been applied to the core dispute resolution contracts, including simplified reward distribution logic and more efficient event handling.
+- **Court type safety improvements** — Resolved edge cases where optional values in dispute timelines, evidence cards, and voting details could cause errors.
