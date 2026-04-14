@@ -1,9 +1,39 @@
 ---
 title: "April 14, 2026"
-description: "Scout homepage redesign, Curate registry reliability improvements, and bug fixes."
+description: "Foresight credits and onboarding guides, Zodiac proposal verification, Scout redesign, and bug fixes."
 ---
 
+## New features
+
+### Foresight credits
+
+[Foresight](/products/foresight) now supports Seer credits as a payment method, including through trade wallets. You can use your monthly Seer credits to participate in prediction sessions without needing to deposit additional collateral. A new link to acquire xDAI is also available directly in the interface.
+
+### Export predictions to CSV
+
+You can now export your Foresight prediction history as a CSV file with UTC timestamps, making it easy to track and analyze your participation across sessions.
+
+### Foresight onboarding guides
+
+New step-by-step guides walk first-time users through the [Foresight](/products/foresight) interface — covering how predictions work, the profit-and-loss mechanics, and the session timeline. An advanced guide with deeper strategy content is also shown on each prediction to help you improve.
+
+### Automatic Zodiac proposal verification
+
+The [Zodiac Reality Module](/products/reality) bots now automatically verify that new governance proposals have valid Reality.eth questions. If a proposal's on-chain question doesn't match expectations, you'll receive a notification with details about what's wrong, so issues are caught before the challenge period ends.
+
 ## Updates
+
+### Batch prediction improvements in Foresight
+
+Large prediction sessions in [Foresight](/products/foresight) now process transactions in configurable chunks, so you're less likely to hit gas limits when predicting on many items at once. Markets that fail to return a quote are gracefully skipped instead of blocking the entire batch.
+
+### Foresight chart and UI polish
+
+Prediction charts now feature highlighted data points for easier reading, improved right-margin spacing, and a corrected time scale. Your predictions are also preserved if you reload the page mid-session.
+
+### Zodiac ENS subdomain and plugin support
+
+The Zodiac bots now support ENS subdomains and multiple SafeSnap plugin JSON schemas, broadening compatibility with different DAO configurations.
 
 ### Scout homepage redesign
 
@@ -15,5 +45,8 @@ When registry data stored on IPFS is temporarily unavailable, [Scout](/products/
 
 ## Bug fixes
 
+- **Foresight prediction reset** — Predictions no longer reset unexpectedly after a successful submission.
+- **Foresight dark mode readability** — The advanced guide is now properly styled in dark mode.
+- **Foresight gas estimation** — Gas buffers are now capped to prevent unexpectedly high transaction fees.
 - **Curate registry display reliability** — In [Curate](/products/curate), a single malformed registry item no longer prevents other valid items from loading. The item list now gracefully handles errors so you always see the items that are available.
 - **Scout challenge date accuracy** — Challenge dates in [Scout](/products/scout) item timelines now display correctly.
