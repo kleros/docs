@@ -1,9 +1,13 @@
 ---
 title: "April 14, 2026"
-description: "Foresight credits and onboarding guides, Zodiac proposal verification, Scout redesign, and bug fixes."
+description: "PNK staking rewards export, Foresight credits and onboarding, Zodiac proposal verification, Scout redesign, and bug fixes across Court, Curate, and Escrow."
 ---
 
 ## New features
+
+### Export PNK staking rewards
+
+You can now export your monthly PNK staking rewards from [Kleros Court](/court/overview) as a downloadable file. A new button on the homepage gives you quick access to your reward history with pagination support, making it easy to track earnings over time.
 
 ### Foresight credits
 
@@ -21,7 +25,23 @@ New step-by-step guides walk first-time users through the [Foresight](/products/
 
 The [Zodiac Reality Module](/products/reality) bots now automatically verify that new governance proposals have valid Reality.eth questions. If a proposal's on-chain question doesn't match expectations, you'll receive a notification with details about what's wrong, so issues are caught before the challenge period ends.
 
+### Ethereum identity on juror profiles
+
+Juror profile pages in [Kleros Court](/court/overview) now display linked Ethereum identities across multiple chains, including Arbitrum, Base, and Optimism. You can see a juror's cross-chain presence and follow them via the Ethereum Follow Protocol (EFP) directly from their profile.
+
+### University dispute kit support
+
+Court now supports the Classic University dispute kit, expanding the range of specialized dispute resolution mechanisms available. Court administrators can select this kit when configuring court parameters, and jurors can commit, vote, reveal, and appeal using the University kit workflow.
+
+### Argentina Consumer Protection dispute kit
+
+A new gated dispute kit for Argentina Consumer Protection cases is now available. This enables dispute resolution tailored to Argentine consumer law, with role-based access controls for qualified participants.
+
 ## Updates
+
+### Corrected APY calculation in Court
+
+The staking APY displayed in [Kleros Court](/court/overview) now uses the adjusted PNK supply for a more accurate calculation, so the rates you see better reflect actual staking returns.
 
 ### Batch prediction improvements in Foresight
 
@@ -43,10 +63,33 @@ The [Scout](/products/scout) homepage has been refreshed with a redesigned hero 
 
 When registry data stored on IPFS is temporarily unavailable, [Scout](/products/scout) now displays a clear "IPFS data unavailable" message instead of failing silently.
 
+### Block explorer links in Escrow timeline
+
+The [Escrow](/products/escrow) transaction timeline now includes direct links to the relevant block explorer for each event. You can click through to verify on-chain activity for payments, disputes, and settlements without leaving the interface.
+
+### Escrow policy viewer
+
+Escrow now features a policies dropdown that lets you browse and view dispute resolution policies directly in the app. The file viewer has also been improved for better readability.
+
+### Scout always visible in navigation
+
+[Scout](/products/scout) is now always shown in the Court navigation bar, making it easier to access community-curated safety information while browsing cases.
+
+### SBT token redeployment on Arbitrum
+
+The SBT (Soulbound Token) contracts for the Argentina Consumer Protection experience and lawyer credentials have been redeployed on Arbitrum with improvements.
+
 ## Bug fixes
 
+- **Court network switch modal** — The modal prompting you to switch to the correct network now works properly even without a connected wallet and can be dismissed as expected.
+- **Court wallet connection popups** — Unnecessary wallet connection popups no longer appear when browsing cases.
+- **Dispute Resolver court redirects** — Links from the [Dispute Resolver](/legacy/resolver-v1) to Court now correctly specify the chain, preventing you from landing on the wrong network.
 - **Foresight prediction reset** — Predictions no longer reset unexpectedly after a successful submission.
 - **Foresight dark mode readability** — The advanced guide is now properly styled in dark mode.
 - **Foresight gas estimation** — Gas buffers are now capped to prevent unexpectedly high transaction fees.
 - **Curate registry display reliability** — In [Curate](/products/curate), a single malformed registry item no longer prevents other valid items from loading. The item list now gracefully handles errors so you always see the items that are available.
 - **Scout challenge date accuracy** — Challenge dates in [Scout](/products/scout) item timelines now display correctly.
+- **Escrow value formatting** — Small token amounts now display correctly instead of rounding to zero.
+- **Escrow seller role checks** — The UI now properly reflects seller-specific actions and conditions.
+- **Court smart contract audit fixes** — Several improvements from a security audit have been applied to the core dispute resolution contracts, including simplified reward distribution logic and more efficient event handling.
+- **Court type safety improvements** — Resolved edge cases where optional values in dispute timelines, evidence cards, and voting details could cause errors.
