@@ -358,7 +358,7 @@
         "groups": [
           {
             "group": "Changelog",
-            "pages": ["changelog/2026-04-14", "changelog/2026-04-13"]
+            "pages": ["changelog/2026-04-14"]
           }
         ]
       }
