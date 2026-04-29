@@ -5,105 +5,165 @@ description: "Subjective oracle system combining Reality.eth bond escalation wit
 
 ## Introduction
 
-Kleros Oracle combines [Reality.eth](https://reality.eth.limo/) a bond escalation mechanism for crowdsourced answers with Kleros Court as an external arbitrator. This provides a decentralized oracle that can answer any question with a publicly verifiable answer.
+Kleros Oracle combines [Reality.eth](https://reality.eth.limo/), a bond escalation mechanism for crowdsourced answers, with Kleros Court as an external arbitrator. This provides a decentralized oracle that can answer any question with a publicly verifiable answer.
 
 Your application only interacts with Reality.eth. Kleros is invoked automatically when a dispute over an answer is escalated to arbitration.
 
 <CardGroup cols={2}>
   <Card title="Smart Contracts" icon="file-contract" href="/developers/products/reality/smart-contracts">
-    Contract interfaces and arbitrator proxy addresses
+    Contract interfaces, arbitrator proxy addresses, and function reference
   </Card>
+
   <Card title="Integration Guide" icon="code" href="/developers/products/reality/integration">
-    Ask questions and retrieve answers from your smart contract
+    Step-by-step guide to ask questions and retrieve answers from your contract
   </Card>
 </CardGroup>
 
----
+***
 
 ## How It Works
 
 <Steps>
   <Step title="Ask a Question">
-    Your contract (or a user) submits a question to Reality.eth with a minimum bond and references a Kleros arbitrator proxy.
+    Your contract (or a user) submits a question to Reality.eth, optionally attaching ETH as a reward, and references a Kleros arbitrator proxy as the dispute resolver.
   </Step>
+
   <Step title="Answer with Bonds">
-    Anyone can submit an answer by posting a bond. To override an existing answer, the new answerer must post a bond at least double the previous one. This bond escalation mechanism economically discourages incorrect answers.
+    Anyone can submit an answer by posting a bond. To override an existing answer, the new answerer must post a bond at least double the previous one. Bond escalation makes incorrect answers economically unsustainable.
   </Step>
+
   <Step title="Finalization or Arbitration">
-    If no one challenges the current answer within the timeout period, it finalizes. If a dispute arises, anyone can request arbitration through the Kleros Arbitrator Proxy, which creates a case in Kleros Court.
+    If no one challenges the current answer within the timeout window, the answer finalizes. If a party disagrees, anyone can pay the arbitration fee to escalate the question to Kleros Court through the arbitrator proxy.
   </Step>
+
   <Step title="Ruling">
-    Kleros jurors evaluate the question and evidence, then submit a ruling. The arbitrator proxy reports the ruling back to Reality.eth, which finalizes the answer accordingly.
+    Kleros jurors evaluate the question and the submitted evidence, then vote on the correct answer. The arbitrator proxy reports the ruling back to Reality.eth, which finalizes the answer.
   </Step>
 </Steps>
 
----
+***
 
 ## Architecture
 
 The integration uses three contract layers:
 
-| Contract | Chain | Role |
-| --- | --- | --- |
-| **Your Contract** | Any supported chain | Asks questions, reads finalized answers |
-| **Reality.eth** | Same chain as your contract | Bond escalation, answer management, timeout logic |
-| **Kleros Arbitrator Proxy** | Same chain as Reality.eth | Creates disputes in Kleros Court, reports rulings back |
+| Contract                    | Chain                       | Role                                                   |
+| --------------------------- | --------------------------- | ------------------------------------------------------ |
+| **Your Contract**           | Any supported chain         | Asks questions, reads finalized answers                |
+| **Reality.eth**             | Same chain as your contract | Bond escalation, answer management, timeout logic      |
+| **Kleros Arbitrator Proxy** | Same chain as Reality.eth   | Creates disputes in Kleros Court, reports rulings back |
 
-Your contract only interacts with Reality.eth. The arbitrator proxy is specified when asking the question, and the proxy handles all interaction with Kleros Court.
+Your contract only interacts with Reality.eth. The arbitrator proxy address is specified when asking the question, and the proxy handles all communication with Kleros Court.
 
----
+### Same-chain vs Cross-chain
+
+The system supports two deployment patterns:
+
+- **Same-chain**: The question and the arbitration both live on the same network. This is the simplest integration.
+- **Cross-chain**: The question lives on one chain (e.g. Gnosis Chain or Polygon) while arbitration runs on Ethereum or Arbitrum through a cross-chain proxy. Use this when your application is on a chain without a native Kleros Court deployment.
+
+Cross-chain proxy deployments are listed in the [cross-chain-realitio-proxy repository](https://github.com/kleros/cross-chain-realitio-proxy/tree/master/contracts#deployments).
+
+***
 
 ## Supported Chains
 
 Reality.eth is deployed on multiple chains. Kleros arbitrator proxies are available on:
 
-| Chain | Status |
-| --- | --- |
-| Ethereum Mainnet | Active (V1 Court) |
-| Gnosis Chain | Active (V1 Court) |
-| Arbitrum One | Available via V2 Court |
-| Polygon | Active (V1 Court) |
+| Chain            | Status                 |
+| ---------------- | ---------------------- |
+| Ethereum Mainnet | Active (V1 Court)      |
+| Gnosis Chain     | Active (V1 Court)      |
+| Arbitrum One     | Available via V2 Court |
+| Polygon          | Active (V1 Court)      |
 
 <Note>
-  Check the [Reality.eth deployment repository](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments) for the full list of chain deployments and contract addresses.
+  Check the [Reality.eth deployment repository](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments) for the full list of chain deployments and contract addresses. For Kleros arbitrator proxy addresses, see the [Smart Contracts](/developers/products/reality/smart-contracts) page.
 </Note>
 
----
+***
 
 ## Question Types
 
-Reality.eth supports several question templates:
+Reality.eth supports several question templates. Each template defines the answer format and how the result is encoded.
 
-| Template ID | Type | Answer Format | Example |
-| --- | --- | --- | --- |
-| 0 | `bool` | Yes/No | "Did event X happen?" |
-| 1 | `uint` | Numeric value | "What was the price of ETH on date Y?" |
-| 2 | `single-select` | One of N options | "Which team won?" |
-| 3 | `multiple-select` | Subset of N options | "Which proposals passed?" |
-| 4 | `datetime` | Unix timestamp | "When did event X occur?" |
+| Template ID | Type              | Answer Format       | Example                                |
+| ----------- | ----------------- | ------------------- | -------------------------------------- |
+| 0           | `bool`            | Yes/No              | "Did event X happen?"                  |
+| 1           | `uint`            | Numeric value       | "What was the price of ETH on date Y?" |
+| 2           | `single-select`   | One of N options    | "Which team won?"                      |
+| 3           | `multiple-select` | Subset of N options | "Which proposals passed?"              |
+| 4           | `datetime`        | Unix timestamp      | "When did event X occur?"              |
+| 5           | `hash`            | bytes32 hash        | "Does hash X correspond to document Y?" |
 
-Custom templates can be registered for specific use cases.
+Custom templates can be registered for application-specific use cases via `createTemplate()` or the [Reality.eth Template Generator](https://reality.eth.link/app/template-generator). For full details on result encoding, see [Smart Contracts → Result Interpretation](/developers/products/reality/smart-contracts#result-interpretation).
 
----
+***
+
+## Resolution Flow
+
+The system follows a push/pull model. Your DApp pushes a question to Reality.eth and later pulls the verified answer.
+
+A question can be resolved through two paths:
+
+### Happy Path — Consensus Resolution
+
+1. An answerer submits an answer with a bond
+2. No one challenges within the timeout period
+3. The answer finalizes automatically
+4. Your DApp reads the result via `resultFor(questionID)`
+
+### Unhappy Path — Arbitration Resolution
+
+1. An answerer submits an answer with a bond
+2. Another user posts a counter-answer with a higher bond
+3. Bond escalation may continue until a party requests arbitration
+4. The question is frozen on Reality.eth
+5. A dispute is created in Kleros Court via the arbitrator proxy
+6. The evidence submission period opens
+7. Jurors review evidence and vote
+8. The ruling is reported back to Reality.eth
+9. Your DApp reads the arbitrated result
+
+All interactions happen through the Reality.eth interface. Your DApp does not need separate UIs for the two paths.
+
+***
 
 ## Key Features
 
 <AccordionGroup>
   <Accordion title="Bond Escalation">
-    Each successive answer must post at least double the previous bond. This makes incorrect answers increasingly expensive to sustain, causing most questions to resolve correctly without arbitration.
+    Each successive answer must post at least double the previous bond. This makes incorrect answers exponentially expensive to sustain, so most questions resolve correctly without ever reaching arbitration.
   </Accordion>
+
   <Accordion title="Arbitration Escalation">
-    At any point after a first answer is submitted, anyone can request arbitration by paying the arbitration fee. The Kleros Arbitrator Proxy creates a dispute in the configured court and subcourt.
+    At any point after the first answer, anyone can request arbitration by paying the arbitration fee. The Kleros Arbitrator Proxy creates a dispute in the configured court and subcourt, with the configured initial juror count.
   </Accordion>
+
   <Accordion title="Evidence Submission">
-    Evidence for arbitration is submitted through the Kleros Arbitrator Proxy contract, not through Reality.eth. The proxy manages the evidence group and forwards it to Kleros Court.
+    Evidence is submitted through the Kleros Arbitrator Proxy contract, not through Reality.eth. The proxy manages the evidence group and forwards submissions to Kleros Court. See the [Integration Guide](/developers/products/reality/integration#evidence-submission) for the submission flow and the ERC-1497 evidence format.
   </Accordion>
+
   <Accordion title="Configurable Parameters">
-    Each arbitrator proxy is deployed with a specific subcourt and initial number of juror votes. The Kleros team can deploy custom proxies for specific use cases.
+    Each arbitrator proxy is deployed with a specific subcourt, initial number of juror votes, and arbitration fee. The Kleros team can deploy custom proxies, including proxies with a custom primary document for jurors when standard arbitration guidelines are not enough for a use case.
+  </Accordion>
+
+  <Accordion title="Cross-chain Support">
+    The system supports cross-chain proxies, allowing a question on one chain to be arbitrated by Kleros Court on another. This unlocks integrations on chains without a native Kleros Court deployment.
   </Accordion>
 </AccordionGroup>
 
----
+***
+
+## Kleros Oracle in Production
+
+The Reality.eth + Kleros oracle powers production systems across multiple categories:
+
+- **Prediction Markets**: [Seer](https://seer.pm), Polkamarkets/Foreland, and [Omen](https://omen.eth.limo) use it to verify real-world event outcomes
+- **Optimistic Governance**: The [Zodiac SafeSnap module](https://docs.kleros.io/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap) implements it for secure DAO proposal execution
+- **Content Moderation**: [Moderate / Susie bot](https://kleros.io/moderate) leverages it for decentralized content policy enforcement
+
+***
 
 ## Resources
 
@@ -111,12 +171,15 @@ Custom templates can be registered for specific use cases.
   <Card title="Reality.eth Documentation" icon="book" href="https://reality.eth.limo/app/docs/html/index.html">
     Official Reality.eth docs and API reference
   </Card>
+
   <Card title="Reality.eth GitHub" icon="github" href="https://github.com/RealityETH/reality-eth-monorepo">
     Contract source code and deployments
   </Card>
+
   <Card title="Kleros Oracle Page" icon="globe" href="https://kleros.io/oracle/">
     Product overview
   </Card>
+
   <Card title="Discord" icon="discord" href="https://discord.gg/kleros">
     Developer support
   </Card>
