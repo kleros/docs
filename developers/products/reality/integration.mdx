@@ -17,33 +17,43 @@ Before integrating, understand the escalation flow:
 
 The RealityV2 Kleros integration contract has a `feeTimeout` parameter (set to **600 seconds / 10 minutes** in the reference deployment). This is the time within which the *other party* must also pay the arbitration fee after it is requested. If they don't pay within `feeTimeout`, the requester wins by default.
 
-```solidity
+```solidity theme={null}
 uint32 public constant FEE_TIMEOUT = 600; // 10 minutes
 ```
 
 Inform your users about this window — if they request arbitration, the other party has only 10 minutes to match the fee.
 
 <Warning>
-The `disputeTemplateMappings` field in the Reality V2 deployment script is currently marked `TODO` in the reference implementation. This means the dispute template shown to Kleros jurors for Reality questions does not yet have dynamic data mappings (it shows static text). Check the [kleros/reality-v2 repository](https://github.com/kleros/reality-v2) for the latest status before relying on dynamic template population.
+  The `disputeTemplateMappings` field in the Reality V2 deployment script is currently marked `TODO` in the reference implementation. This means the dispute template shown to Kleros jurors for Reality questions does not yet have dynamic data mappings (it shows static text). Check the [kleros/reality-v2 repository](https://github.com/kleros/reality-v2) for the latest status before relying on dynamic template population.
 </Warning>
 
----
+***
 
 ## Integration Options
 
-There are two ways to integrate with the Reality.eth + Kleros oracle:
+There are two ways to integrate with the Reality.eth + Kleros oracle.
 
-**Smart contract integration**: Your contract calls Reality.eth functions directly to ask questions and read finalized answers. This is the recommended approach for on-chain applications.
+### Off-chain (Quick Testing)
 
-**Frontend-only integration**: Use the [Reality.eth web interface](https://reality.eth.limo/) to submit questions and retrieve answers manually, without contract changes.
+Use the [Reality.eth web interface](https://reality.eth.limo/) to submit questions and retrieve answers manually. Best for:
 
----
+- Testing the system before full integration
+- Learning how question lifecycles work
+- One-off questions that don't need automation
+
+### On-chain (Production)
+
+Have your smart contract call Reality.eth directly to ask questions, read answers, and react to oracle responses programmatically. This is the recommended approach for production DApps.
+
+For the on-chain path, you'll want to be familiar with the [Reality.eth interface](https://reality.eth.limo/app/docs/html/) and the [reality-eth-monorepo](https://github.com/RealityETH/reality-eth-monorepo) for contract addresses and ABIs.
+
+***
 
 ## Smart Contract Integration
 
 ### Step 1: Ask a Question
 
-```solidity
+```solidity theme={null}
 import {IRealityETH} from "./interfaces/IRealityETH.sol";
 
 contract OracleConsumer {
@@ -71,9 +81,21 @@ contract OracleConsumer {
 
 Any ETH sent with `askQuestion` becomes the question reward, incentivizing answerers.
 
+#### Question Parameters
+
+- **`templateID`** — `0` for bool, `1` for uint, `2` for single-select, `3` for multiple-select, `4` for datetime, `5` for hash.
+- **`question`** — Parameters separated by the `␟` (U+241F) delimiter, formatted to match the template. Examples:
+  - Bool: `"Did event X happen?␟category␟en"`
+  - Uint: `"What was the price of ETH on April 16, 2025?␟crypto␟en"`
+  - Single-select: `"Which team won?␟\"Lakers\",\"Celtics\",\"Bucks\"␟sports␟en"`
+- **`arbitrator`** — Kleros Arbitrator Proxy address. See [Smart Contracts](/developers/products/reality/smart-contracts#kleros-arbitrator-proxy-addresses) for available proxies.
+- **`timeout`** — Seconds before an unchallenged answer finalizes. Typically 86400 (24 hours). The contract enforces a maximum of 365 days.
+- **`openingTimestamp`** — Earliest time answers can be submitted. Set to `0` for immediate.
+- **`nonce`** — Differentiator for identical questions with the same parameters. Use `0` if you don't need to ask the same question more than once.
+
 ### Step 2: Read the Finalized Answer
 
-```solidity
+```solidity theme={null}
 function getAnswer(bytes32 _questionID) external view returns (bytes32) {
     require(realityETH.isFinalized(_questionID), "Not finalized");
     return realityETH.resultFor(_questionID);
@@ -87,14 +109,14 @@ function getAnswerAsBool(bytes32 _questionID) external view returns (bool) {
 ```
 
 <Warning>
-  `resultFor()` reverts if the question is not yet finalized. Always check `isFinalized()` first, or use a callback pattern.
+  `resultFor()` reverts if the question is not yet finalized. Always check `isFinalized()` first, or use a callback pattern. For full result decoding by template type and how to handle special values like `INVALID` and `ANSWERED_TOO_EARLY`, see [Smart Contracts → Result Interpretation](/developers/products/reality/smart-contracts#result-interpretation).
 </Warning>
 
 ### Step 3: Handle the Callback (Optional)
 
 For automated execution, use Reality.eth's callback mechanism:
 
-```solidity
+```solidity theme={null}
 function resultReady(bytes32 _questionID) external {
     require(msg.sender == address(realityETH), "Only Reality.eth");
     bytes32 answer = realityETH.resultFor(_questionID);
@@ -102,27 +124,201 @@ function resultReady(bytes32 _questionID) external {
 }
 ```
 
----
+***
 
 ## Choosing an Arbitrator Proxy
 
 Each Kleros Arbitrator Proxy is configured with:
 
-| Parameter | Description |
-| --- | --- |
-| **Subcourt** | Which Kleros court handles disputes |
-| **Number of jurors** | Initial juror count for first round |
-| **Arbitration fee** | Cost to escalate a question to Kleros |
+| Parameter            | Description                           |
+| -------------------- | ------------------------------------- |
+| **Subcourt**         | Which Kleros court handles disputes   |
+| **Number of jurors** | Initial juror count for first round   |
+| **Arbitration fee**  | Cost to escalate a question to Kleros |
 
-Use an existing proxy or contact `integrations@kleros.io` to deploy one configured for your use case.
+Use an existing proxy from the [Smart Contracts](/developers/products/reality/smart-contracts) page, or contact `integrations@kleros.io` to deploy one configured for your use case.
+
+For applications that span chains (question on Polygon, arbitration on Ethereum, for example), use a [cross-chain proxy](https://github.com/kleros/cross-chain-realitio-proxy/tree/master/contracts#deployments).
 
 To check the current arbitration fee:
 
-```solidity
+```solidity theme={null}
 uint256 fee = realityETH.getArbitrator(_questionID).getDisputeFee(_questionID);
 ```
 
----
+***
+
+## Evidence Submission
+
+When a Reality.eth question goes to arbitration, evidence helps jurors make informed decisions. Submit evidence through the Kleros Arbitrator Proxy, not through Reality.eth.
+
+### Evidence Timeline
+
+1. Question posted on Reality.eth
+2. Answer phase — users submit answers with bonds
+3. Arbitration requested — someone pays the arbitration fee
+4. **Evidence period opens** (typically 3-7 days, varies by court configuration)
+5. Voting phase — Kleros jurors review evidence and vote
+6. Final ruling reported back to Reality.eth
+
+### Submitting Evidence from a Contract
+
+```solidity theme={null}
+interface IKlerosArbitratorProxy {
+    function submitEvidence(
+        uint256 _questionID,
+        string calldata _evidenceURI
+    ) external;
+}
+
+contract MyDApp {
+    IKlerosArbitratorProxy public arbitratorProxy;
+
+    constructor(address _arbitratorProxyAddress) {
+        arbitratorProxy = IKlerosArbitratorProxy(_arbitratorProxyAddress);
+    }
+
+    function submitEvidenceForQuestion(
+        bytes32 _questionID,
+        string calldata _evidenceURI
+    ) external {
+        arbitratorProxy.submitEvidence(uint256(_questionID), _evidenceURI);
+    }
+}
+```
+
+### Submitting Evidence Directly
+
+You can also call the proxy directly:
+
+```solidity theme={null}
+arbitratorProxy.submitEvidence(
+    uint256(questionID),
+    "/ipfs/QmYourEvidenceHash"
+);
+```
+
+### Evidence Format
+
+Evidence JSON follows the [ERC-1497](https://github.com/ethereum/EIPs/issues/1497) standard. Host the JSON on IPFS (preferred) or any publicly accessible URL.
+
+```json theme={null}
+{
+  "name": "Evidence Supporting Yes",
+  "description": "Official S&P website showing closing price of 5,127.43 on April 16, 2025",
+  "fileURI": "/ipfs/QmScreenshotHash",
+  "fileHash": "QmScreenshotHash",
+  "fileTypeExtension": "png"
+}
+```
+
+### Evidence Best Practices
+
+- **IPFS first** — `/ipfs/QmHash` or `ipfs://QmHash` is preferred for permanence. Web URLs work but rely on host availability.
+- **Both sides should submit** — supporters of each answer should submit their own evidence. Jurors weigh both.
+- **Quality over quantity** — clear, authoritative sources beat numerous weak ones.
+- **Submit early** — anyone can submit during the evidence period, but late submissions risk being missed.
+- **Reference the underlying claim** — each evidence file should clearly map to the answer it supports.
+
+### Monitoring Evidence Submissions
+
+Watch for these events on the proxy contract:
+
+```solidity theme={null}
+// Emitted when arbitration is created
+event Dispute(
+    IArbitrator indexed _arbitrator,
+    uint256 indexed _disputeID,
+    uint256 _metaEvidenceID,
+    uint256 _evidenceGroupID
+);
+
+// Emitted on each evidence submission
+event Evidence(
+    IArbitrator indexed _arbitrator,
+    uint256 indexed _evidenceGroupID,
+    address indexed _party,
+    string _evidence
+);
+```
+
+***
+
+## Fees and Payments
+
+The Reality.eth + Kleros system has five fee types. Each plays a specific role in the incentive structure.
+
+| Fee              | Set By           | Paid By                | Paid To                                                          |
+| ---------------- | ---------------- | ---------------------- | ---------------------------------------------------------------- |
+| Question Reward  | Asker            | Asker                  | Highest-bonded correct answerer\*                                |
+| Answer Bond      | Answerer         | Answerer               | Returned if correct, otherwise to the next correct answerer      |
+| Takeover Fee     | Previous bond    | Subsequent answerer    | Previous answerer (deducted from rewards)                        |
+| Arbitration Fee  | Arbitrator       | Anyone requesting      | Arbitrator                                                       |
+| Claim Fee (2.5%) | System           | Claimer                | Burned (deducted from claimed amount, Reality.eth v2.1+)         |
+
+\*When settled by arbitration, the arbitrator specifies who receives the reward.
+
+### Question Reward
+
+- Set by sending ETH (or tokens via `askQuestionERC20`) when calling `askQuestion()`
+- Paid to whoever provides the final accepted answer, minus any arbitrator fee
+- Higher rewards typically result in faster and more accurate answers
+
+### Answer Bond
+
+- Backs the answerer's claim that their answer is correct
+- Must be at least double the previous bond if there was a prior answer
+- Returned if the answer is correct
+- Paid to the next correct answerer if the original answer is overturned
+
+### Takeover Fee
+
+- Compensates the previous answerer when someone takes over a correct answer
+- Equal to the bond supplied by the previous person who gave that answer
+- Deducted from rewards that would otherwise go to the new answerer
+
+### Arbitration Fee
+
+- Paid to the arbitrator when a party escalates the question
+- Set by the arbitrator (check via `realityETH.getArbitrator(_qid).getDisputeFee(_qid)`)
+- Usually paid by an answerer whose answer was replaced
+
+### Claim Fee
+
+- Active from Reality.eth v2.1 onwards
+- 2.5% of claimed bonds (excluding the final bond) is burned
+
+***
+
+## Custom Primary Document for Arbitration
+
+Most DApp integrations work fine with the standard [Question Resolution Policy](https://ipfs.io/ipfs/QmaUr6hnSVxYD899xdcn2GUVtXVjXoSXKZbce3zFtGWw4H/Question_Resolution_Policy.pdf). In some cases, you may need a custom primary document tailored to your application.
+
+### When You Need a Custom Document
+
+- Your DApp has specific rules for how disputes should be judged
+- Resolving disputes requires specialized knowledge or context
+- You need a dedicated Kleros court for your application's disputes
+- The interpretation of answers in your domain differs from standard interpretations
+
+### How the Process Works
+
+1. **Initial assessment** — the Kleros team reviews your use case to confirm a custom document is necessary
+2. **Document drafting** — you work with Kleros to create a document that:
+   - Explains your application's context to jurors
+   - Provides guidance on evaluating evidence
+   - Defines specialized terminology
+   - Establishes clear criteria for determining correct answers
+3. **Deployment** — Kleros deploys a dedicated arbitrator proxy with your primary document embedded as part of the proxy's metaevidence
+4. **Usage** — when disputes go to arbitration, jurors apply your guidelines
+
+### Real-World Example: Seer Prediction Markets
+
+[Seer](https://seer.pm) needed a [custom resolution policy](https://ipfs.io/ipfs/QmPmRkXFUmzP4rq2YfD3wNwL8bg3WDxkYuvTP9A9UZm9gJ/seer-markets-resolution-policy.pdf) because their prediction markets have specific rules for handling complex outcomes, edge cases like delayed events, and explicit authoritative information sources.
+
+If your application might need this level of customization, contact `integrations@kleros.io`.
+
+***
 
 ## DAO Governance Integration
 
@@ -135,28 +331,38 @@ The Reality.eth + Kleros oracle powers the **Zodiac Reality Module** for DAO gov
 
 See the [DAO Governance example](/developers/examples/dao-governance) for implementation details.
 
----
+***
 
 ## Reality.eth Deployments
 
 Reality.eth contracts are deployed across multiple chains. Reference the correct contract address for your target chain:
 
-| Chain | Repository Path |
-| --- | --- |
-| Ethereum Mainnet | `chains/deployments/1/` |
-| Gnosis Chain | `chains/deployments/100/` |
-| Arbitrum One | `chains/deployments/42161/` |
-| Polygon | `chains/deployments/137/` |
+| Chain            | Repository Path             |
+| ---------------- | --------------------------- |
+| Ethereum Mainnet | `chains/deployments/1/`     |
+| Gnosis Chain     | `chains/deployments/100/`   |
+| Arbitrum One     | `chains/deployments/42161/` |
+| Polygon          | `chains/deployments/137/`   |
 
-Full deployment data: [Reality.eth monorepo](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments)
+Full deployment data: [Reality.eth monorepo](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments).
 
----
+***
+
+## Production Integrations
+
+The Reality.eth + Kleros oracle is used in production by:
+
+- **Prediction Markets** — [Seer](https://seer.pm), Polkamarkets/Foreland, and [Omen](https://omen.eth.limo) use it to verify real-world event outcomes
+- **Optimistic Governance** — the [Zodiac SafeSnap module](https://docs.kleros.io/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap) uses it for secure DAO proposal execution
+- **Content Moderation** — [Moderate / Susie bot](https://kleros.io/moderate) uses it for decentralized content policy enforcement
+
+***
 
 ## Testing
 
-For local development, you can deploy Reality.eth and a mock arbitrator on a testnet:
+For local development, deploy Reality.eth and a mock arbitrator on a testnet:
 
-```bash
+```bash theme={null}
 # Clone the Reality.eth monorepo
 git clone https://github.com/RealityETH/reality-eth-monorepo.git
 cd reality-eth-monorepo/packages/contracts
@@ -165,4 +371,30 @@ cd reality-eth-monorepo/packages/contracts
 npx hardhat deploy --network <your-network>
 ```
 
-For integration testing with Kleros Court, use the Arbitrum Sepolia testnet where Kleros V2 contracts are deployed.
+For integration testing with Kleros Court V2, use the **Arbitrum Sepolia** testnet where Kleros V2 contracts are deployed. For V1 Court testing, use **Sepolia** with the General Court proxy at `0x05b942faecfb3924970e3a28e0f230910cedff45`.
+
+***
+
+## Common Questions
+
+**Does my DApp need to call the arbitrator proxy directly?**
+No. Your DApp only needs to interact with Reality.eth for the standard question/answer flow. The proxy is invoked automatically when arbitration is requested. You only need to call the proxy directly to submit evidence during an active arbitration.
+
+**What happens if there's a dispute?**
+Reality.eth and Kleros handle the dispute flow through the arbitrator proxy. Your DApp doesn't need any special logic — once the dispute resolves, `resultFor()` returns the arbitrated answer.
+
+**How do I write a clear question?**
+Be specific, include resolution criteria, and specify a trusted information source. Example: "Did the S&P 500 close above 5,000 on April 10, 2025, according to the official S&P website?"
+
+**Can I handle the full flow inside my DApp without using the Reality.eth frontend?**
+Yes. You can implement everything from your DApp: ask questions, submit answers, request arbitration, and submit evidence.
+
+***
+
+## Need Help?
+
+Contact the Kleros team at `integrations@kleros.io` for:
+
+- Custom arbitrator proxy deployments
+- Help with Reality.eth integration
+- Assistance with complex use cases or custom primary documents
