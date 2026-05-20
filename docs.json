@@ -358,7 +358,14 @@
         "groups": [
           {
             "group": "Changelog",
-            "pages": ["changelog/2026-05-19", "changelog/2026-05-18", "changelog/2026-05-12", "changelog/2026-05-05", "changelog/2026-04-28", "changelog/2026-04-21", "changelog/2026-04-14"]
+            "pages": [
+              "changelog/2026-05-19",
+              "changelog/2026-05-12",
+              "changelog/2026-05-05",
+              "changelog/2026-04-28",
+              "changelog/2026-04-21",
+              "changelog/2026-04-14"
+            ]
           }
         ]
       }
@@ -453,5 +460,12 @@
         ]
       }
     ]
-  }
+  },
+  "redirects": [
+    {
+      "source": "/changelog/2026-05-18",
+      "destination": "changelog/2026-05-19",
+      "permanent": true
+    }
+  ]
 }
