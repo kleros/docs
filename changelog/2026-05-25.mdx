@@ -1,0 +1,26 @@
+---
+title: "May 25, 2026"
+description: "Scout adds ATQ duplicate detection and JavaScript Court routing, Curate distinguishes withdrawn items, plus Rabby wallet and Foresight UI fixes."
+---
+
+## New features
+
+### Duplicate detection for Address Tags Queries
+
+[Scout](/products/scout) now flags duplicate Address Tags Queries (ATQ) submissions before you sign. If an entry with the same GitHub repository, commit hash, and EVM chain ID already exists in the registry, you'll see a clear error so you can review the existing submission instead of creating a duplicate.
+
+### JavaScript Court routing
+
+Disputes related to JavaScript submissions in [Scout](/products/scout) now route to the dedicated JavaScript Court, so the right pool of jurors reviews each case.
+
+## Updates
+
+### Clearer item lifecycle in Curate
+
+[Curate](/products/curate) Permanent registries now distinguish items that were voluntarily **withdrawn** by their submitter from items that were **removed or rejected** through a challenge. The item timeline shows when withdrawal was initiated and when it completed, making the history of each entry easier to audit.
+
+## Bug fixes
+
+**Rabby wallet on mainnet** — [Kleros Court](/court/overview) no longer crashes when connecting with Rabby (or other wallets that don't expose the legacy chain ID call) on mainnet. Contract bindings now resolve reliably across providers.
+
+**Success popup icon in Foresight** — The confirmation icon shown after submitting predictions in [Foresight](/products/foresight) now renders at the correct size.
