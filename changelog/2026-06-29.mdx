@@ -1,0 +1,24 @@
+---
+title: "June 29, 2026"
+description: "Kleros Court adds voting type tooltips, Court V2 simplifies the navbar and language settings, and the file viewer hardens URL handling."
+---
+
+## New features
+
+### Voting type tooltip in Court
+
+[Kleros Court](/court/overview) now shows whether a court uses **Hidden votes** or **Public votes** directly in the court information modal, with a tooltip explaining what each mode means for jurors. You can see at a glance whether a court requires a commit-then-reveal flow or a single-step vote before you stake.
+
+### Simpler Court V2 navbar
+
+The [Court V2](/court/overview) header has been streamlined. The "Home" and "My Profile" entries have been removed from the Explore menu, and clicking your connected wallet address now takes you straight to your juror profile.
+
+## Updates
+
+### Centered language settings in Court V2
+
+The language selector in [Court V2](/court/overview) settings is now centered for better alignment, and the Disconnect button has been resized so the settings panel looks consistent across viewports.
+
+## Bug fixes
+
+**File viewer URL hardening in Court V2** — The file viewer in [Court V2](/court/overview) now only loads files served over `http` or `https` and reuses the shared URL sanitizer used elsewhere in the app, so attached evidence and dispute files with unexpected or unsafe URL schemes are rejected before they can render.
