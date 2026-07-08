@@ -83,6 +83,10 @@ Kleros V2 uses **Randomizer.io** as the primary random number source on the prod
 
 The RNG request is made with a configurable **lookahead** parameter, the random number depends on a future block, not the current one. This prevents the requester from knowing the outcome at request time.
 
+<Note>
+In Kleros V1, juror selection is built into the KlerosLiquid contract rather than a separate SortitionModule, and randomness comes from a blockhash-based source. V2 moves selection into the standalone SortitionModule and adds swappable RNG sources.
+</Note>
+
 ---
 
 ## Historical Context
