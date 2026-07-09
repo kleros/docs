@@ -19,6 +19,9 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
   <Step title="Go to the Kleros Escrow website">
     Visit [escrow-v1.kleros.builders](https://escrow-v1.kleros.builders/) and connect your wallet (Rabby, MetaMask, or WalletConnect). Make sure you have ETH for transaction fees and the payment amount. From the homepage you can create, search, or review transactions.
   </Step>
+  <Frame >
+  <img src="/images/walletconnect-escrow.png"  />
+</Frame>
   <Step title="Create a new payment">
     Click the **Create Transaction** button in the top right. You deposit funds into escrow, where they remain secure until one of the following happens:
 
@@ -27,6 +30,9 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
     - A dispute is resolved by Kleros Court
     - The expiry date passes
   </Step>
+  <Frame >
+  <img src="/images/homepage-escrow.png"  />
+</Frame>
   <Step title="Select an escrow type">
     Two transaction types are available:
 
@@ -35,8 +41,8 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
   </Step>
 </Steps>
 
-<Frame caption="Step 1: Initiate a Payment, screenshot to be added">
-  <img src="/images/v1-screenshot-placeholder.svg" alt="Step 1: Initiate a Payment, screenshot to be added" />
+<Frame >
+  <img src="/images/escrowtype.png" />
 </Frame>
 
 ---
@@ -54,7 +60,11 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
     <Warning>
     Non-standard ERC-20 tokens such as USDT, BNB, and OMG are not supported in Escrow V1.
     </Warning>
+     <Frame >
+  <img src="/images/transactiondetail.jpeg"  />
+</Frame>
   </Step>
+ 
   <Step title="Set the delivery deadline">
     Provide a detailed description of the service or product. This description is crucial for dispute resolution.
 
@@ -65,6 +75,10 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
     3. **Escrow expiry**: 7 days after the deadline, either party can execute the transaction.
 
     For example: a transaction created on December 17 with a delivery deadline of January 16 expires on January 23.
+  
+   <Frame >
+  <img src="/images/deliverydetails.jpeg"  />
+</Frame>
   </Step>
   <Step title="Attach an agreement document">
     Optionally upload a PDF agreement, or include the terms in the description. Jurors rely on this document if a dispute arises, so specify clearly:
@@ -80,8 +94,8 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
   </Step>
 </Steps>
 
-<Frame caption="Step 2: Submit the Payment, screenshot to be added">
-  <img src="/images/v1-screenshot-placeholder.svg" alt="Step 2: Submit the Payment, screenshot to be added" />
+<Frame >
+  <img src="/images/submitescrow.png"  />
 </Frame>
 
 ---
@@ -90,15 +104,26 @@ This tutorial covers the Escrow V1 application on Ethereum Mainnet. For the diff
 
 After creation, both parties see a transaction summary with their available actions.
 
+ <Frame >
+  <img src="/images/summaryescrow.png"  />
+</Frame>
+
 ### As the payment sender
 
 - **Make payment**: release funds to the receiver, in full or partially. Pay the full amount when the service or product was delivered as agreed. Pay a partial amount to settle a disagreement without a dispute; the remainder stays in escrow and can still be disputed.
 - **Raise dispute**: click if you are unsatisfied with the delivery. You are shown the arbitration cost (for example, 0.03 ETH) and deposit the fee to initiate. The fee is refunded if you win.
+ <Frame >
+  <img src="/images/senderpayment-escrow.png"  />
+</Frame>
 
 ### As the payment receiver
 
 - **Reimburse**: return funds to the sender, in full or partially. Reimburse the full amount if you cannot complete the delivery. Reimburse partially to keep payment for work completed; the remainder goes to you and the transaction closes.
 - **Raise dispute**: click if the sender refuses payment despite you completing the terms. The arbitration cost and process are the same for both parties.
+ <Frame >
+  <img src="/images/receiver-escrow.png"  />
+</Frame>
+
 
 ### Settlements through partial payments
 
@@ -126,6 +151,18 @@ Best practices for settlements:
     Either party clicks **Raise Dispute** and pays the arbitration fee (refunded if you win). The other party then has a limited time to pay their side of the fees; the interface shows the remaining time.
 
     If the other party fails to pay their side of the fees, the first paying party automatically wins.
+   <Frame >
+  <img src="/images/raisedispute-escrow.png"  />
+</Frame>
+
+ <Frame >
+  <img src="/images/timeleft-escrow.png"  />
+</Frame>
+
+  <Frame >
+  <img src="/images/partydetails-escrow.png"  />
+</Frame>
+  
   </Step>
   <Step title="Share evidence">
     Submit evidence through the [Kleros Dispute Resolver](https://resolve.kleros.io/), not through the Escrow frontend:
@@ -149,8 +186,8 @@ Best practices for settlements:
   </Step>
 </Steps>
 
-<Frame caption="Step 4: Raise a Dispute, screenshot to be added">
-  <img src="/images/v1-screenshot-placeholder.svg" alt="Step 4: Raise a Dispute, screenshot to be added" />
+<Frame >
+  <img src="/images/monitordispute.png" />
 </Frame>
 
 ---
