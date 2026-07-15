@@ -80,7 +80,7 @@ interface IArbitrableV2 {
 
     /// @dev Called by the arbitrator when a ruling is final.
     /// @param _disputeID The arbitrator-assigned dispute ID.
-    /// @param _ruling    The winning option. 0 = "Refuse to Arbitrate" — always handle this.
+    /// @param _ruling    The winning option. 0 = "Refuse to Arbitrate" - always handle this.
     function rule(uint256 _disputeID, uint256 _ruling) external;
 
     event Ruling(IArbitratorV2 indexed _arbitrator, uint256 indexed _disputeID, uint256 _ruling);
@@ -92,10 +92,10 @@ interface IArbitrableV2 {
 `extraData` configures the court and juror count:
 
 ```solidity
-// V2 uses uint96 for courtID (not uint256 as in V1 — this is a breaking change)
+// V2 uses uint96 for courtID (not uint256 as in V1 - this is a breaking change)
 bytes memory extraData = abi.encodePacked(
-    uint96(1),   // courtID  — 1 = General Court
-    uint256(3)   // minJurors — always use odd numbers to avoid ties
+    uint96(1),   // courtID  - 1 = General Court
+    uint256(3)   // minJurors - always use odd numbers to avoid ties
 );
 ```
 
@@ -220,7 +220,7 @@ function raiseDispute(uint256 _txID) external payable {
         templateUri
     );
     
-    // Refund excess — use .call() not .transfer()
+    // Refund excess - use .call() not .transfer()
     if (msg.value > cost) {
         (bool ok,) = payable(msg.sender).call{value: msg.value - cost}("");
         require(ok, "Refund failed");
@@ -242,7 +242,7 @@ function rule(uint256 _disputeID, uint256 _ruling) external override {
     
     tx.status = Status.Resolved;
 
-    // Execute ruling — use .call() not .transfer() to avoid gas limit issues
+    // Execute ruling - use .call() not .transfer() to avoid gas limit issues
     if (_ruling == uint256(Ruling.PaySeller)) {
         (bool ok,) = tx.seller.call{value: tx.amount}("");
         require(ok, "Transfer failed");

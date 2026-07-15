@@ -42,7 +42,7 @@ Pays the relayer's fee after a ruling has been delivered.
 ### Governance Methods (Governor Only)
  
 #### `changeCourtJurorFee(uint96 _courtID, uint256 _feeForJuror)`
-Updates the per-juror fee stored in the ForeignGateway for a specific court. This must be called to keep gateway fees in sync when KlerosCore court fees change on Arbitrum. **Fee drift is a known operational risk** — if this is not updated after a governance change to `feeForJuror` on Arbitrum, arbitration cost on the foreign chain will be incorrect.
+Updates the per-juror fee stored in the ForeignGateway for a specific court. This must be called to keep gateway fees in sync when KlerosCore court fees change on Arbitrum. **Fee drift is a known operational risk** - if this is not updated after a governance change to `feeForJuror` on Arbitrum, arbitration cost on the foreign chain will be incorrect.
  
 #### `changeVea(address _veaOutbox, uint256 _gracePeriod)`
 Updates the Vea outbox address. Supports a grace period for deprecated bridge transitions.
