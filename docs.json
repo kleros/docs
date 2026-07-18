@@ -205,13 +205,22 @@
             ]
           },
           {
+            "group": "V2 Architecture",
+            "pages": [
+              "reference/architecture/v2-architecture",
+              "reference/architecture/arbitrator-v2",
+              "reference/architecture/sortition-module-spec",
+              "reference/architecture/vea-overview"
+            ]
+          },
+          {
             "group": "Arbitrable Apps",
             "pages": [
               "developers/arbitrable-apps/arbitrable-overview",
+              "developers/arbitrable-apps/v1-arbitrable-apps",
               "developers/arbitrable-apps/arbitrable-guide",
               "developers/arbitrable-apps/erc-792",
               "developers/arbitrable-apps/erc-1497",
-              "developers/arbitrable-apps/v1-arbitrable-apps",
               "developers/arbitrable-apps/centralized-arbitrator",
               "developers/arbitrable-apps/arbitrable-proxy",
               "developers/arbitrable-apps/arbitrable-testing",
@@ -300,26 +309,22 @@
             ]
           },
           {
-            "group": "Architecture",
-            "pages": [
-              "reference/architecture/v2-architecture",
-              "reference/architecture/arbitrator-v2",
-              "reference/architecture/sortition-module-spec",
-              "reference/architecture/vea-overview"
-            ]
-          },
-          {
             "group": "Contracts",
             "pages": [
-              "reference/contracts/deployment-addresses",
               "reference/contracts/deployment-addresses-v1",
-              "reference/contracts/kleros-core",
-              "reference/contracts/dispute-kit-classic",
-              "reference/contracts/sortition-module",
-              "reference/contracts/gateways",
-              "reference/contracts/kleros-governor",
-              "reference/contracts/policy-registry",
-              "reference/contracts/dispute-template-registry",
+              "reference/contracts/deployment-addresses",
+              {
+                "group": "Reference V2",
+                "pages": [
+                  "reference/contracts/kleros-core",
+                  "reference/contracts/dispute-kit-classic",
+                  "reference/contracts/sortition-module",
+                  "reference/contracts/dispute-template-registry",
+                  "reference/contracts/policy-registry",
+                  "reference/contracts/kleros-governor",
+                  "reference/contracts/gateways"
+                ]
+              },
               "reference/contracts/moderated-evidence-module"
             ]
           },
