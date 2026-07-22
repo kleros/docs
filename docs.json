@@ -205,6 +205,15 @@
             ]
           },
           {
+            "group": "V2 Architecture",
+            "pages": [
+              "reference/architecture/v2-architecture",
+              "reference/architecture/arbitrator-v2",
+              "reference/architecture/sortition-module-spec",
+              "reference/architecture/vea-overview"
+            ]
+          },
+          {
             "group": "Arbitrable Apps",
             "pages": [
               "developers/arbitrable-apps/arbitrable-overview",
@@ -363,6 +372,8 @@
           {
             "group": "Changelog",
             "pages": [
+              "changelog/2026-07-13",
+              "changelog/2026-07-06",
               "changelog/2026-06-29",
               "changelog/2026-06-15",
               "changelog/2026-05-25",
