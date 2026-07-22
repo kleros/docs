@@ -7,6 +7,8 @@ description: "GraphQL endpoints for Kleros V2 core, DRT, and V1 subgraphs on Arb
 
 All Kleros subgraphs are deployed on The Graph. Use these endpoints to query Kleros data via GraphQL.
 
+Every subgraph published by Kleros on The Graph decentralized network is listed on the [Kleros deployer profile on Graph Explorer](https://thegraph.com/explorer/profile/0x7f3a845bf7aa9eb6da3dc53518ff22a2f65612e6?chain=arbitrum-one&view=Subgraphs). Each Explorer page shows the subgraph ID and the exact query URL.
+
 <Note>
 **Infrastructure:** Subgraphs were migrated from Alchemy to Goldsky following Alchemy's subgraph service shutdown (December 2025–January 2026). The core subgraph 0.18.1 and DRT subgraph 0.14.0 were deployed on Goldsky (November 2025), and the GTCR Indexer reached v0.1.7 with an Envio branch (April 2026). Some applications use Envio HyperIndex as the primary indexer with a subgraph as fallback.
 </Note>
@@ -24,25 +26,23 @@ Subgraph endpoints on the decentralized network require a **Graph API key**. Get
 
 
 
-| Environment | Network | Studio Page |
-| --- | --- | --- |
-| Mainnet | Arbitrum One | [kleros-v2-coreneo](https://thegraph.com/studio/subgraph/kleros-v2-coreneo/) |
-| Testnet | Arbitrum Sepolia | [kleros-v2-core-testnet](https://thegraph.com/studio/subgraph/kleros-v2-core-testnet/) |
-| Devnet | Arbitrum Sepolia | [kleros-v2-core-devnet](https://thegraph.com/studio/subgraph/kleros-v2-core-devnet/) |
+| Environment | Network | Explorer Page | Subgraph ID |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [kleros-v2-coreneo](https://thegraph.com/explorer/subgraphs/3U95wXKP8fBpkMNn8mbroVkUTuh6KtHGa456pTixx9B2) | `3U95wXKP8fBpkMNn8mbroVkUTuh6KtHGa456pTixx9B2` |
+| Testnet | Arbitrum Sepolia | [kleros-v2-core-testnet](https://thegraph.com/explorer/subgraphs/77xeh3UeBCzHokbVtkeaH42vXsFh6MRe4JpZSPddoXZo) | `77xeh3UeBCzHokbVtkeaH42vXsFh6MRe4JpZSPddoXZo` |
+| Devnet | Arbitrum Sepolia | [kleros-v2-core-devnet](https://thegraph.com/explorer/subgraphs/4Rg3NAW99hX8RDD281ycfeRWxp92k6RdqpW3pf6imGTS) | `4Rg3NAW99hX8RDD281ycfeRWxp92k6RdqpW3pf6imGTS` |
 
 **Decentralized network query URL pattern:**
 ```
 https://gateway.thegraph.com/api/{YOUR_API_KEY}/subgraphs/id/{SUBGRAPH_ID}
 ```
 
-Get the `SUBGRAPH_ID` (deployment hash) from the Studio pages linked above - it is shown on the subgraph's Overview tab.
-
 ### Dispute Template Registry Subgraph
 
-| Environment | Network | Studio Page |
-| --- | --- | --- |
-| Mainnet | Arbitrum One | [kleros-v2-drt](https://thegraph.com/studio/subgraph/kleros-v2-drt/) |
-| Testnet | Arbitrum Sepolia | [kleros-v2-drt-arbisep-testnet](https://thegraph.com/studio/subgraph/kleros-v2-drt-arbisep-testnet/) |
+| Environment | Network | Explorer Page | Subgraph ID |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [kleros-v2-drt](https://thegraph.com/explorer/subgraphs/FktCcvKHN9mdcyNMK1jgnKwf5AwmVXka4kATxXX3HmKT) | `FktCcvKHN9mdcyNMK1jgnKwf5AwmVXka4kATxXX3HmKT` |
+| Testnet | Arbitrum Sepolia | [kleros-v2-drt-arbisep-testnet](https://thegraph.com/explorer/subgraphs/EZjJCfxBiQ9B9RtfQDTzNKx34nckSnBWDNaLZPficnHp) | `EZjJCfxBiQ9B9RtfQDTzNKx34nckSnBWDNaLZPficnHp` |
 
 ---
 
@@ -50,10 +50,10 @@ Get the `SUBGRAPH_ID` (deployment hash) from the Studio pages linked above - it 
 
 ### Escrow V2
 
-| Environment | Network | Subgraph ID |
-| --- | --- | --- |
-| Mainnet | Arbitrum One | `96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW` |
-| Devnet | Arbitrum Sepolia | `3aZxYcZpZL5BuVhuUupqVrCV8VeNyZEvjmPXibyPHDFQ` |
+| Environment | Network | Explorer Page | Subgraph ID |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [escrow-v2-neo](https://thegraph.com/explorer/subgraphs/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW) | `96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW` |
+| Devnet | Arbitrum Sepolia | [escrow-v2-devnet](https://thegraph.com/explorer/subgraphs/3aZxYcZpZL5BuVhuUupqVrCV8VeNyZEvjmPXibyPHDFQ) | `3aZxYcZpZL5BuVhuUupqVrCV8VeNyZEvjmPXibyPHDFQ` |
 
 Full query URL (mainnet):
 ```
@@ -62,7 +62,7 @@ https://gateway.thegraph.com/api/{YOUR_API_KEY}/subgraphs/id/96vpnRJbRVkzF6usMNY
 
 ### Curate V2
 
-Curate V2 subgraph is under active development. Check the [curate-v2 repository](https://github.com/kleros/curate-v2/tree/master/subgraph) for the latest deployment.
+Curate V2 subgraph is under active development. A devnet deployment is published as [curate-v2-devnet](https://thegraph.com/explorer/subgraphs/H93eWJbDpYKAtkLmsMn7Su3ZLZwAwLN5VoyvQH4NbGAv). Check the [curate-v2 repository](https://github.com/kleros/curate-v2/tree/master/subgraph) for the latest deployment.
 
 ---
 
@@ -70,24 +70,38 @@ Curate V2 subgraph is under active development. Check the [curate-v2 repository]
 
 These index V1 Kleros products still in active use.
 
+<Note>
+The Graph hosted service (`thegraph.com/hosted-service/...` URLs) has been shut down. Old hosted-service endpoints no longer work.
+</Note>
+
 ### Curate V1
 
-| Network | Endpoint |
-| --- | --- |
-| Ethereum Mainnet | `https://thegraph.com/hosted-service/subgraph/kleros/curate` |
-| Gnosis Chain | `https://thegraph.com/hosted-service/subgraph/kleros/legacy-curate-xdai` |
+| Network | Explorer Page | Subgraph ID |
+| --- | --- | --- |
+| Ethereum Mainnet | [legacy-curate-mainnet](https://thegraph.com/explorer/subgraphs/A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ) | `A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ` |
+| Gnosis Chain | [legacy-curate-gnosis](https://thegraph.com/explorer/subgraphs/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8) | `9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8` |
+
+The Curate application at [curate.kleros.io](https://curate.kleros.io) queries these public Goldsky endpoints, which require no API key:
+
+```
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-mainnet/0.0.3/gn
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-gnosis/0.0.3/gn
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-sepolia/0.0.3/gn
+```
 
 ### Proof of Humanity V1
 
-| Network | Endpoint |
-| --- | --- |
-| Ethereum Mainnet | `https://thegraph.com/hosted-service/subgraph/kleros/proof-of-humanity-mainnet` |
+The Proof of Humanity application at [app.proofofhumanity.id](https://app.proofofhumanity.id) queries this public Studio endpoint:
 
-You can also query PoH V1 directly: call `isRegistered(address)` on `0xC5E9dDebb09Cd64DfaCab4011A0D5cEDaf7c9BDb` on Ethereum Mainnet.
+```
+https://api.studio.thegraph.com/query/61738/proof-of-humanity-mainnet/version/latest
+```
+
+You can also query PoH V1 directly on-chain: call `isRegistered(address)` on `0xC5E9dDebb09Cd64DfaCab4011A0D5cEDaf7c9BDb` on Ethereum Mainnet.
 
 ### Other V1 Products
 
-For Escrow V1, Linguo, Tokens, and other V1 apps, see the [Kleros subgraph list on GitHub](https://github.com/orgs/kleros/repositories?q=subgraph).
+For Escrow V1, Linguo, Tokens, and other V1 apps, see the [Kleros deployer profile on Graph Explorer](https://thegraph.com/explorer/profile/0x7f3a845bf7aa9eb6da3dc53518ff22a2f65612e6?chain=arbitrum-one&view=Subgraphs) and the [Kleros subgraph repositories on GitHub](https://github.com/orgs/kleros/repositories?q=subgraph).
 
 ---
 

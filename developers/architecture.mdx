@@ -22,9 +22,13 @@ graph TB
 | **KlerosLiquid** | Staking, juror drawing, voting, appeals, ruling execution |
 | **PNK** | Staking token |
 | **PolicyRegistry** | Court policy storage |
-| **Arbitrable contracts** | Implement ERC-792 to create disputes and receive rulings |
+| **Arbitrable contracts** | Implement ERC-792 to create disputes and receive rulings, and ERC-1497 to provide dispute context |
 
 V1 uses the ERC-792 (arbitration) and ERC-1497 (evidence) standards, blockhash-based randomness, commit-reveal plurality voting, and a hierarchical subcourt tree. For V1 contract addresses, see [Deployment Addresses](/reference/contracts/deployment-addresses-v1).
+
+<Warning>
+A V1 arbitrable contract must implement [ERC-1497](/developers/arbitrable-apps/erc-1497) in addition to ERC-792. In particular, it must emit a `MetaEvidence` event and link disputes to it with a `Dispute` event. The Court interface relies on `MetaEvidence` to display the dispute and its ruling options to jurors. An arbitrable that never emits `MetaEvidence` produces disputes that cannot be adjudicated properly.
+</Warning>
 
 ## V2 System Overview
 

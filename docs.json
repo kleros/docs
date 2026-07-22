@@ -217,14 +217,24 @@
             "group": "Arbitrable Apps",
             "pages": [
               "developers/arbitrable-apps/arbitrable-overview",
-              "developers/arbitrable-apps/v1-arbitrable-apps",
-              "developers/arbitrable-apps/arbitrable-guide",
-              "developers/arbitrable-apps/erc-792",
-              "developers/arbitrable-apps/erc-1497",
-              "developers/arbitrable-apps/centralized-arbitrator",
-              "developers/arbitrable-apps/arbitrable-proxy",
-              "developers/arbitrable-apps/arbitrable-testing",
-              "developers/arbitrable-apps/arbitrable-production"
+              {
+                "group": "Building on V2",
+                "pages": [
+                  "developers/arbitrable-apps/arbitrable-guide",
+                  "developers/arbitrable-apps/arbitrable-testing",
+                  "developers/arbitrable-apps/arbitrable-production"
+                ]
+              },
+              {
+                "group": "Building on V1",
+                "pages": [
+                  "developers/arbitrable-apps/erc-792",
+                  "developers/arbitrable-apps/erc-1497",
+                  "developers/arbitrable-apps/v1-arbitrable-apps",
+                  "developers/arbitrable-apps/centralized-arbitrator",
+                  "developers/arbitrable-apps/arbitrable-proxy"
+                ]
+              }
             ]
           },
           {
@@ -309,27 +319,36 @@
             ]
           },
           {
-            "group": "Contracts",
+            "group": "Architecture",
             "pages": [
-              "reference/contracts/deployment-addresses-v1",
+              "reference/architecture/v2-architecture",
+              "reference/architecture/arbitrator-v2",
+              "reference/architecture/sortition-module-spec",
+              "reference/architecture/vea-overview"
+            ]
+          },
+          {
+            "group": "Contracts (V2)",
+            "pages": [
               "reference/contracts/deployment-addresses",
-              {
-                "group": "Reference V2",
-                "pages": [
-                  "reference/contracts/kleros-core",
-                  "reference/contracts/dispute-kit-classic",
-                  "reference/contracts/sortition-module",
-                  "reference/contracts/dispute-template-registry",
-                  "reference/contracts/policy-registry",
-                  "reference/contracts/kleros-governor",
-                  "reference/contracts/gateways"
-                ]
-              },
+              "reference/contracts/kleros-core",
+              "reference/contracts/dispute-kit-classic",
+              "reference/contracts/sortition-module",
+              "reference/contracts/gateways",
+              "reference/contracts/kleros-governor",
+              "reference/contracts/policy-registry",
+              "reference/contracts/dispute-template-registry",
               "reference/contracts/moderated-evidence-module"
             ]
           },
           {
-            "group": "Data Formats",
+            "group": "Contracts (V1)",
+            "pages": [
+              "reference/contracts/deployment-addresses-v1"
+            ]
+          },
+          {
+            "group": "Data Formats (V2)",
             "pages": [
               "reference/data-formats/dispute-templates",
               "reference/data-formats/evidence-format",
@@ -339,7 +358,7 @@
             ]
           },
           {
-            "group": "SDK",
+            "group": "SDK (V2)",
             "pages": [
               "reference/sdk/kleros-sdk"
             ]
