@@ -9,18 +9,19 @@ Testing arbitrable contracts requires simulating the full dispute lifecycle. You
 
 ```mermaid
 graph TB
-    subgraph Testing Layers
+    subgraph TL["Testing Layers"]
         direction TB
-        L1["1. Unit Tests<br/>Your contract logic in isolation<br/>with MockArbitrator"]
-        L2["2. Integration Tests<br/>With mock arbitrator + dispute lifecycle"]
-        L3["3. Testnet<br/>With real Kleros on Arbitrum Sepolia"]
-        L4["4. Mainnet Fork<br/>Simulate with production KlerosCore state"]
+        L1["Layer 1: Unit Tests<br/>Contract logic in isolation with MockArbitrator"]
+        L2["Layer 2: Integration Tests<br/>Mock arbitrator plus full dispute lifecycle"]
+        L3["Layer 3: Testnet<br/>Real Kleros on Arbitrum Sepolia"]
+        L4["Layer 4: Mainnet Fork<br/>Production KlerosCore state"]
+        L1 --> L2 --> L3 --> L4
     end
-    L1 --> L2 --> L3 --> L4
-    style L1 fill:#e8e0f0,stroke:#7b5ea7
-    style L2 fill:#d8ccf0,stroke:#7b5ea7
-    style L3 fill:#c4b0e8,stroke:#7b5ea7
-    style L4 fill:#7b5ea7,color:#fff,stroke:#5a3d8a
+    style TL fill:transparent,stroke:#7b5ea7
+    style L1 fill:#ede7f6,stroke:#7b5ea7,color:#1a1a2e
+    style L2 fill:#d1c4e9,stroke:#7b5ea7,color:#1a1a2e
+    style L3 fill:#9575cd,stroke:#5a3d8a,color:#ffffff
+    style L4 fill:#5e35b1,stroke:#4a2d91,color:#ffffff
 ```
 
 ## Unit Testing with Mock Arbitrator

@@ -5,7 +5,7 @@ description: "Design patterns for arbitrable smart contracts"
 
 ## What is an Arbitrable Contract?
 
-An arbitrable contract is any smart contract that can create disputes and enforce rulings from Kleros. Your contract implements the `IArbitrableV2` interface, which defines two things:
+An arbitrable contract is any smart contract that can create disputes and enforce rulings from Kleros. Your contract implements an arbitrable interface (`IArbitrableV2` in Kleros V2, ERC-792 in V1), which defines two things:
 
 1. **How disputes are created**: your contract decides when conflicts arise
 2. **How rulings are enforced**: your contract executes the outcome
@@ -90,9 +90,13 @@ Decide how evidence reaches jurors:
 - **Separate module** Use the `EvidenceModule` contract
 - **Cross-chain** Evidence from foreign chain via gateway
 
-## Interface Requirements
+## Interface Requirements (V2)
 
-Your contract must implement:
+<Note>
+This section is specific to Kleros V2. For V1, contracts implement [ERC-792](/developers/arbitrable-apps/erc-792) and [ERC-1497](/developers/arbitrable-apps/erc-1497) instead, and must emit a `MetaEvidence` event so the Court interface can display the dispute.
+</Note>
+
+To integrate with Kleros V2, your contract must implement:
 
 ```solidity
 interface IArbitrableV2 {
