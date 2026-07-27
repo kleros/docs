@@ -1,0 +1,52 @@
+---
+title: "July 27, 2026"
+description: "Hidden voting and rewards visibility in Scout, new Robinhood chain in Scout and Curate classic, Arbitrum ↔ Base Vea route in the SDK, Gnosis explorers switched to Blockscout, and dispute-history ruling fixes in Court."
+---
+
+## New features
+
+### Hidden voting in Scout
+
+[Kleros Scout](/products/scout) now supports the Kleros hidden-voting flow: juror votes stay hidden during the voting phase and are revealed afterwards, matching the hidden court dispute type used for sensitive registries.
+
+### Rewards visibility on Scout profiles and submissions
+
+[Scout](/products/scout) profile headers now display rewards stats, and submission cards show a "rewarded" tag so contributors can see at a glance which of their submissions earned rewards. Profile pages also include bounty totals.
+
+### Robinhood chain support in Scout and Curate classic
+
+[Kleros Scout](/products/scout) and Kleros Curate classic add support for the Robinhood chain, including its network logo, so users can browse and interact with registries on that network.
+
+### Arbitrum ↔ Base route in the VeaShi SDK
+
+The [Vea bridge](/developers/crosschain/vea-bridge) ships its Arbitrum ↔ Base route in the `veashi-sdk` (v0.0.3): the new route addresses and types are exported, the Yaho address is loaded for CCIP, and Lightbulb and Yaru deployments are fixed. Integrators can now build against the new route directly from the SDK.
+
+## Updates
+
+### Faster and more reliable item pages in Scout
+
+[Scout](/products/scout) item pages now wait for the IPFS backup before rendering, verify IPFS availability before a user submits a transaction (preventing broken submissions), and cache IPFS props across refetches so pages feel faster and avoid unnecessary reloads.
+
+### Gnosis chain explorer links switched to Blockscout
+
+[Kleros Court](/court/overview), [Scout](/products/scout), and Kleros Curate classic now point Gnosis-chain transaction and address links to `gnosis.blockscout.com` instead of Gnosisscan, restoring working explorer links across the products.
+
+### Clearer claim-modal wording in Court
+
+The reward claim modal in [Kleros Court](/court/overview) reworks its transaction-link text for clarity so it's easier to tell what the link goes to.
+
+### Staking-rewards page tab order in Court
+
+The public staking-rewards page in [Kleros Court](/court/overview) reorders its tabs based on user feedback, and now reads reward snapshots from a manifest so the rewards data users see is delivered more reliably.
+
+### Improved sign-in gating in Dispute Resolver
+
+The dispute creation flow in [Dispute Resolver](/products/proof-of-humanity) tightens Sign-In With Ethereum (SIWE) gating on the create form and summary, so authentication prompts appear at the right moments.
+
+## Bug fixes
+
+**Ruling values in Court dispute history** — [Kleros Court](/court/overview) now handles reserved and non-standard ruling values correctly in the round history section: ruling values are normalized, the section re-initializes when the ruling prop changes, and errors while fetching the answer string no longer break the view. Users see the correct ruling label on past rounds instead of blanks or wrong values.
+
+**Ruling decoded in Court evidence timeline** — [Court](/court/overview) fixes decoding of the ruling shown in the evidence timeline so users see the human-readable outcome instead of raw values.
+
+**Stale draw query in Kleros V2** — Fixes a stale draw query on the [Kleros V2 web app](/products/overview) so juror-draw data stays in sync when moving between disputes.
