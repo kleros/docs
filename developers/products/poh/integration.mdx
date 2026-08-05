@@ -1,87 +1,82 @@
 ---
 title: "Integration Guide"
-description: "Integrate Proof of Humanity V2 to verify unique humans, covering contract calls on Gnosis Chain and cross-chain state on Ethereum Mainnet."
+description: "Verify unique humans with Proof of Humanity V2 through CrossChainProofOfHumanity on Ethereum Mainnet and Gnosis Chain."
 ---
 
 # Proof of Humanity 2.0 Integration Guide
 
-This guide shows how to integrate PoH V2 to verify that an address belongs to a real, verified human. PoH V2 runs on Gnosis Chain as the home chain, with cross-chain state synchronized to Ethereum Mainnet.
+This guide is for developers who want to verify whether an address belongs to a registered human.
+
+<Note>
+Integrators consume identity through **CrossChainProofOfHumanity**. PoH operators manage the registry through **ProofOfHumanity**. If you are integrating PoH into an application, you only need CrossChainProofOfHumanity.
+</Note>
 
 ---
 
-## Contract Addresses
+## Quick start: Verify a human
 
-<Tabs>
-  <Tab title="Gnosis Chain">
-    | Contract | Address |
-    | --- | --- |
-    | ProofOfHumanity | `0xa4AC94C4fa65Bb352eFa30e3408e64F72aC857bc` |
-    | CrossChainProofOfHumanity | `0x16044E1063C08670f8653055A786b7CC2034d2b0` |
-    | AMB Bridge Gateway | `0x6Ef5073d79c42531352d1bF5F584a7CBd270c6B1` |
-  </Tab>
-  <Tab title="Ethereum Mainnet">
-    | Contract | Address |
-    | --- | --- |
-    | ProofOfHumanityExtended | `0xbE9834097A4E97689d9B667441acafb456D0480A` |
-    | CrossChainProofOfHumanity | `0xa478095886659168E8812154fB0DE39F103E74b2` |
-    | AMB Bridge Gateway | `0xddafACf8B4a5087Fc89950FF7155c76145376c1e` |
-    | Fork Module | `0x068a27Db9c3B8595D03be263d52c813cb2C99cCB` |
-  </Tab>
-</Tabs>
-
----
-
-## Core Interface
-
-The primary verification functions:
+Use `CrossChainProofOfHumanity` as the integration contract on every supported chain. It exposes both locally registered and synchronized cross-chain humanities.
 
 ```solidity
-function isHuman(address _account) external view returns (bool);
-function humanityOf(address _account) external view returns (bytes20);
-function isClaimed(bytes20 _humanityId) external view returns (bool);
-function boundTo(bytes20 _humanityId) external view returns (address);
-function getHumanityInfo(bytes20 _humanityId) external view returns (
-    bool vouching, bool pendingRevocation, uint48 nbPendingRequests,
-    uint40 expirationTime, address owner, uint256 nbRequests
-);
-```
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
 
-| Function | Purpose |
-| --- | --- |
-| `isHuman(address)` | Returns true if the address belongs to a verified human |
-| `humanityOf(address)` | Returns the `humanityId` bound to an address (zero if none) |
-| `isClaimed(humanityId)` | Returns true if the humanity ID is actively claimed |
-| `boundTo(humanityId)` | Returns the wallet address currently bound to a humanity ID |
-| `getHumanityInfo(humanityId)` | Full status: vouching state, pending requests, expiration, owner |
-
----
-
-## Basic Integration Pattern
-
-The simplest integration is a modifier that gates functions to verified humans:
-
-```solidity
-interface IProofOfHumanity {
-    function isHuman(address _account) external view returns (bool);
+interface ICrossChainProofOfHumanity {
+    function isHuman(address account) external view returns (bool);
+    function humanityOf(address account) external view returns (bytes20);
 }
 
-contract MyApp {
-    IProofOfHumanity public poh;
+contract HumanOnly {
+    ICrossChainProofOfHumanity public immutable proofOfHumanity;
 
-    constructor(IProofOfHumanity _poh) {
-        poh = _poh;
+    error NotHuman();
+
+    constructor(address crossChainProofOfHumanity) {
+        proofOfHumanity = ICrossChainProofOfHumanity(crossChainProofOfHumanity);
     }
 
     modifier onlyHuman() {
-        require(poh.isHuman(msg.sender), "Must be verified human");
+        if (!proofOfHumanity.isHuman(msg.sender)) revert NotHuman();
         _;
     }
 
     function humanOnlyAction() external onlyHuman {
-        // Only verified humans reach this point
+        // Application logic
     }
 }
 ```
+
+### CrossChainProofOfHumanity addresses
+
+| Network | CrossChainProofOfHumanity |
+| --- | --- |
+| Ethereum Mainnet | `0xa478095886659168E8812154fB0DE39F103E74b2` |
+| Gnosis Chain | `0x16044E1063C08670f8653055A786b7CC2034d2b0` |
+
+- Use `isHuman(address)` when you only need human verification.
+- Use `humanityOf(address)` and store application data by humanity ID when identity must survive wallet changes.
+
+<Warning>
+Cross-chain state is delivered through bridge synchronization, so a recent registration, revocation, or transfer may not appear on another chain immediately.
+</Warning>
+
+---
+
+## Identity lookup
+
+Once you have a `humanityId` from `humanityOf(address)`, these read-only functions provide additional detail:
+
+```solidity
+function isClaimed(bytes20 _humanityId) external view returns (bool);
+function boundTo(bytes20 _humanityId) external view returns (address);
+```
+
+| Function | Purpose |
+| --- | --- |
+| `isClaimed(humanityId)` | Returns true if the humanity ID is actively claimed |
+| `boundTo(humanityId)` | Returns the wallet address currently bound to a humanity ID |
+
+For the full status of a humanity (vouching state, pending requests, expiration, owner) via `getHumanityInfo(humanityId)`, and for the registry management functions used by operators, see the [Smart Contracts](/developers/products/poh/smart-contracts) reference.
 
 ---
 
@@ -100,6 +95,30 @@ humanity.owner == newAddress       // Re-registered with new wallet
 <Note>
 V1 users have a `humanityId` equal to their original registration address (`bytes20(address)`). V2 users receive a new unique `humanityId` at registration. The `isHuman()` call automatically covers V1 registrations through the Fork Module.
 </Note>
+
+---
+
+## Registry contract addresses
+
+Operators who manage the registry directly interact with `ProofOfHumanity` (and, on Ethereum Mainnet, `ProofOfHumanityExtended`).
+
+<Tabs>
+  <Tab title="Gnosis Chain">
+    | Contract | Address |
+    | --- | --- |
+    | ProofOfHumanity | `0xa4AC94C4fa65Bb352eFa30e3408e64F72aC857bc` |
+    | CrossChainProofOfHumanity | `0x16044E1063C08670f8653055A786b7CC2034d2b0` |
+    | AMB Bridge Gateway | `0x6Ef5073d79c42531352d1bF5F584a7CBd270c6B1` |
+  </Tab>
+  <Tab title="Ethereum Mainnet">
+    | Contract | Address |
+    | --- | --- |
+    | ProofOfHumanityExtended | `0xbE9834097A4E97689d9B667441acafb456D0480A` |
+    | CrossChainProofOfHumanity | `0xa478095886659168E8812154fB0DE39F103E74b2` |
+    | AMB Bridge Gateway | `0xddafACf8B4a5087Fc89950FF7155c76145376c1e` |
+    | Fork Module | `0x068a27Db9c3B8595D03be263d52c813cb2C99cCB` |
+  </Tab>
+</Tabs>
 
 ---
 

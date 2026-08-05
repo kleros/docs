@@ -143,11 +143,11 @@ V2 keeps the same crypto-economic model as V1 and changes how it is implemented 
 
 | Component | V1 | V2 |
 | --- | --- | --- |
-| **Network** | Ethereum L1 | Arbitrum L2 |
+| **Network** | Ethereum L1 and Gnosis Chain | Arbitrum L2 |
 | **Core contract** | KlerosLiquid (monolithic) | KlerosCore (modular) |
 | **Juror selection** | Built into KlerosLiquid | SortitionModule (separate) |
 | **Dispute resolution** | Single mechanism | Pluggable DisputeKits (Classic, Shutter, Gated, GatedShutter) |
-| **Cross-chain** | Single chain | Multi-chain via VEA bridge |
+| **Cross-chain** | Separate deployments on Ethereum and Gnosis, no cross-chain relay | Multi-chain via VEA bridge |
 | **Staking** | PNK stays in wallet | PNK transfers to contract |
 | **RNG** | Single source | Enhanced with fallback mechanisms |
 

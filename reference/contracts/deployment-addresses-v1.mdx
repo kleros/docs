@@ -77,9 +77,14 @@ See [Deployment Addresses V2](/reference/contracts/deployment-addresses).
 
 ### V1 (Ethereum Mainnet)
 
+Escrow V1 is deployed across four contracts, depending on whether the payment is in ETH or an ERC20 token and which court disputes are sent to (chosen by the transaction type when the escrow is created).
+
 | Contract | Address |
 | --- | --- |
-| Escrow (ETH) | `0x0d67440946949FE293B45c52eFD8A9b3d51e2522` |
+| Escrow (ETH, General Court) | `0x0d67440946949FE293B45c52eFD8A9b3d51e2522` |
+| Escrow (ETH, Blockchain Non-Technical Court) | `0xE2Dd8CCe2c33a04215074ADb4B5820B765d8Ed9D` |
+| Escrow (ERC20, General Court) | `0xBCf0d1AD453728F75e9cFD4358ED187598A45e6c` |
+| Escrow (ERC20, Blockchain Non-Technical Court) | `0xC25a0b9681ABF6F090AEd71a8c08fB564b41dab6` |
 
 ### V2 (Arbitrum)
 
