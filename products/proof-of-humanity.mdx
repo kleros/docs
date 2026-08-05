@@ -1,6 +1,6 @@
 ---
 title: "Proof of Humanity"
-description: "Proof of Humanity verifies unique humans on-chain with video, social vouching, and Kleros disputes, powering fair airdrops, voting, and UBI."
+description: "Proof of Humanity (PoH) verifies unique humans on-chain through video, community vouching, and Kleros dispute resolution, providing the human verification layer for Web3."
 ---
 
 # Proof of Humanity
@@ -8,12 +8,12 @@ description: "Proof of Humanity verifies unique humans on-chain with video, soci
 <img src="/images/poh-hero.png" alt="Proof of Humanity Interface" />
 
 <Warning>
-Proof of Humanity uses the **Kleros V1 protocol** for dispute resolution even the "PoH 2.0" product version. The "2.0" refers to product improvements (cross-chain support, improved UX), not the underlying Kleros arbitration protocol version.
+Proof of Humanity uses the **Kleros V1 protocol** for dispute resolution, even the "PoH 2.0" product version. The "2.0" refers to product improvements (cross-chain support, improved UX), not the underlying Kleros arbitration protocol version.
 </Warning>
 
-**Proof of Humanity (PoH)** is a Sybil-resistant registry of verified humans. It combines video verification, social vouching, and Kleros dispute resolution to create a decentralized identity system where each registered person is cryptographically linked to a unique Ethereum address.
+**Proof of Humanity (PoH)** is a decentralized, Sybil-resistant registry of verified humans. It combines video verification, community vouching, and Kleros dispute resolution to create a trusted proof-of-personhood system, where each verified individual is linked to a unique, non-transferable digital identity.
 
-PoH serves as the foundation for applications that need to distinguish real humans from bots and duplicate accounts enabling fairer airdrops, one-person-one-vote governance, and universal basic income distribution.
+PoH serves as the human verification layer for Web3, enabling applications to distinguish real humans from bots and duplicate accounts for fair governance, reputation systems, rewards, identity-gated experiences, UBI, and many other human-centric use cases.
 
 ---
 
@@ -21,16 +21,16 @@ PoH serves as the foundation for applications that need to distinguish real huma
 
 <Steps>
   <Step title="Submit a Profile">
-    Register by submitting a video of yourself holding your Ethereum address, along with a name and photo. A deposit is required to deter spam.
+    Register by submitting a video of yourself holding your wallet address, along with a profile photo, display name, and a refundable deposit.
   </Step>
   <Step title="Get Vouched">
-    An already-registered human must vouch for you. Vouching is a web-of-trust mechanism: the voucher stakes their reputation on your legitimacy.
+    A registered Proof of Humanity user must vouch for your submission, confirming that you're a unique human.
   </Step>
-  <Step title="Challenge Period">
-    Your submission enters a challenge period. Anyone can challenge your registration (e.g., claiming you're a duplicate or the video doesn't meet requirements) by paying a challenge deposit. Challenges are resolved by Kleros Court.
+  <Step title="Challenge Period (In Review)">
+    Your submission enters a challenge period, during which anyone can dispute it. Challenges are resolved by Kleros Court.
   </Step>
-  <Step title="Registration">
-    If unchallenged (or if you win the dispute), you're registered as a verified human. Registration has an expiration period after which you must re-verify.
+  <Step title="Become a Verified Human">
+    If your submission is not challenged, or if you win a dispute, you become a verified human and receive a unique PoH Soulbound ID. Your registration expires periodically and must be renewed to remain active.
   </Step>
 </Steps>
 
@@ -38,29 +38,45 @@ PoH serves as the foundation for applications that need to distinguish real huma
 
 ## PoH 2.0 (Product Update)
 
-The PoH 2.0 product update introduced several improvements to the registration experience:
+The PoH 2.0 product update introduced several improvements to make registration more accessible, secure, and interoperable:
 
-**Cross-chain profiles**: Profiles can exist on multiple chains (Ethereum, Gnosis Chain), enabling use across different ecosystems.
+**Lower registration cost**: PoH 2.0 was deployed on Gnosis Chain, significantly reducing registration fees and making it more accessible to users worldwide.
 
-**Improved UX**: Simplified registration flow, better video guidance, and clearer status tracking.
+**PoH Soulbound IDs**: Every verified human receives a unique, non-transferable PoH Soulbound ID, providing a persistent digital identity that can be recovered even if the original wallet is lost.
 
-**Enhanced vouching**: Refined vouching mechanics to strengthen the web-of-trust.
+**Cross-chain profiles**: Profiles can exist on multiple chains (Ethereum, Gnosis Chain), enhancing accessibility and interoperability. Users can maintain and transfer their verified identity across different chains.
+
+**Improved UX**: Streamlined the registration process with a simpler interface, better guidance, and clearer status tracking.
 
 <Note>
-These are product-level improvements. The underlying dispute resolution still uses Kleros V1 contracts on Ethereum mainnet.
+These are product-level improvements. The underlying dispute resolution still uses the Kleros V1 arbitration protocol.
 </Note>
 
 ---
 
 ## Use Cases
 
-**Sybil-Resistant Governance**: PoH-gated voting ensures one person = one vote, preventing token-whale domination. The Kleros yellow paper describes a future court mode where juror selection requires PoH registration.
+Proof of Humanity enables applications to distinguish real humans from bots, duplicate accounts, and autonomous agents. Below are some of the many ways projects can integrate PoH.
 
-**Universal Basic Income**: The UBI token project distributes a universal basic income stream to every registered PoH human.
+**Human Verification for the AI Era**: As AI agents become more capable of interacting online and on-chain, PoH enables applications to reliably distinguish real humans from bots and autonomous agents, preserving trust in digital systems.
 
-**Fair Airdrops**: Projects can use PoH to ensure airdrop tokens go to unique humans rather than bots farming with multiple wallets.
+**Governance and DAOs**: PoH enables one-person-one-vote governance by verifying that each participant is a unique human, helping DAOs and communities prevent Sybil attacks and governance manipulation.
 
-**Identity Verification**: Any application that needs to verify a user is a unique human without relying on centralized KYC providers.
+**Fairdrops (Fair Rewards/Airdrops)**: PoH helps ensure that rewards, grants, incentives, and airdrops are distributed fairly by limiting participation to one verified human per identity.
+
+**Universal Basic Income**: PoH provides a trusted registry of verified humans, allowing UBI programs to distribute funds fairly while preventing duplicate claims.
+
+**Prediction Markets**: Prediction markets can use PoH to create human-only markets, limit participation to verified individuals, or reward unique human contributors.
+
+Proof of Humanity also supports social recovery, digital credentials, decentralized social networks, and many other human-centric innovations.
+
+---
+
+## Start Building
+
+Proof of Humanity is an open-source project. You are free to start integrating it into your project or building on top of it.
+
+If you need support, reach out to Coopérative Kleros at contact@kleros.io, [Discord](https://discord.gg/kleros), or [Telegram](https://t.me/kleros).
 
 ---
 
@@ -70,7 +86,7 @@ These are product-level improvements. The underlying dispute resolution still us
   <Card title="Register on PoH" icon="user-check" href="https://v2.proofofhumanity.id/">
     Start your Proof of Humanity registration
   </Card>
-  <Card title="PoH Integration Guide" icon="code" href="/developers/products/poh">
+  <Card title="PoH Integration Guide" icon="code" href="/developers/products/poh/integration">
     Verify human users in your application
   </Card>
 </CardGroup>

@@ -71,6 +71,7 @@ enum Resolution {
 function createNativeTransaction(
     uint256 _deadline,              // Unix timestamp for automatic execution
     string memory _transactionUri,  // Data URI for transaction metadata
+    address payable _buyer,         // Payment sender address
     address payable _seller         // Payment recipient address
 ) external payable returns (uint256 transactionID)
 ```
@@ -83,6 +84,7 @@ function createERC20Transaction(
     IERC20 _token,                  // ERC20 token contract address
     uint256 _deadline,              // Unix timestamp for automatic execution
     string memory _transactionUri,  // Data URI for transaction metadata
+    address payable _buyer,         // Payment sender address
     address payable _seller         // Payment recipient address
 ) external returns (uint256 transactionID)
 ```
@@ -146,7 +148,7 @@ function acceptSettlement(uint256 _transactionID) external
     Counter-offers reset `lastFeePaymentTime` and switch the waiting status.
   </Step>
   <Step title="Dispute Option">
-    Only the non-proposing party can raise a dispute (after `settlementTimeout` elapses).
+    The party that did not propose the settlement can raise a dispute immediately by paying the arbitration fee. The proposing party must wait for `settlementTimeout` to elapse before it can raise a dispute.
   </Step>
 </Steps>
 
@@ -404,7 +406,7 @@ const metadata = {
 const dataUri = `data:application/json;base64,${btoa(JSON.stringify(metadata))}`;
 
 // Use this dataUri when creating the transaction
-await createNativeTransaction(deadline, dataUri, sellerAddress);
+await createNativeTransaction(deadline, dataUri, buyerAddress, sellerAddress);
 ```
 
 <Tip>
