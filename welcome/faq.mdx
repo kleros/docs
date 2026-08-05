@@ -45,4 +45,10 @@ description: "Frequently asked questions about Kleros: how the protocol works, h
   <Accordion title="How is Kleros governed?">
     PNK holders govern the protocol through Snapshot voting. Governance proposals (KIPs) are submitted on the [Kleros Forum](https://forum.kleros.io) and voted on by the community. On-chain execution uses the KlerosGovernor contract.
   </Accordion>
+
+  <Accordion title="Can I use a smart contract account to stake in the Court?">
+    Jurors should not stake using a smart contract account specifically in courts where hiddenVotes are enabled, because the frontend is currently unable to verify the signature. At the moment, the courts which have hiddenVotes enabled are the General Court on Gnosis Chain and the Spanish General Court on both Ethereum Mainnet and Gnosis Chain.
+
+    Additionally, when using a smart contract wallet, the `receive()` function may cause transfers made with `.send()` to fail. For example, receiving ETH juror rewards might fail. This is a known issue caused by the Berlin hardfork, as [documented by Safe](https://help.safe.global/en/articles/40813-why-can-t-i-transfer-eth-from-a-contract-into-a-safe). The Kleros contracts deployed from 2025 rely on a SafeSend mechanism which is not affected by this limitation.
+  </Accordion>
 </AccordionGroup>

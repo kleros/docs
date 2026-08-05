@@ -97,7 +97,8 @@
                   "products/scout",
                   "products/scout-earn",
                   "products/scout-partnerships",
-                  "products/scout-snap"
+                  "products/scout-snap",
+                  "products/scout-faq"
                 ]
               },
               "products/reality",
@@ -168,7 +169,8 @@
             "group": "Enterprise",
             "pages": [
               "enterprise/enterprise",
-              "enterprise/ecosystem"
+              "enterprise/ecosystem",
+              "enterprise/famous-cases"
             ]
           },
           {
