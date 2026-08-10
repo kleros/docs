@@ -1,0 +1,60 @@
+---
+title: "August 10, 2026"
+description: "Veashi Scanner in the Vea bridge, July juror rewards in Court, Governor v1 evidence in Dispute Resolver, and RPC fallbacks across Escrow."
+---
+
+## New features
+
+### Veashi Scanner for the Vea bridge
+
+The [Vea bridge](/developers/crosschain/vea-bridge) ships **Veashi Scanner**, a new web app for tracking cross-chain messages end to end. Users can search by transaction, filter by source and destination chain, browse a messages table, and drill into per-message pages showing bridge, adapter, threshold, and route details. A companion Envio-based indexer (`veashi-envio-yaho`) backs the scanner, and a separate `relayer-envio-inbox` indexer is available for operators running Vea relayers.
+
+### Governor v1 evidence submission in Dispute Resolver
+
+The Kleros Dispute Resolver now supports submitting evidence on [Kleros Governor v1](/products/governor) disputes. Governor v1 is wired into the network and contract mapping so users can attach evidence directly from the Dispute Resolver UI.
+
+### July staking rewards in Court
+
+The [Kleros Court](/court/overview) claim modal picks up the July rewards snapshot, so jurors can now claim July staking rewards from the app.
+
+### Notifications banner in Foresight
+
+The [Foresight](/products/foresight) homepage now shows a notifications banner reflecting whether the connected wallet is subscribed to alerts. The unsubscribe page and notifications contact-details form have been streamlined, and the PredictAll success popup has been tidied up.
+
+### Movies Round 3 experiment on Foresight
+
+A new "Movies Round 3" experiment is live on the [Foresight](/products/foresight) homepage, with an updated banner and refreshed first-visit miniguide illustrations.
+
+### Configurable block confirmation depth in Zodiac bots
+
+The [Kleros Zodiac module](/products/governor) bots expose a new environment variable to configure block confirmation depth. Operators can now tune reorg safety per deployment.
+
+## Updates
+
+### Faster Court home page and claim modal
+
+[Kleros Court](/court/overview) caches reward snapshots and skips unnecessary MetaEvidence fetches on the home page and claim modal, so the initial load is faster and empty-snapshot states render cleanly.
+
+### RPC fallbacks in Escrow V1 and Escrow V2
+
+Both the [Escrow](/products/escrow) V1 UI and Escrow V2 web app add a fallback RPC mechanism. Token and chain requests keep working when the primary RPC is down, and custom token metadata now resolves through an on-chain fallback in Escrow V2 and handles missing metadata gracefully in Escrow V1's "Add Custom Token" flow.
+
+### Keeper bot gas handling in Court V2
+
+The Kleros V2 keeper bot now uses `estimateGas` instead of a hardcoded gas value for `draw` and `execute`, caps real-send gas at the provider limit, and halves the batch size and retries when gas would exceed the configured maximum. This should reduce failed or stuck keeper transactions.
+
+### Cases list polish in Court V2
+
+Alignment on the Cases list view in the [Kleros V2 web app](/products/overview) has been tightened across the dispute info list, list view, and period banner.
+
+### Help and tutorial links refreshed
+
+Help menu, FAQ, and in-app tutorial links across the [Kleros V2 web app](/products/overview), [Escrow](/products/escrow) V1 and V2, and Governor V2 have been repointed to their current documentation URLs.
+
+## Bug fixes
+
+**Default block explorer in Scout** — [Scout](/products/scout) now uses the correct block explorer for Profile page links and URL utilities, so list entries link to the intended explorer.
+
+**Malformed Zodiac proposals no longer crash the bot** — The [Zodiac module](/products/governor) bots harden Snapshot and Reality.eth question parsing. A malformed SafeSnap transaction now surfaces a structured validation error instead of crashing the bot.
+
+**Chain-correct bond amounts in Zodiac bots** — Bond amounts in [Zodiac module](/products/governor) notifications are now labeled with the native currency symbol of the chain, so messages accurately reflect the bond asset.
