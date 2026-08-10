@@ -5,30 +5,7 @@ description: "Integrate Kleros with DAO governance using the Zodiac Reality Modu
 
 ## Overview
 
-The **Zodiac Reality Module** connects off-chain Snapshot voting with on-chain execution through a Gnosis Safe. It uses Reality.eth as the verification layer and Kleros Court as the backstop arbitrator. This pattern is used in production by DAOs including Gnosis and Kleros itself.
-
----
-
-## Architecture
-
-```mermaid
-graph LR
-    A[Snapshot Proposal] --> B[SafeSnap Plugin]
-    B --> C[Reality.eth Question]
-    C --> D{Challenged?}
-    D -->|No| E[Execute via Safe]
-    D -->|Yes| F[Kleros Court]
-    F --> G{Ruling}
-    G -->|Valid| E
-    G -->|Invalid| H[Proposal Blocked]
-```
-
-### Flow
-
-1. A DAO member creates a Snapshot proposal with a batch of on-chain transactions attached via the SafeSnap plugin
-2. When the vote passes, SafeSnap posts a question to Reality.eth: "Did this proposal pass and does it meet the DAO requirements?"
-3. An answerer posts a bond affirming the result. If unchallenged within the timeout, the transactions execute through the Gnosis Safe
-4. If the answer is disputed, the bond escalation mechanism activates. At any point, either party can escalate to Kleros Court for a binding ruling
+This guide covers **setup and configuration only**. For what SafeSnap is, its components, and how the end-to-end flow works, see the **[SafeSnap product page](/products/safesnap)**.
 
 ---
 
@@ -56,7 +33,13 @@ graph LR
     ```
   </Step>
   <Step title="Monitor Proposals">
-    Use OpenZeppelin Sentinel or a custom bot to monitor Reality.eth questions created by the module. Any address can submit proposals to the Reality Module, so monitoring is critical for detecting malicious submissions.
+    Any address can post a question to the Reality Module, so monitoring is part of the security model, not optional. Run [`kleros/zodiac-bots`](https://github.com/kleros/zodiac-bots), the open-source service Kleros maintains for watching Zodiac Reality modules. It tracks one or more Snapshot spaces — identified by ENS name and a starting block — and pushes alerts to **Slack, Telegram, or email** when proposals and answers appear:
+
+    ```bash
+    SPACES=kleros.eth:3000000,1inch.eth:6000000
+    ```
+
+    Email recipients can be scoped per space, so different DAOs' alerts route to different inboxes. If you would rather not self-host, a general-purpose monitoring service such as OpenZeppelin Defender or a custom bot can watch the same Reality.eth events.
   </Step>
 </Steps>
 

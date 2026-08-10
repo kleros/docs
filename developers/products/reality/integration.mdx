@@ -322,14 +322,9 @@ If your application might need this level of customization, contact `integration
 
 ## DAO Governance Integration
 
-The Reality.eth + Kleros oracle powers the **Zodiac Reality Module** for DAO governance. This module translates off-chain Snapshot votes into on-chain transactions through Reality.eth's verification:
+The Reality.eth + Kleros oracle powers **SafeSnap**, which translates off-chain Snapshot votes into on-chain execution through a Gnosis Safe, with Kleros Court as the arbitration backstop.
 
-1. A Snapshot proposal passes with a batch of transactions
-2. The SafeSnap plugin posts the proposal as a Reality.eth question
-3. If the answer ("Is this proposal valid?") goes unchallenged, the transactions execute through the Gnosis Safe
-4. If challenged, Kleros Court arbitrates
-
-See the [DAO Governance example](/developers/examples/dao-governance) for implementation details.
+See the **[SafeSnap product page](/products/safesnap)** for what it is and how the flow works, and the **[DAO Governance example](/developers/examples/dao-governance)** for setup and configuration.
 
 ***
 
