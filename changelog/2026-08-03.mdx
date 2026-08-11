@@ -1,0 +1,64 @@
+---
+title: "August 3, 2026"
+description: "Vote confirmation modal in Court V2, Axelar route in VeaShi SDK, Scout Snap v1.4.1, and RPC fallbacks across Scout and Curate classic."
+---
+
+## New features
+
+### Vote confirmation modal in Kleros V2
+
+Jurors on the [Kleros V2 web app](/products/overview) now see a confirmation modal before submitting a classic vote or commit on Case Details. The extra step helps prevent accidental submissions. Available in English, Spanish, and French.
+
+### Axelar route in the VeaShi SDK
+
+The [Vea bridge](/developers/crosschain/vea-bridge) adds an Axelar GMP transport to the `veashi-sdk`, with new `AxelarAdapter` and `AxelarReporter` contracts deployed on Base ↔ Ethereum / Arbitrum and their testnets. Integrators can now select Axelar as a route alongside existing bridges.
+
+### `isSubscribed` query in `@kleros/kleros-app`
+
+`@kleros/kleros-app` v3.1.0 exposes a new `fetchIsSubscribed` utility wired into `AtlasProvider`, letting integrators check whether the current user is subscribed to Kleros notifications via the Atlas API.
+
+### Scout Snap v1.4.1
+
+The [Kleros Scout](/products/scout) landing page now installs `@kleros/scout-snap` v1.4.1 (up from v1.3.1), so new users get the latest MetaMask Snap release.
+
+## Updates
+
+### Faster, more resilient MetaEvidence in Court
+
+[Kleros Court](/court/overview) adds a MetaEvidence caching layer with stricter validation, so case cards, case details, ongoing-cases lists, and round history load faster and handle malformed evidence payloads gracefully.
+
+### Staking rewards moved to rewards.kleros.io
+
+The in-app staking rewards page in [Kleros Court](/court/overview) has been retired. The Court homepage now links out to `rewards.kleros.io`, the canonical destination for staking rewards.
+
+### Public RPC fallback in Curate classic and Scout
+
+Kleros Curate classic (GTCR) now falls back to public RPC endpoints when Alchemy is unreachable, keeping lists usable during upstream outages. [Scout](/products/scout) picks up the same fallback for its ENS lookups.
+
+### Galxe integration removed from Scout
+
+The defunct Galxe quest integration has been removed from [Scout](/products/scout).
+
+### Clearer proposal notifications from Zodiac bots
+
+Notification templates from the [Kleros Zodiac module](/products/governor) bots (email, Slack, Telegram) now state explicitly when automated validation did **not** run and phrase each checklist item as an action ("Verify…", "Confirm…"), reducing the risk of assuming a proposal was auto-validated when it wasn't.
+
+### Escrow V2 network list
+
+The [Escrow V2](/products/escrow) web app no longer offers Gnosis Chain in the network picker; only the currently supported networks are available.
+
+## Bug fixes
+
+**ENS resolution in Scout** — [Scout](/products/scout) restores ENS name resolution, which had broken because mainnet wasn't configured, and adds a public RPC fallback so lookups keep working when the primary provider is down.
+
+**Futarchy trading period end** — The [Foresight](/products/foresight) UI now polls trading-period status every few seconds instead of relying on a single timer, so markets reliably flip to their post-trading state when the window ends, even after tab suspension or clock drift.
+
+**Accurate unique traders on Foresight** — The "unique traders" stat on [Foresight](/products/foresight) markets is now computed from Swapr pool swaps across all UP/DOWN market pairs, giving an accurate distinct-address count instead of an approximation based on top token holders.
+
+**No misleading vote justification message in Kleros V2** — When a vote justification is missing, the [Kleros V2 web app](/products/overview) now shows a neutral state instead of asserting a specific reason.
+
+**Duplicate Zodiac bot notifications** — The [Zodiac module](/products/governor) bots deduplicate notifications per on-chain event, so subscribers no longer receive repeat emails, Slack, or Telegram messages when an event is reprocessed.
+
+**Stale Reality link template** — Fixes the default `REALITY_LINK_TEMPLATE` in the Zodiac bots `.env.example` so new deployments copying the example get working [Reality.eth](/products/reality) links out of the box.
+
+**VeaShi Lightbulb Base-Sepolia route** — The Lightbulb demo route on Arbitrum Sepolia ↔ Base Sepolia has been redeployed; the [VeaShi SDK](/developers/crosschain/vea-bridge) address files pick up the new deployment automatically.
