@@ -89,6 +89,7 @@
             "pages": [
               "products/overview",
               "products/curate",
+              "products/stake-curate",
               "products/escrow",
               "products/governor",
               {
@@ -102,6 +103,7 @@
                 ]
               },
               "products/reality",
+              "products/safesnap",
               "products/proof-of-humanity",
               "products/foresight",
               {
@@ -374,6 +376,7 @@
           {
             "group": "Changelog",
             "pages": [
+              "changelog/2026-08-10",
               "changelog/2026-08-03",
               "changelog/2026-07-27",
               "changelog/2026-07-13",
