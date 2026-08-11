@@ -89,6 +89,7 @@
             "pages": [
               "products/overview",
               "products/curate",
+              "products/stake-curate",
               "products/escrow",
               "products/governor",
               {
@@ -102,6 +103,7 @@
                 ]
               },
               "products/reality",
+              "products/safesnap",
               "products/proof-of-humanity",
               "products/foresight",
               {

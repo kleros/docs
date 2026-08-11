@@ -11,7 +11,7 @@ description: "Reality.eth is a crowdsourced oracle where bonded answers settle r
 
 **Reality.eth** is a crowdsourced oracle system where anyone can post questions and answers with economic bonds. Kleros serves as the **final arbitration layer** when an answer on Reality.eth is disputed and the bond escalation reaches its limit, the dispute is sent to Kleros Court for resolution.
 
-This combination is widely used in DAO governance through the **Zodiac Reality Module** (formerly SafeSnap), which allows DAOs to execute on-chain transactions based on Snapshot vote outcomes.
+This combination powers **[SafeSnap](/products/safesnap)** — trustless DAO governance where the Zodiac Reality Module executes on-chain transactions based on Snapshot vote outcomes, with Kleros as the final arbitrator.
 
 ---
 
@@ -56,13 +56,11 @@ sequenceDiagram
 
 ---
 
-## Zodiac Reality Module (SafeSnap)
+## SafeSnap (DAO Governance)
 
-The most prominent integration of Reality.eth + Kleros is the **Zodiac Reality Module**, which enables DAOs using Gnosis Safe to execute on-chain transactions based on Snapshot votes.
+The most prominent use of Reality.eth + Kleros is **SafeSnap**: it lets DAOs execute Snapshot vote outcomes directly against a Gnosis Safe treasury, with Reality.eth verifying the result and Kleros Court as the arbitration backstop — no trusted multisig in the loop.
 
-**How it works:** After a Snapshot proposal passes, anyone can submit the corresponding transaction to Reality.eth. If no one challenges it within the challenge period, the Safe executes the transaction. If challenged, Kleros resolves the dispute.
-
-This is used by multiple DAOs to bridge off-chain governance (Snapshot votes) to on-chain execution (Gnosis Safe transactions) without relying on a trusted multi-sig.
+See the **[SafeSnap product page](/products/safesnap)** for its components, the end-to-end flow, and setup.
 
 ---
 
@@ -79,6 +77,9 @@ This is used by multiple DAOs to bridge off-chain governance (Snapshot votes) to
 ## What's Next?
 
 <CardGroup cols={2}>
+  <Card title="SafeSnap" icon="vault" href="/products/safesnap">
+    Trustless execution of Snapshot votes against a Safe treasury
+  </Card>
   <Card title="Reality.eth" icon="globe" href="https://reality.eth.limo">
     Explore the Reality.eth oracle interface
   </Card>
