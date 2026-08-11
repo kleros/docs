@@ -1,12 +1,12 @@
 ---
 title: "Scout"
-description: "Kleros Scout is a public frontend for Curate registries, surfacing verified address tags, token metadata, and contract labels across EVM chains."
+description: "Kleros Scout is a public frontend for Curate registries, surfacing verified address tags, token metadata, and contract labels across major EVM chains and Solana."
 ---
 
 # Scout
 
 <img src="/images/scout-hero.png" alt="Kleros Scout Interface" />
-<Note>Scout is part of the [Curate](/products/curate) product family - it is a frontend that reads from Curate registries. It currently uses **V1 Curate registries**. The Scout V2 frontend redesign is complete, with underlying registry migration to V2 planned.</Note>
+<Note>Scout is part of the [Curate](/products/curate) product family — a frontend that reads from Curate registries. Its registries run on **Kleros Court V1 (Gnosis Chain)** and, as of **July 2026**, are arbitrated by the dedicated **Curation Court with hidden voting** (KIP-87). The Scout V2 frontend redesign is complete.</Note>
 
 **Kleros Scout** is a frontend application that displays community-curated safety and metadata information for smart contracts, tokens, and dApps. It aggregates data from multiple [Curate](/products/curate) registries to give users a unified view of address tags, contract labels, and token information.
 
@@ -24,7 +24,7 @@ Scout is the public-facing layer on top of Curate's decentralized registries thi
     Verified token metadata including names, logos, and contract details
   </Card>
   <Card title="Multi-Chain Coverage" icon="link">
-    Supports Ethereum Mainnet, Arbitrum, Base, Gnosis, Polygon, and other EVM chains
+    Covers Ethereum, Arbitrum One, OP Mainnet, Base, Polygon, Gnosis, Linea, zkSync, Avalanche, Celo, and Solana, among others
   </Card>
 </CardGroup>
 
@@ -36,11 +36,11 @@ Scout itself does not manage submissions or disputes those happen in [Curate](/p
 
 **Address Tags Registry (ATR)**: Maps contract addresses to human-readable labels (e.g., "Uniswap V3 Router"). These tags appear in block explorers like Blockscout and wallet interfaces like MetaMask.
 
-**Address Tags Query (ATQ)**: Handles removal requests and quality checks for the ATR.
+**Address Tag Query (ATQ)**: A meta-registry of NPM packages that each generate batches of address tags — enabling large-scale tagging of many similar contracts without an individual submission per address (the ATR handles one tag at a time). See [Curation Registries](/developers/products/curate/registries) for how ATQ packages are run.
 
 **Token Registry**: Curated list of verified ERC-20 tokens with metadata (name, symbol, logo, decimals).
 
-**Contract Domain Names (CDN)**: Stores additional metadata like project logos and descriptions served to dApps.
+**Contract-Domain Name (CDN)**: Verified contract-to-domain pairings, plus project metadata like logos and descriptions served to dApps.
 
 ### Integrations
 
@@ -71,16 +71,22 @@ Check the [Kleros Blog](https://blog.kleros.io) for the latest monthly Scout inc
 
 ## Current Status
 
-As of the May 2026 development update, Scout reached its definitive version with **2.6M+ curated addresses** shown on the homepage. Recent work includes completing the Atlas IPFS migration (submissions and evidence now go through the Atlas SIWE flow), adding ATQ duplicate detection, and adding the JavaScript Court to the disputes view.
+Scout is in its definitive version and is the largest decentralized source of on-chain contract metadata, spanning its four registries (ATR, Token, CDN, ATQ). Recent developments (mid-2026):
 
-Follow development on the [Kleros blog - developer updates](https://blog.kleros.io/tag/developer/).
+- **Hidden voting on a dedicated Curation Court** — following KIP-87, the registries migrated on **July 13, 2026** to a new Curation Court on Gnosis Chain that uses commit-and-reveal *hidden voting*, so jurors can't see other votes before deciding.
+- **AI agent–ready submissions** — contributors can delegate the full submission workflow (finding candidates, checking tagging status, validating policy and metadata, submitting on-chain) to an AI agent instead of preparing each entry manually. See [Earn with Scout](/products/scout-earn).
+- **Expanded chain coverage** — reward-eligible chains now include Ethereum, Arbitrum One, OP Mainnet, Base, Polygon, Gnosis, Linea, zkSync, Avalanche C-Chain, Celo, MegaETH, Solana, and Robinhood Chain (Scroll is no longer eligible).
+- **Explorer links migrated to Blockscout**, ahead of Gnosisscan's deprecation.
+- Earlier in 2026, Scout completed its **Atlas IPFS migration** (submissions and evidence now go through the Atlas SIWE flow) and added ATQ duplicate detection.
+
+Follow development on the [Kleros blog - developer updates](https://blog.kleros.io/tag/developer/) and the monthly [Scout incentive posts](https://blog.kleros.io/tag/kleros-scout/).
 
 ---
 
 ## What's Next?
 
 <CardGroup cols={3}>
-  <Card title="Explore Scout" icon="magnifying-glass" href="https://klerosscout.eth.limo/">
+  <Card title="Explore Scout" icon="magnifying-glass" href="https://scout.kleros.io/">
     Browse community-curated address tags and token data
   </Card>
   <Card title="Curate" icon="list-check" href="/products/curate">

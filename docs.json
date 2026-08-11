@@ -89,6 +89,7 @@
             "pages": [
               "products/overview",
               "products/curate",
+              "products/stake-curate",
               "products/escrow",
               "products/governor",
               {

@@ -23,7 +23,7 @@ Curate is a family of three variants. All three use the V1 Kleros Court for disp
 
 - **Classic Curate** (V1) - a full Token-Curated Registry (TCR) supporting complex schemas. Best for high-value registries with custom fields. Migrated to Gnosis Chain.
 - **Light Curate** (V1) - a simplified TCR built for higher volume and lower gas costs. On Gnosis Chain.
-- **Stake Curate** (V1 infrastructure) - continuous verification with permanent deposits, on Gnosis Chain. Deployed mid-August 2025; first implementation with DAMM Capital (September 2025). See [Stake Curate](/products/stake%20curate).
+- **Stake Curate** (V1 infrastructure) - continuous verification with permanent deposits, on Gnosis Chain. Deployed mid-August 2025; first implementation with DAMM Capital (September 2025). See [Stake Curate](/products/stake-curate).
 
 
 
@@ -121,12 +121,12 @@ This creates a self-policing system where bad actors are economically punished.
     **Example:** [Kleros Scout](/products/scout) displays security information from Curate registries.
   </Tab>
   
-  <Tab title="CDN & Content">
-    **Problem:** Decentralized apps need reliable metadata (logos, descriptions, links).
+  <Tab title="Contract-Domain Names">
+    **Problem:** Users and dApps can't easily tell which website a contract officially belongs to.
     
-    **Solution:** Registries that store and serve verified content metadata.
+    **Solution:** The Contract-Domain Name (CDN) registry verifies contract-to-domain pairings, along with project metadata such as logos and descriptions.
     
-    **Example:** Token logos and project information served to dApps across the ecosystem.
+    **Example:** Verified project information and logos served to wallets and dApps across the ecosystem.
   </Tab>
 </Tabs>
 
@@ -148,7 +148,7 @@ Curate offers three variants across the two protocol versions:
 |---------|---------|----------|-----------|-------------|
 | **Classic Curate** (full) | V1 | High-value registries with complex schemas | Higher | Maximum |
 | **Light Curate** | V1 | Simple registries, higher volume | Lower | Standard schemas |
-| **Stake Curate** | V1 infra | Continuous verification with permanent deposits | - | See [Stake Curate](/products/stake%20curate) |
+| **Stake Curate** | V1 infra | Continuous verification with permanent deposits | - | See [Stake Curate](/products/stake-curate) |
 
 Among the V1 variants, most registries use **Light Curate** for cost efficiency. Classic Curate is used when you need custom fields or complex acceptance criteria.
 
@@ -156,7 +156,7 @@ Among the V1 variants, most registries use **Light Curate** for cost efficiency.
 
 ## Current Status
 
-As of the May 2026 development update, Curate V2 aligned its evidence query with the kleros-core schema migration and removed an unused evidence hook. Work is in progress to integrate a shared file-viewer component.
+Following **KIP-87**, a dedicated **Curation Court with hidden voting** went live on Gnosis Chain in mid-2026. Hidden voting splits juror voting into commit-and-reveal phases so jurors can't see other votes before deciding, reducing herding on curation disputes. The Scout registries migrated to this court on **July 13, 2026**. Curate V2 development also aligned its evidence query with the kleros-core schema migration.
 
 Follow development on the [Kleros blog - developer updates](https://blog.kleros.io/tag/developer/).
 
@@ -196,8 +196,11 @@ Follow development on the [Kleros blog - developer updates](https://blog.kleros.
 ## Quick Links
 
 <CardGroup cols={2}>
-  <Card title="Launch Curate" icon="arrow-up-right-from-square" href="https://curate-v2.netlify.app/">
-    Open the Curate application
+  <Card title="Launch Curate (V1)" icon="arrow-up-right-from-square" href="https://curate.kleros.io/">
+    Open the active Curate app, maintained by the Kleros team
+  </Card>
+  <Card title="Curate V2" icon="flask" href="https://curate-v2.netlify.app/">
+    Try the next-generation Curate interface
   </Card>
   <Card title="Curate Subgraph" icon="database" href="/developers/subgraph/overview">
     Query registry data via GraphQL
