@@ -15,7 +15,23 @@ In V2, the ability to create disputes directly is integrated into the Court inte
 - **Evidence display**: the interface fetches data from dynamic scripts for flexible evidence display, and normalizes PoH evidence payloads (including older submissions and non-object payloads)
 - **MetaEvidence**: fetched via an API-based approach
 - **Realitio cases**: ruling options display correctly for Realitio disputes
-- **Networks**: Base Sepolia is supported alongside the existing networks
 - **Dispute creation**: the create-dispute form validates inputs before submission
+
+---
+
+## Supported networks
+
+The Dispute Resolver can create and manage disputes only on chains where the **Kleros V1 Court is deployed** (a local arbitrator plus an Arbitrable Proxy):
+
+| Network | Type | Dispute creation |
+| --- | --- | --- |
+| Ethereum Mainnet | Production | ✅ Supported |
+| Gnosis Chain | Production | ✅ Supported |
+| Sepolia | Testnet | ✅ Supported |
+| Gnosis Chiado | Testnet | ✅ Supported |
+
+<Warning>
+  The network selector also lists several other chains — including Polygon, Arbitrum One, Optimism, Base (and Base Sepolia), zkSync Era, Unichain, and Redstone — that come from a shared Kleros network configuration. These are cross-chain entries with **no V1 Court and no Arbitrable Proxy deployed**, so they appear in the list but creating a dispute on them does not work. Use one of the supported networks above.
+</Warning>
 
 For the history of changes, see the [Changelog](/changelog) and the [Kleros blog developer updates](https://blog.kleros.io/tag/developer/).
