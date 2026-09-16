@@ -1,0 +1,36 @@
+---
+title: "August 17, 2026"
+description: "New Commerce and Agentic Commerce courts on Kleros V2, revamped Curate classic with Permanent GTCR, and local justification drafts in Court."
+---
+
+## New features
+
+### Commerce and Agentic Commerce courts in Kleros V2
+
+Two new courts are live on the [Kleros V2](/products/overview) mainnet: **Commerce Court** for small-scale commercial disputes, and **Agentic Commerce Court** for commercial interactions between AI agents, with short resolution times and jurors expected to be AI agents.
+
+### Revamped Curate classic homepage with Permanent GTCR
+
+The [Kleros Curate](/products/curate) classic (GTCR) interface ships new verified-registries homepages and adds a dedicated **Permanent GTCR** factory alongside the existing standard factory. Users can now discover verified lists on curated landing pages and deploy either standard or permanent (stake-based) registries directly from the app.
+
+### Local justification drafts in Kleros Court
+
+[Kleros Court](/court/overview) now auto-saves your vote justification locally per dispute in hidden-vote (commit-and-reveal) courts. You can start writing your justification during the commit period and review or submit it when revealing your vote. Drafts are stored on the device only and cleared once the vote is submitted.
+
+## Updates
+
+### Cleaner justification UI in Court
+
+The caption next to the [Kleros Court](/court/overview) justification box has been removed on the case details page for a tighter voting layout.
+
+### PoH Governor whitelisted in Court
+
+The Proof of Humanity Governor address is now on the [Kleros Court](/court/overview) arbitrable whitelist, so cases originating from that governor render with their intended metadata.
+
+### More reliable data reads in Dispute Resolver
+
+The [Dispute Resolver](/developers/products/dispute-resolver/overview) now routes reads for legacy hardcoded Infura endpoints through Kleros's read-only RPCs inside evidence-display iframes. Case data keeps loading even when the original public endpoint is throttled or down.
+
+## Bug fixes
+
+**Correct FAQ link in Court smart-contract wallet warning** — The "smart contract wallet not recommended" banner in [Kleros Court](/court/overview) now points to the current FAQ entry on smart contract accounts, replacing a stale link that 404'd after the docs restructure.

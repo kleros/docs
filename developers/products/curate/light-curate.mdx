@@ -9,6 +9,10 @@ description: "Developer guide for integrating Kleros Light Curate (V1) with subg
 This covers Light Curate (V1). For V2 Curate, see the [Developers Curate section](/developers/products/curate/overview).
 </Note>
 
+<Warning>
+**Curate V1 (Classic Curate and Light Curate) is being deprecated.** The V1 smart contracts stay deployed and unchanged, so existing lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Curate V1, and creating new lists through Kleros frontends is being disabled. Banners in the [Curate V1 app](https://curate.kleros.io) flag the change.
+</Warning>
+
 ---
 
 ## Overview
@@ -312,7 +316,7 @@ Before touching MetaEvidence or deposits for an unfamiliar address:
 7. Call `addItem("/ipfs/<hash>")` with `msg.value = deposit`.
 
 <Note>
-Deploying a list does not make it visible on the Curate frontend. The public list-of-lists mechanism uses Curate Classic (`GeneralizedTCR`), not Light Curate's `addItem(string)`; submitting a new list for discoverability is a separate, optional workflow.
+Deploying a list does not make it visible on the Curate frontend. The public list-of-lists mechanism uses Curate Classic (`GeneralizedTCR`), not Light Curate's `addItem(string)`. Note that creating new lists through Kleros frontends is being disabled as part of the Curate V1 deprecation (see the notice at the top of this page).
 </Note>
 
 ---

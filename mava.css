@@ -1,0 +1,4 @@
+/* Keep Mava clear of the assistant's floating input */
+#mava-webchat-launcher {
+  bottom: 88px !important;
+}

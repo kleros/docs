@@ -117,7 +117,7 @@ These must never be wrong in any code you generate or review:
 
 - Deployments: `https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments`
 - Court UI: `https://v2.kleros.builders/`
-- Discord: `https://discord.gg/kleros`
+- Discord: `https://discord.gg/MhXQGCyHd9`
 - Integration contact: `integrations@kleros.io`
 
 ## Documentation Structure

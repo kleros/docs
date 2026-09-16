@@ -29,7 +29,7 @@ Foresight project funding cards now load their contents only when you open the a
 
 ## Bug fixes
 
-**Hardened IPFS and URL handling across products** — [Kleros Court](/court/overview), [Curate](/products/curate), [Escrow](/products/escrow), and [Dispute Resolver](/products/proof-of-humanity) now share a stricter IPFS URI policy: bare CIDs (v0 and v1) and prefixed URIs are validated and normalized consistently across attachments, case details, claim modals, evidence, and file previews. Absolute `http(s)` URLs pass through unchanged, and rejected fetches are no longer cached, so retries pick up recovered content.
+**Hardened IPFS and URL handling across products** — [Kleros Court](/court/overview), [Curate](/products/curate), [Escrow](/products/escrow), and [Dispute Resolver](/developers/products/dispute-resolver/overview) now share a stricter IPFS URI policy: bare CIDs (v0 and v1) and prefixed URIs are validated and normalized consistently across attachments, case details, claim modals, evidence, and file previews. Absolute `http(s)` URLs pass through unchanged, and rejected fetches are no longer cached, so retries pick up recovered content.
 
 **Escrow attachment navigation** — [Kleros Escrow](/products/escrow) now URL-encodes attachment paths in the Explore navbar, fixing broken links for files with special characters, and cleans up a style glitch on the attached-file preview card.
 

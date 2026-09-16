@@ -9,6 +9,10 @@ description: "Kleros Curate lets anyone build community-run lists and token regi
 
 # Curate
 
+<Warning>
+**Curate V1 (Classic Curate and Light Curate) is being deprecated.** The V1 smart contracts stay deployed and unchanged, so existing lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Curate V1, and creating new lists through Kleros frontends is being disabled. Banners in the [Curate V1 app](https://curate.kleros.io) flag the change.
+</Warning>
+
 **Curate** is a decentralized application for creating and maintaining community-curated registries. Anyone can submit items to a list, and anyone can challenge incorrect or malicious submissions-with disputes resolved by Kleros Court.
 
 Think of it as Wikipedia for structured data, but with economic skin in the game. Submitters stake a deposit that they lose if their submission is successfully challenged. Challengers risk their own deposit if the submission turns out to be valid. This creates a self-sustaining system where participants are economically incentivized to maintain accurate registries.
@@ -156,6 +160,8 @@ Among the V1 variants, most registries use **Light Curate** for cost efficiency.
 
 ## Current Status
 
+**Curate V1 deprecation:** the Classic Curate and Light Curate contracts remain deployed and existing lists (including the Scout registries) keep running. Kleros will not launch new registries on Curate V1, and list creation is being removed from Kleros frontends, with banners in the Curate V1 app flagging the change.
+
 Following **KIP-87**, a dedicated **Curation Court with hidden voting** went live on Gnosis Chain in mid-2026. Hidden voting splits juror voting into commit-and-reveal phases so jurors can't see other votes before deciding, reducing herding on curation disputes. The Scout registries migrated to this court on **July 13, 2026**. Curate V2 development also aligned its evidence query with the kleros-core schema migration.
 
 Follow development on the [Kleros blog - developer updates](https://blog.kleros.io/tag/developer/).
@@ -197,7 +203,7 @@ Follow development on the [Kleros blog - developer updates](https://blog.kleros.
 
 <CardGroup cols={2}>
   <Card title="Launch Curate (V1)" icon="arrow-up-right-from-square" href="https://curate.kleros.io/">
-    Open the active Curate app, maintained by the Kleros team
+    Browse, submit to, and challenge items on existing V1 lists
   </Card>
   <Card title="Curate V2" icon="flask" href="https://curate-v2.netlify.app/">
     Try the next-generation Curate interface
@@ -207,8 +213,5 @@ Follow development on the [Kleros blog - developer updates](https://blog.kleros.
   </Card>
   <Card title="Contract Addresses" icon="file-contract" href="/reference/contracts/deployment-addresses">
     Curate V2 deployment addresses
-  </Card>
-  <Card title="Create a Registry" icon="plus" href="/tutorials/curate-tutorial">
-    Guide to deploying your own registry
   </Card>
 </CardGroup>

@@ -376,6 +376,11 @@
           {
             "group": "Changelog",
             "pages": [
+              "changelog/2026-09-14",
+              "changelog/2026-09-07",
+              "changelog/2026-08-31",
+              "changelog/2026-08-24",
+              "changelog/2026-08-17",
               "changelog/2026-08-10",
               "changelog/2026-08-03",
               "changelog/2026-07-27",
