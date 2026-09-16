@@ -6,7 +6,9 @@ description: "Generic ERC-792 proxy contract for creating Kleros disputes, submi
 
 
 <Note>
-This covers the V1 ArbitrableProxy. For V2, the [Dispute Resolver](/developers/products/dispute-resolver/overview) provides a web UI for standalone dispute creation, and the `IDisputeResolver` interface serves a similar role for custom contracts.
+This covers the V1 ArbitrableProxy, the contract behind the V1 [Dispute Resolver](/developers/products/dispute-resolver/overview) app (resolve.kleros.io). The V1 `IDisputeResolver` interface lets custom V1 contracts use that app for evidence and appeal funding.
+
+For V2, there is no ArbitrableProxy or standalone Dispute Resolver app. Dispute creation is built into the [Court V2](/court/overview) interface, backed by the V2 `DisputeResolver` contract (see [Arbitrable Overview](/developers/arbitrable-apps/arbitrable-overview)).
 </Note>
 
 ---
@@ -66,11 +68,14 @@ function withdrawFeesAndRewards(
 
 ## Resources
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="ERC-792 Standard" icon="file-contract" href="/developers/arbitrable-apps/erc-792">
     Arbitration interface specification
   </Card>
-  <Card title="Dispute Resolver (V2)" icon="gavel" href="/developers/products/dispute-resolver/overview">
-    Web-based dispute creation tool for V2
+  <Card title="Dispute Resolver (V1)" icon="gavel" href="/developers/products/dispute-resolver/overview">
+    Web app for creating V1 disputes through the ArbitrableProxy
+  </Card>
+  <Card title="V2 DisputeResolver" icon="diagram-project" href="/developers/arbitrable-apps/arbitrable-overview">
+    V2 contract behind dispute creation in the Court V2 interface
   </Card>
 </CardGroup>
