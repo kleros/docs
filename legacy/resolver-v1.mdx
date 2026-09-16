@@ -1,27 +1,30 @@
 ---
 title: "Resolver V1"
-description: "Kleros Resolver V1 documentation: the retired standalone app for creating arbitrary Court disputes, now integrated directly into the Court V2 interface."
+description: "Kleros Dispute Resolver V1: the standalone app at resolve.kleros.io for creating Court V1 disputes. In V2, dispute creation is built into the Court V2 interface."
 ---
 
 # Resolver V1
 
-<Warning>
-Resolver V1 was a standalone application. Its functionality is now integrated directly into the [Court V2](/court/overview) interface.
-</Warning>
+<Note>
+Dispute Resolver V1 is a standalone application at [resolve.kleros.io](https://resolve.kleros.io) that works with Kleros Court V1. In V2 there is no separate app: dispute creation is built into the [Court V2](/court/overview) interface.
+</Note>
 
-Kleros Dispute Resolver V1 (formerly known as "Resolve") was a standalone web application that allowed users to create arbitrary disputes in Kleros Court without needing to build a custom arbitrable contract. Users could define the dispute question, options, and evidence, then submit it directly to Court for resolution.
+Kleros Dispute Resolver V1 (formerly known as "Resolve") is a standalone web application that lets users create arbitrary disputes in Kleros Court V1 without building a custom arbitrable contract. Users define the dispute question, options, and evidence, then submit it directly to Court for resolution.
 
 ---
 
-## What It Did
+## What It Does
 
-- Allowed anyone to create a dispute from a web interface
+- Lets anyone create a dispute from a web interface
 - No smart contract development required
 - Used for simple two-party disagreements
 - Evidence submission and appeal management through the Resolver UI
+- Creates disputes through the V1 [ArbitrableProxy](/developers/arbitrable-apps/arbitrable-proxy) on chains where Court V1 is deployed (see [supported networks](/developers/products/dispute-resolver/overview#supported-networks))
 
 ---
 
 ## Current Status
 
-In V2, the ability to create disputes directly has been integrated into the Court interface at [court.kleros.io](https://court.kleros.io). There is no longer a separate Resolver application users can create disputes and submit evidence directly within the Court UI.
+Dispute Resolver V1 remains live at [resolve.kleros.io](https://resolve.kleros.io) for Court V1 disputes.
+
+In V2, there is no separate Resolver application. Users create disputes and submit evidence directly within the [Court V2](/court/overview) interface, backed by the V2 `DisputeResolver` contract.

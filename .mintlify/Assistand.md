@@ -61,7 +61,7 @@ When answering questions about juror counts, mention: always use odd numbers.
 | Situation | Resource |
 |-----------|----------|
 | Pre-production review | `integrations@kleros.io` |
-| Technical questions | Discord `#developer` channel at discord.gg/kleros |
+| Technical questions | Discord `#developer` channel at discord.gg/MhXQGCyHd9 |
 | Contract addresses | `github.com/kleros/kleros-v2/tree/dev/contracts/deployments` |
 | Active disputes | `court.kleros.io` |
 | Bridge status | `veascan.io` |
