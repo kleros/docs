@@ -1,0 +1,33 @@
+---
+title: "October 5, 2026"
+description: "Court derives Reality.eth answer options on-chain and warns jurors about mismatches, Foresight shows notional volume per market, and a fix for the VeaShi Arbitrum to Tempo route."
+---
+
+## New features
+
+### Verified Reality.eth answer options in Court
+
+[Kleros Court](/court/overview) now looks up [Reality.eth](/products/reality) questions and their templates on-chain to build the answer options for these cases. It no longer relies on the arbitrable's display script. This stops crafted question parameters from changing the options jurors see.
+
+Court also shows a notice on the case page when:
+
+- Other interfaces display different answer options. Vote according to the options shown in Court.
+- The question parameters are malformed, or the options could not be verified or determined. Read the question carefully. If in doubt, refuse to arbitrate.
+
+### Notional volume breakdown in Foresight
+
+The [Foresight](/products/foresight) header now shows the notional volume across markets. Click it to open a breakdown by market and by outcome, in sDAI and USD.
+
+## Updates
+
+### USD values in the Foresight header
+
+Total liquidity in the [Foresight](/products/foresight) header now displays in USD, matching volume. Both values wait for the sDAI price before they appear. Chart legend prices now show two decimals.
+
+### Reality.eth library updates
+
+Dispute Resolver, the Kleros SDK, and the [Reality.eth cross-chain proxies](/products/reality) now use updated Reality.eth libraries.
+
+## Bug fixes
+
+**VeaShi Arbitrum to Tempo route** — The Arbitrum to Tempo route in `@kleros/veashi-sdk` now points to the correct address. See [VeaShi deployment addresses](/developers/crosschain/vea-deployment-addresses).
