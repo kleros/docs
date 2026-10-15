@@ -59,11 +59,7 @@ Companion documents, deliberately not repeated here:
   | **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
 </Warning>
 
-You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. The `instructions` string you receive when you connect names your key's deployment, court and juror count, and says whether your Preset broadcasts or only simulates.
-
-<Info>
-  **Read it on connect and believe it over any document**, this one included.
-</Info>
+You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. The `instructions` string you receive when you connect names your key's deployment, court and juror count, and says whether your Preset broadcasts or only simulates. **Read it on connect and believe it over any document**, this one included.
 
 Both deployments are exercised in that order: a dispute is created on the Testnet (`arbitrum-sepolia-testnet`), checked in the Court interface, and only then created on Beta (`arbitrum-one`).
 
@@ -87,9 +83,7 @@ Partner disputes today go to the Agentic Commerce Court — your partner page an
 | Beta | `arbitrum-one` | `34` | **10 min** | 45 min | 30 min | 36 h |
 | Testnet | `arbitrum-sepolia-testnet` | `8` | **15 min** | 45 min | 30 min | 45 min |
 
-<Tip>
-  Those numbers come back as `timesPerPeriod`, in seconds, ordered `[evidence, commit, vote, appeal]`. **Read them at run time; do not hard-code them.** They are governance parameters, they differ per court and per deployment — as the table shows — and the court your Preset files into is named in your `instructions` string. Note that the court **ids** differ too, so a court id is not portable between the two deployments.
-</Tip>
+Those numbers come back as `timesPerPeriod`, in seconds, ordered `[evidence, commit, vote, appeal]`. **Read them at run time; do not hard-code them.** They are governance parameters, they differ per court and per deployment — as the table shows — and the court your Preset files into is named in your `instructions` string. Note that the court **ids** differ too, so a court id is not portable between the two deployments.
 
 Three things that follow, and matter more than the numbers:
 
@@ -141,23 +135,15 @@ field to branch on is `status`:
 | `mined` | The dispute exists and the fee is spent. | Record **both** ids — `coreDisputeID`, which every read below is keyed on, and `localDisputeID`, which `evidence_list` is — and submit your evidence with [step 3](#step-3-submit-the-evidence-document). |
 | `unknown` | Broadcast, but no receipt arrived in time. The dispute probably exists. | **Do not file again.** A second filing pays a second fee and creates a second dispute. Escalate to a human with the `txHash`. |
 
-<Note>
-  **There is no `reverted` status.** A creation transaction that was mined and failed arrives as a refusal, `TRANSACTION_REVERTED` with `isError: true`, never as a result to branch on — see [When something goes wrong](#when-something-goes-wrong). So a result without `isError` is always one of the three rows above.
+**There is no `reverted` status.** A creation transaction that was mined and failed arrives as a refusal, `TRANSACTION_REVERTED` with `isError: true`, never as a result to branch on — see [When something goes wrong](#when-something-goes-wrong). So a result without `isError` is always one of the three rows above.
 
-  A failure comes back as `isError: true` with text shaped `CODE: message` — for example `INSUFFICIENT_BALANCE: …`. There is no machine-readable code field to switch on; match a short leading phrase at most, and expect the prose to move between releases. When a failure text says the transaction **may have been sent**, treat it exactly like `unknown` above.
-</Note>
+A failure comes back as `isError: true` with text shaped `CODE: message` — for example `INSUFFICIENT_BALANCE: …`. There is no machine-readable code field to switch on; match a short leading phrase at most, and expect the prose to move between releases. When a failure text says the transaction **may have been sent**, treat it exactly like `unknown` above.
 
-<Warning>
-  **Make one write at a time.** Steps 1, 2 and 3 run one at a time for your organisation. A write sent while another of yours is still running comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**: wait for the other write to return, then call again. It is never queued for you, so a client that makes tool calls in parallel must serialise these three. Reads such as `dispute_get` are never held back.
-</Warning>
+**Make one write at a time.** Steps 1, 2 and 3 run one at a time for your organisation. A write sent while another of yours is still running comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**: wait for the other write to return, then call again. It is never queued for you, so a client that makes tool calls in parallel must serialise these three. Reads such as `dispute_get` are never held back.
 
-<Tip>
-  **`unknown` is the exception to "verbatim".** That one result is prefixed with a plain-English warning before the JSON, so `JSON.parse` on the whole text throws. Every other status is bare JSON. If you parse defensively, parse the last JSON object in the text rather than the whole of it.
-</Tip>
+**`unknown` is the exception to "verbatim".** That one result is prefixed with a plain-English warning before the JSON, so `JSON.parse` on the whole text throws. Every other status is bare JSON. If you parse defensively, parse the last JSON object in the text rather than the whole of it.
 
-<Info>
-  **A simulation cannot be escalated into a filing by you.** Whether your Preset broadcasts is set on this service, not passed as an argument. If a real filing is wanted and your instructions say you are in simulation, say so and let a human arrange it.
-</Info>
+**A simulation cannot be escalated into a filing by you.** Whether your Preset broadcasts is set on this service, not passed as an argument. If a real filing is wanted and your instructions say you are in simulation, say so and let a human arrange it.
 
 #### The two dispute ids
 
@@ -295,17 +281,13 @@ truncated before they reached us, compare `cid` against your own.
 | `mined` | The Evidence document is recorded and the gas is spent. | Verify with `evidence_list` on step 1's `localDisputeID` if you want the record; nothing else is owed. |
 | `unknown` | Broadcast, but no receipt arrived in time. The document is probably recorded. | **Do not submit again.** An `evidence_list` read cannot settle it for you — see below. Escalate with the `txHash`. |
 
-<Note>
-  **`reverted` is not a status on this tool**, just as it is not on step 1. A submission that was mined and failed arrives as a refusal named `TRANSACTION_REVERTED` with `isError: true`, not as an ordinary result you branch on.
+**`reverted` is not a status on this tool**, just as it is not on step 1. A submission that was mined and failed arrives as a refusal named `TRANSACTION_REVERTED` with `isError: true`, not as an ordinary result you branch on.
 
-  Branch on `isError` first on every tool here: a refusal is `CODE: message` as plain text, so parsing it as JSON throws. On steps 1 and 3 alike, the absence of `isError` means the transaction is not known to have reverted: `simulated` sent nothing and `mined` succeeded, but `unknown` has no receipt, so it cannot say either way.
+Branch on `isError` first on every tool here: a refusal is `CODE: message` as plain text, so parsing it as JSON throws. On steps 1 and 3 alike, the absence of `isError` means the transaction is not known to have reverted: `simulated` sent nothing and `mined` succeeded, but `unknown` has no receipt, so it cannot say either way.
 
-  `unknown` is prefixed with a plain-English warning before the JSON here exactly as it is on step 1, so `JSON.parse` on the whole text throws. Every other status on both tools is bare JSON; parse the last JSON object in the text if you parse defensively.
-</Note>
+`unknown` is prefixed with a plain-English warning before the JSON here exactly as it is on step 1, so `JSON.parse` on the whole text throws. Every other status on both tools is bare JSON; parse the last JSON object in the text if you parse defensively.
 
-<Tip>
-  A duplicate submission is untidy rather than harmful, which is the whole difference from step 1: it costs gas and shows the jurors the same document twice, but it pays no arbitration fee and creates no second dispute. That is why the rule after an uncertain outcome is _read back, then decide_ — not "never retry".
-</Tip>
+A duplicate submission is untidy rather than harmful, which is the whole difference from step 1: it costs gas and shows the jurors the same document twice, but it pays no arbitration fee and creates no second dispute. That is why the rule after an uncertain outcome is _read back, then decide_ — not "never retry".
 
 <AccordionGroup>
   <Accordion title="This spends gas, and no cost ceiling bounds it" icon="gas-pump">
@@ -323,7 +305,7 @@ truncated before they reached us, compare `cid` against your own.
 
 ### Verifying a submission needs the other dispute id
 
-<Warning>
+<Warning title="Two dispute ids">
   **Measured 2026-09-10 on Testnet (`arbitrum-sepolia-testnet`), and this is the sharpest edge in this document.** A Kleros v2 dispute has two ids: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
   On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
@@ -352,9 +334,7 @@ index rather than the chain, so an empty answer shortly after a submission is we
 absence. The strongest confirmation a submission landed is still step 3's own `mined` result and
 its `txHash`.
 
-<Note>
-  The translation is upstream's to do and is reported against AgentKit. `localDisputeID` is this service's answer in the meantime, and it stays useful either way.
-</Note>
+The translation is upstream's to do and is reported against AgentKit. `localDisputeID` is this service's answer in the meantime, and it stays useful either way.
 
 ## Step 4: Poll for the first-round ruling
 
@@ -492,13 +472,11 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
 
 ### Ignoring appeals: what you are actually choosing
 
-<Info>
-  Reading the first-round majority and stopping is a legitimate choice. Be explicit about what it means:
+Reading the first-round majority and stopping is a legitimate choice. Be explicit about what it means:
 
-  - The dispute keeps running without you. If an appeal is funded, `roundCount` increments and `status` goes back through `Commit` and `Vote` with more jurors, and **the final on-chain ruling may differ from the number you recorded**.
-  - Nothing calls back into your system either way. These disputes are created through the generic Kleros arbitrable, so there is no `rule()` callback into your contracts: whatever settlement follows is your own action, taken on the number you read.
-  - If you later want the final outcome, the same `dispute_get` call gives it: `ruled: true` with `status: "Executed"`, and `overridden: true` if a parent court changed it on appeal.
-</Info>
+- The dispute keeps running without you. If an appeal is funded, `roundCount` increments and `status` goes back through `Commit` and `Vote` with more jurors, and **the final on-chain ruling may differ from the number you recorded**.
+- Nothing calls back into your system either way. These disputes are created through the generic Kleros arbitrable, so there is no `rule()` callback into your contracts: whatever settlement follows is your own action, taken on the number you read.
+- If you later want the final outcome, the same `dispute_get` call gives it: `ruled: true` with `status: "Executed"`, and `overridden: true` if a parent court changed it on appeal.
 
 ## When something goes wrong
 
@@ -590,9 +568,7 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
   </Tab>
 </Tabs>
 
-<Note>
-  Anything you receive that is in none of these three tables and not in the read-path rows above is a code this document has not seen. Branch on `isError` first and escalate the text — do not pattern-match a code you have not been given a meaning for. On an unrecognised code, retry only step 2: a repeat pin of the same bytes publishes the same Attachment and spends nothing, while a repeat of step 1 or step 3 spends money against an outcome you have not established.
-</Note>
+Anything you receive that is in none of these three tables and not in the read-path rows above is a code this document has not seen. Branch on `isError` first and escalate the text — do not pattern-match a code you have not been given a meaning for. On an unrecognised code, retry only step 2: a repeat pin of the same bytes publishes the same Attachment and spends nothing, while a repeat of step 1 or step 3 spends money against an outcome you have not established.
 
 ## Before you go live
 
