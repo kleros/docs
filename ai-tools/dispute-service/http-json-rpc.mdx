@@ -7,34 +7,55 @@ description: "Call the Kleros Dispute Service as plain JSON-RPC over HTTP: heade
 
 For clients that want the read tools without adopting an MCP client library: POST JSON-RPC to `/mcp` with a bearer token and parse the reply. This is supported, not a workaround.
 
-Verified 2026-09-08 against the deployed service and `@modelcontextprotocol/server` 2.0.0. Two shapes this guide never uses are refused with HTTP 400. A request that claims protocol revision `2026-07-28` without the `MCP-Protocol-Version` header is refused with `-32020` (since `@modelcontextprotocol/server` 2.2.0). And **a JSON-RPC batch is refused at any size, a batch of one included** — send one request per POST. A bare call as described below is unaffected.
+<Accordion title="Compatibility notes" icon="circle-info">
+  Verified 2026-09-08 against the deployed service and `@modelcontextprotocol/server` 2.0.0. Two shapes this guide never uses are refused with HTTP 400:
+
+  - A request that claims protocol revision `2026-07-28` without the `MCP-Protocol-Version` header is refused with `-32020` (since `@modelcontextprotocol/server` 2.2.0).
+  - **A JSON-RPC batch is refused at any size, a batch of one included**. Send one request per POST.
+
+  A bare call as described below is unaffected.
+</Accordion>
 
 ## It works, and you do not need `initialize`
 
 `/mcp` answers a request that carries no protocol-revision claim statelessly, one request at a time. A bare `tools/call` returns a result with no handshake, no session ID, and nothing to keep alive between calls.
 
-Every call is independent. There is no session to establish, resume or tear down.
+<Check>
+  Every call is independent. There is no session to establish, resume or tear down.
+</Check>
 
 ## Two things that will break your first request
 
-**Send both media types in `Accept`, or you get a 406.** `Accept: application/json` on its own — and a missing `Accept` header — are both rejected before your request is read:
+<Warning>
+  `Accept: application/json` on its own, and a missing `Accept` header, are both rejected before your request is read:
 
-```json
-{"jsonrpc":"2.0","error":{"code":-32000,"message":"Not Acceptable: Client must accept both application/json and text/event-stream"},"id":null}
-```
+  ```json 406 response
+  {"jsonrpc":"2.0","error":{"code":-32000,"message":"Not Acceptable: Client must accept both application/json and text/event-stream"},"id":null}
+  ```
+</Warning>
 
-**A 200 comes back SSE-framed, not as a JSON body.** The response is `content-type: text/event-stream` and looks like this, so `JSON.parse` on the raw body fails:
+<Warning>
+  The response is `content-type: text/event-stream` and looks like this, so `JSON.parse` on the raw body fails:
 
-```text
-event: message
-data: {"result":{...},"jsonrpc":"2.0","id":1}
-```
+  ```text 200 response body
+  event: message
+  data: {"result":{...},"jsonrpc":"2.0","id":1}
+  ```
+</Warning>
 
-Take the line beginning `data:`, strip that prefix, and parse what is left. Despite the framing this is a single-shot request/response: one frame, then the connection closes. `GET /mcp` is a 404 — there is no stream to subscribe to.
+To parse the response:
+
+1. Take the line beginning `data:`.
+2. Strip that prefix.
+3. Parse what is left.
+
+<Note>
+  Despite the framing this is a single-shot request/response: one frame, then the connection closes. `GET /mcp` is a 404: there is no stream to subscribe to.
+</Note>
 
 ## A working call
 
-```sh
+```sh curl highlight={4} icon=terminal
 curl -sS https://kleros-dispute-service.fly.dev/mcp \
   -H "authorization: Bearer $KEY" \
   -H "content-type: application/json" \
@@ -42,41 +63,89 @@ curl -sS https://kleros-dispute-service.fly.dev/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"dispute_list","arguments":{"chain":"arbitrum-one"}}}'
 ```
 
-`tools/list` works over the same bare POST and returns each tool's input schema. Read argument names from there rather than guessing them — and read the `required` array as well as the properties, because on the write surface it is load-bearing: `dispute_create` requires `aliases` even from a caller who names no parties, so `"arguments":{}` is a refusal (`ALIASES_REQUIRED`) rather than a dispute, and `"arguments":{"aliases":{}}` is the call that creates a dispute with nobody named. Nothing forces a hand-written payload through the schema, so this is the one place a client that reads only property names quietly diverges from what the service accepts.
+`tools/list` works over the same bare POST and returns each tool's input schema. Read argument names from there rather than guessing them, and read the `required` array as well as the properties, because on the write surface it is load-bearing.
+
+<Warning>
+  `dispute_create` requires `aliases` even from a caller who names no parties:
+
+  | Arguments | Result |
+  | --- | --- |
+  | `"arguments":{}` | A refusal (`ALIASES_REQUIRED`) rather than a dispute |
+  | `"arguments":{"aliases":{}}` | The call that creates a dispute with nobody named |
+
+  Nothing forces a hand-written payload through the schema, so this is the one place a client that reads only property names quietly diverges from what the service accepts.
+</Warning>
 
 ## Read this before you trust a result
 
-Skipping `initialize` means you never receive the server's `instructions` string, which is where the arbitration semantics are written down. An MCP client is handed it on connect; you are not. Fetch it yourself — it is unauthenticated, and it is required reading, not background:
+Skipping `initialize` means you never receive the server's `instructions` string, which is where the arbitration semantics are written down. An MCP client is handed it on connect; you are not. Fetch it yourself:
 
-```text
-https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md
-```
+<Card title="Skill document" icon="book-open" href="https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md">
+  Unauthenticated. Required reading, not background.
+</Card>
 
 Treat that document as the source of truth. Two traps matter enough to name here, because both fail silently rather than erroring:
 
-- **Pass `chain` explicitly.** `dispute_get`, `dispute_list` and `evidence_list` all fan out when you omit it — across `ethereum`, then `gnosis`, then `arbitrum-one`, drained in that order. Page one is entirely `ethereum`, so an absent result means "not on `ethereum` yet", not "does not exist".
-- **`chain: "arbitrum-one"` is Kleros v2 Beta, and Beta is the live production deployment** — real disputes, real arbitration fees, real money. The name describes the release, not the network. The public testing deployment with test data is `chain: "arbitrum-sepolia-testnet"`. A client that read "Beta" as a testnet has already answered a question about live disputes with test data.
-- **`arbitrum-sepolia` is retired** and is now refused. It used to name the *Devnet*, which is now `arbitrum-sepolia-devnet` — so a find-and-replace onto the advertised `arbitrum-sepolia-testnet` succeeds and silently reads a different deployment. Relatedly, any unresolvable `chain` is now an error: it previously fell through to a live three-chain production fan-out reported as `success`.
-- **Failed tool calls carry no error code.** The result is `isError: true` plus rendered text — no code field, no `structuredContent`. AgentKit raises codes such as `CHAIN_REQUIRED` and `CHAIN_NOT_SUPPORTED` internally and they are real on its command line, but the MCP layer emits only the message, so they never reach you. Branch on `isError`; treat the text as prose that moves between releases.
+<AccordionGroup>
+  <Accordion title="Pass chain explicitly" icon="link">
+    `dispute_get`, `dispute_list` and `evidence_list` all fan out when you omit it: across `ethereum`, then `gnosis`, then `arbitrum-one`, drained in that order. Page one is entirely `ethereum`, so an absent result means "not on `ethereum` yet", not "does not exist".
+  </Accordion>
+
+  <Accordion title="arbitrum-one is Kleros v2 Beta, the live production deployment" icon="triangle-exclamation">
+    `chain: "arbitrum-one"` is Kleros v2 Beta, and Beta is the live production deployment: real disputes, real arbitration fees, real money. The name describes the release, not the network. The public testing deployment with test data is `chain: "arbitrum-sepolia-testnet"`. A client that read "Beta" as a testnet has already answered a question about live disputes with test data.
+  </Accordion>
+
+  <Accordion title="arbitrum-sepolia is retired" icon="ban">
+    `arbitrum-sepolia` is retired and is now refused. It used to name the _Devnet_, which is now `arbitrum-sepolia-devnet`, so a find-and-replace onto the advertised `arbitrum-sepolia-testnet` succeeds and silently reads a different deployment. Relatedly, any unresolvable `chain` is now an error: it previously fell through to a live three-chain production fan-out reported as `success`.
+  </Accordion>
+
+  <Accordion title="Failed tool calls carry no error code" icon="circle-exclamation">
+    The result is `isError: true` plus rendered text: no code field, no `structuredContent`. AgentKit raises codes such as `CHAIN_REQUIRED` and `CHAIN_NOT_SUPPORTED` internally and they are real on its command line, but the MCP layer emits only the message, so they never reach you. Branch on `isError`; treat the text as prose that moves between releases.
+  </Accordion>
+</AccordionGroup>
 
 The skill document also covers what `ruled` means on each Kleros generation, why `dispute_get` and `dispute_list` can disagree about it, and which tools refuse to fan out at all.
 
 ## One request per POST
 
-Send each JSON-RPC message in a POST of its own. A JSON-RPC array — a batch, of any length, 1 included — is refused with HTTP 400 before any tool runs:
+Send each JSON-RPC message in a POST of its own. A JSON-RPC array (a batch, of any length, 1 included) is refused with HTTP 400 before any tool runs:
 
-```json
+```json 400 batch refusal
 {"jsonrpc":"2.0","error":{"code":-32600,"message":"Invalid Request: JSON-RPC batches are not accepted. Send one request per POST."},"id":null}
 ```
 
-The refusal is decided after your key is checked and metered, so a refused batch still spends one request of your limit. The MCP protocol itself dropped JSON-RPC batching as of revision 2025-06-18, so a current MCP client never sends one.
+<Note>
+  The refusal is decided after your key is checked and metered, so a refused batch still spends one request of your limit.
+</Note>
+
+The MCP protocol itself dropped JSON-RPC batching as of revision 2025-06-18, so a current MCP client never sends one.
 
 ## One write at a time per organisation
 
-`dispute_create`, `evidence_pin` and `evidence_submit` run one at a time per organisation — strictly, per signer your key's Preset names. A write that arrives while another of your organisation's writes is still running is not queued. It comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**, so call it again once your other write has returned. If your client makes tool calls in parallel, serialise the writes. Reads are never held back by this, and other organisations' writes do not block yours.
+`dispute_create`, `evidence_pin` and `evidence_submit` run one at a time per organisation (strictly, per signer your key's Preset names).
+
+<Warning>
+  A write that arrives while another of your organisation's writes is still running is not queued. It comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**, so call it again once your other write has returned.
+</Warning>
+
+<Tip>
+  If your client makes tool calls in parallel, serialise the writes. Reads are never held back by this, and other organisations' writes do not block yours.
+</Tip>
 
 ## Limits and health
 
-Your key is metered at **30 requests per minute**, per key. One request is one POST, and since a POST carries exactly one call, one request is one tool call. Going over returns status 429 with `{"error":"rate limit exceeded"}`. A missing or unrecognised token returns status 401 with `{"error":"unauthorized"}`. An oversized request body returns status 413 with `{"error":"request body too large"}` — a guard on the size of the whole HTTP request, not a limit on any one argument, and ordinary calls are nowhere near it. None of the three is JSON-RPC framed — all are plain JSON, and all are decided before your request reaches the JSON-RPC layer, so check the HTTP status first.
+Your key is metered at **30 requests per minute**, per key. One request is one POST, and since a POST carries exactly one call, one request is one tool call.
 
-`/health` is unauthenticated so the platform can probe it. A green `/health` means the HTTP process is up; it does not mean the arbitration backend is reachable, which is only exercised by a real tool call.
+| Status | Body | Cause |
+| --- | --- | --- |
+| 429 | `{"error":"rate limit exceeded"}` | Going over the rate limit |
+| 401 | `{"error":"unauthorized"}` | A missing or unrecognised token |
+| 413 | `{"error":"request body too large"}` | An oversized request body: a guard on the size of the whole HTTP request, not a limit on any one argument, and ordinary calls are nowhere near it |
+
+<Tip>
+  None of the three is JSON-RPC framed: all are plain JSON, and all are decided before your request reaches the JSON-RPC layer, so check the HTTP status first.
+</Tip>
+
+<Note>
+  `/health` is unauthenticated so the platform can probe it. A green `/health` means the HTTP process is up; it does not mean the arbitration backend is reachable, which is only exercised by a real tool call.
+</Note>
