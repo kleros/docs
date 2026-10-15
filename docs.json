@@ -9,9 +9,6 @@
     "dark": "#f60c36"
   },
   "favicon": "/logo/Kleros logo_updated_white square.svg",
-  "background": {
-    "decoration": "grid"
-  },
   "navbar": {
     "links": [
       {
