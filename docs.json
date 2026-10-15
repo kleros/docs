@@ -309,6 +309,20 @@
               "developers/subgraph/endpoints",
               "developers/subgraph/queries"
             ]
+          },
+          {
+            "group": "AI Tools",
+            "pages": [
+              {
+                "group": "Dispute Service",
+                "pages": [
+                  "ai-tools/dispute-service/overview",
+                  "ai-tools/dispute-service/http-json-rpc",
+                  "ai-tools/dispute-service/dispute-flow",
+                  "ai-tools/dispute-service/dispute-templates"
+                ]
+              }
+            ]
           }
         ]
       },

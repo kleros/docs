@@ -1,0 +1,82 @@
+---
+title: "Kleros Dispute Service"
+description: "Create Kleros v2 disputes, submit evidence and read rulings through one authenticated MCP endpoint, without deploying an arbitrable contract."
+---
+
+{/* Generated from the kleros-dispute-service repository. Edit it there and re-export; changes made here are overwritten. */}
+
+The Kleros Dispute Service lets a platform send its users' disputes to Kleros without deploying an
+arbitrable contract of its own. Over one authenticated endpoint you create a Kleros v2 dispute,
+publish and submit evidence for the jurors, and read the ruling back. The same endpoint also serves
+read access to Kleros courts, disputes, evidence, jurors and stakes.
+
+It is built for agents: the endpoint is an MCP server, so an MCP client discovers the tools and
+their rules on connect. Any HTTP client can call it too, as plain JSON-RPC.
+
+> **Experimental.** The service is a proof of concept, operated by Kleros with API keys issued by
+> hand to integrating partners. Its tools and their outputs may change between releases. Disputes
+> created on **Beta** (`arbitrum-one`) are real: Beta is Kleros v2 **live production**, with real
+> jurors and real arbitration fees. "Beta" is the release name, not a test network.
+
+## How it works
+
+Each partner holds one API key per deployment, and each key carries a **Preset** set up by Kleros:
+the deployment, the court, the number of jurors, the dispute template jurors read, the wallet that
+pays the arbitration fee, and a ceiling on that fee. A dispute creation therefore takes almost no
+input — just the addresses of the parties, if you know them — and cannot be pointed at a different
+court, template or deployment by mistake.
+
+| Deployment | `chain` | What it is |
+| --- | --- | --- |
+| **Beta** | `arbitrum-one` | Kleros v2 live production. Real disputes, real fees. |
+| **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
+
+Rehearse every integration on the Testnet (`arbitrum-sepolia-testnet`) key first, and look at the
+dispute in the Kleros Court interface before using the Beta (`arbitrum-one`) key.
+
+## The tools
+
+| Tools | What they do | Who can call them |
+| --- | --- | --- |
+| `dispute_create`, `evidence_pin`, `evidence_submit` | Create a dispute, publish an attachment to IPFS, submit evidence against a dispute | Keys with a Preset — all three together |
+| `dispute_get`, `dispute_list`, `dispute_brief`, `dispute_policy`, `evidence_list` | Read disputes, their policies and their evidence | Every key |
+| `court_list`, `court_get`, `court_policy`, `juror_info`, `juror_top`, `stake_list`, `arbitrable_classify` | Read courts, jurors, stakes and arbitrable contracts | Every key |
+
+The read tools cover Kleros v2 (`arbitrum-one`, `arbitrum-sepolia-testnet`) and Kleros v1
+(`ethereum`, `gnosis`). Disputes are created on Kleros v2 only. Your key's `tools/list` is the
+source of truth for what it can call.
+
+## Connecting
+
+The endpoint is `https://kleros-dispute-service.fly.dev/mcp`, and every request carries your key as
+`Authorization: Bearer <key>`. Each key is limited to 30 requests per minute.
+
+From an MCP client, add it as a remote HTTP server with that header — for example, in Claude Code:
+
+```sh
+claude mcp add --transport http kleros-dispute-service \
+  https://kleros-dispute-service.fly.dev/mcp --header "Authorization: Bearer $KEY"
+```
+
+On connect, the client receives an `instructions` string naming your key's deployment, court, juror
+count and whether it really creates disputes or only simulates them. **Believe it over any
+document**, these pages included. The full arbitration semantics are served, unauthenticated, as a
+[skill document](https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md).
+
+From any other HTTP client, follow [Calling the service as raw HTTP JSON-RPC](/ai-tools/dispute-service/http-json-rpc): one POST per call, no
+session, and two headers that trip up a first request.
+
+## Getting a key
+
+Keys are issued by Kleros to integrating partners. To request one, submit the contact form at
+[ai.kleros.io](https://ai.kleros.io). You will receive one key per deployment, a partner page
+describing your Preset — your alias slots, your dispute template and what each ruling means — and
+these pages.
+
+## Where to go next
+
+| You want | Read |
+| --- | --- |
+| The wire protocol — headers, framing, auth, rate limits | [Calling the service as raw HTTP JSON-RPC](/ai-tools/dispute-service/http-json-rpc) |
+| One dispute end to end: create, evidence, poll the ruling, every refusal code | [One dispute, from creation to a ruling](/ai-tools/dispute-service/dispute-flow) |
+| How a dispute template works, and what it never contains | [Dispute templates](/ai-tools/dispute-service/dispute-templates) |
