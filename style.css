@@ -8,6 +8,12 @@
   max-width: 55rem;
 }
 
+/* Equal-height cards: wrap a CardGroup/Columns in <div className="equal-height-cards"> */
+.equal-height-cards [class*="grid"] > *,
+.equal-height-cards .card {
+  height: 100%;
+}
+
 #content-side-layout {
  padding-right: 30rem;
 }

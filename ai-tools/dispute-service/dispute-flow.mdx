@@ -1,0 +1,584 @@
+---
+title: "One dispute, from creation to a ruling"
+description: "One dispute end to end: publish the attachment, create the dispute, submit evidence, poll the first-round ruling, and every refusal code on the way."
+---
+
+{/* Generated from the kleros-dispute-service repository. Edit it there and re-export; changes made here are overwritten. */}
+
+The functional walkthrough of one dispute end to end: publish the attachment, create the dispute,
+put the evidence in front of the jurors, and read the first-round ruling back. It is the same for
+every partner. What differs between partners — the alias slots, the template jurors read, and what
+each ruling value means — is in that partner's own page, and this document points there wherever
+it matters.
+
+Companion documents, deliberately not repeated here:
+
+<CardGroup cols={2}>
+  <Card title="Calling the service as raw HTTP JSON-RPC" icon="plug" href="/ai-tools/dispute-service/http-json-rpc">
+    The wire protocol — headers, framing, auth, rate limits.
+  </Card>
+
+  <Card title="Dispute templates" icon="file-lines" href="/ai-tools/dispute-service/dispute-templates">
+    How a dispute template works, and what it never contains.
+  </Card>
+
+  <Card title="Your partner page" icon="id-card">
+    Your keys, alias slots, template and ruling values. It comes with this one.
+  </Card>
+
+  <Card title="Skill document" icon="book-open" href="https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md">
+    The arbitration semantics in full, always current.
+  </Card>
+</CardGroup>
+
+## The four steps, and the tool for each
+
+| # | Step | Through this service | Deadline |
+| --- | --- | --- | --- |
+| 1 | Create the dispute, naming the parties you know | ✅ `dispute_create`, if your Preset carries it | none — creating a dispute is untimed |
+| 2 | Publish the attachment to IPFS | ✅ `evidence_pin`, if your Preset carries it | none — but do it before step 1, see [Sequencing](#sequencing-publish-the-attachment-before-you-file) |
+| 3 | Submit the evidence against the dispute | ✅ `evidence_submit`, if your Preset carries it | before the evidence period closes — though a late one is still accepted |
+| 4 | Poll for the first-round ruling | ✅ `dispute_get` | the ruling waits for you |
+
+**`tools/list` is the source of truth for what your key can call, not this table.** Read it on connect and build against what is in it. Read each tool's input schema from `tools/list` too, for the exact spelling of its arguments: the field tables below say what a call carries, not how the keys are typed.
+
+**All three write tools are granted per key, by one Preset and together.** `dispute_create`, `evidence_pin` and `evidence_submit` stand or fall as a set: if your key has no Preset all three are absent from `tools/list`, and calling one returns a JSON-RPC `-32601 Method not found` rather than a refusal you can read. That is a different condition from a Preset that only simulates, which is covered under [What comes back](#what-comes-back) and again under [Steps 2 and 3](#steps-2-and-3-evidence-and-the-two-tools-that-carry-it).
+
+## Deployment names, tied to the value you pass
+
+<Warning>
+  Client-facing rule, and the one most likely to cost real money if it is missed:
+</Warning>
+
+| We say | You pass as `chain` | What it is |
+| --- | --- | --- |
+| **Beta** | `arbitrum-one` | Kleros v2 **live production**. Real disputes, real fees, real money. "Beta" is the release name, not a test network. |
+| **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
+
+You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. The `instructions` string you receive when you connect names your key's deployment, court and juror count, and says whether your Preset broadcasts or only simulates. **Read it on connect and believe it over any document**, this one included.
+
+Both deployments are exercised in that order: a dispute is created on the Testnet (`arbitrum-sepolia-testnet`), checked in the Court interface, and only then created on Beta (`arbitrum-one`).
+
+## The clock
+
+A Kleros v2 dispute walks through periods whose lengths are properties of the **court**, not of the dispute:
+
+```text Dispute lifecycle
+create ──▶ Evidence ──▶ Commit ──▶ Vote ──▶ Appeal ──────▶ Executed
+              ▲                               ▲
+              │                               │
+   step 3 must land here                  the first-round ruling
+   (step 2 belongs before                 is readable from here
+    the dispute exists)
+```
+
+Partner disputes today go to the Agentic Commerce Court — your partner page and your `instructions` string name yours — and **it is not configured identically on the two deployments**. Read with `court_get` on 2026-09-10:
+
+| Deployment | `chain` | Court | Evidence | Commit | Vote | Appeal |
+| --- | --- | --- | --- | --- | --- | --- |
+| Beta | `arbitrum-one` | `34` | **10 min** | 45 min | 30 min | 36 h |
+| Testnet | `arbitrum-sepolia-testnet` | `8` | **15 min** | 45 min | 30 min | 45 min |
+
+Those numbers come back as `timesPerPeriod`, in seconds, ordered `[evidence, commit, vote, appeal]`. **Read them at run time; do not hard-code them.** They are governance parameters, they differ per court and per deployment — as the table shows — and the court your Preset files into is named in your `instructions` string. Note that the court **ids** differ too, so a court id is not portable between the two deployments.
+
+Three things that follow, and matter more than the numbers:
+
+<AccordionGroup>
+  <Accordion title="The evidence period is a floor, not a window you can extend" icon="hourglass-start">
+    Ten minutes on Beta (`arbitrum-one`) is the shortest the dispute can stay open to evidence, and nothing you can call makes it longer. Budget against the shorter of the two figures, so the same code works on both deployments.
+  </Accordion>
+
+  <Accordion title="A period can close before its deadline" icon="forward">
+    The commit and vote periods advance as soon as the drawn jurors have all acted, which is how a first-round ruling can be readable ten to twenty minutes after creation when the court's periods sum to well over an hour. So the honest planning figure is a range, not a number: treat `deadline` as an upper bound on the current period and **poll `status` rather than modelling the clock**.
+  </Accordion>
+
+  <Accordion title="This court uses hidden votes" icon="eye-slash">
+    This court uses hidden votes (`hiddenVotes: true`), so jurors commit a hash first and reveal during the vote period. Nothing meaningful is readable from the ruling field until votes are revealed. Expect the useful value at the vote → appeal transition, not before.
+  </Accordion>
+</AccordionGroup>
+
+<Accordion title="What one real dispute actually did" icon="flask">
+  Measured on Testnet (`arbitrum-sepolia-testnet`, court `8`) on 2026-09-10, with three jurors: creation to `status: "Executed"` with a final ruling took about **66 minutes**, against configured periods summing to well over two hours. Both halves of the rule above showed up in the same dispute — the commit and vote periods closed early once the jurors had acted, and the dispute then sat in `Vote` with its vote `deadline` already in the past, because a period does not advance itself when the clock runs out. Plan for a wide range, poll `status`, and never infer the period from the time.
+</Accordion>
+
+## Step 1: Create the dispute
+
+```json dispute_create request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"dispute_create",
+  "arguments":{"aliases":{"<slot>":"0x…","<other slot>":"0x…"}}
+}}
+```
+
+`aliases` is the only argument, and the only thing that varies between one of your disputes and the next. Its slot names are your Preset's own — your partner page lists them and says who each party is, and your `instructions` string lists them too.
+
+<Info>
+  **`aliases` is required — send it even when it is empty.** `dispute_create` names it in the `required` array of its input schema, so `"arguments":{}` is refused with `ALIASES_REQUIRED` and nothing is created. To create a dispute with no party named, send `"arguments":{"aliases":{}}`. Naming no parties is legitimate; it just has to be something you say rather than something you leave out.
+</Info>
+
+- **Omit a party you do not know.** An omitted slot is simply absent from the filed template, which is how "unknown" is written. A zero address or any other placeholder is **refused**, not filed. That is per slot, and separate from the rule above: the `aliases` object itself is always sent.
+- **You cannot override the court, the juror count, the template or the deployment.** Your Preset fixes them. Passing them as arguments is ignored, not honoured.
+- **The parties are labels for jurors, not permissions.** Naming an address does not give it any standing, and evidence can be submitted by anyone.
+
+### What comes back
+
+The result is the filing tool's own JSON payload, verbatim — with one exception noted below. The
+field to branch on is `status`:
+
+| `status` | Meaning | What to do |
+| --- | --- | --- |
+| `simulated` | The fee was quoted, the wallet was checked, the call was simulated. **Nothing was sent, and no dispute exists.** | Report it as a simulation. Never as a filed dispute. |
+| `mined` | The dispute exists and the fee is spent. | Record **both** ids — `coreDisputeID`, which every read below is keyed on, and `localDisputeID`, which `evidence_list` is — and submit your evidence with [step 3](#step-3-submit-the-evidence-document). |
+| `unknown` | Broadcast, but no receipt arrived in time. The dispute probably exists. | **Do not file again.** A second filing pays a second fee and creates a second dispute. Escalate to a human with the `txHash`. |
+
+**There is no `reverted` status.** A creation transaction that was mined and failed arrives as a refusal, `TRANSACTION_REVERTED` with `isError: true`, never as a result to branch on — see [When something goes wrong](#when-something-goes-wrong). So a result without `isError` is always one of the three rows above.
+
+A failure comes back as `isError: true` with text shaped `CODE: message` — for example `INSUFFICIENT_BALANCE: …`. There is no machine-readable code field to switch on; match a short leading phrase at most, and expect the prose to move between releases. When a failure text says the transaction **may have been sent**, treat it exactly like `unknown` above.
+
+**Make one write at a time.** Steps 1, 2 and 3 run one at a time for your organisation. A write sent while another of yours is still running comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**: wait for the other write to return, then call again. It is never queued for you, so a client that makes tool calls in parallel must serialise these three. Reads such as `dispute_get` are never held back.
+
+**`unknown` is the exception to "verbatim".** That one result is prefixed with a plain-English warning before the JSON, so `JSON.parse` on the whole text throws. Every other status is bare JSON. If you parse defensively, parse the last JSON object in the text rather than the whole of it.
+
+**A simulation cannot be escalated into a filing by you.** Whether your Preset broadcasts is set on this service, not passed as an argument. If a real filing is wanted and your instructions say you are in simulation, say so and let a human arrange it.
+
+#### The two dispute ids
+
+**The dispute id arrives under `coreDisputeID`** — that exact casing, as a string, at the top level of the payload. Measured on the first broadcast run, 2026-09-10; there is no `id` and no `disputeId`, and nothing is nested. It is the id the Court interface shows and the id every read below is keyed on, with one exception you must read before you rely on it: [Verifying a submission](#verifying-a-submission-needs-the-other-dispute-id).
+
+**A `mined` payload carries a second identifier, and you must keep it.** `localDisputeID` is the arbitrable contract's own id for the same dispute — the id `evidence_list` is keyed on, and the one nothing else here returns ([Verifying a submission](#verifying-a-submission-needs-the-other-dispute-id)).
+
+- **It is decoded from the creation transaction, so it is on `mined` results only:** a `simulated` filing created no dispute to name, and an `unknown` one is reported before the receipt is read at all, so it carries a `txHash` and no `coreDisputeID` — and without that number there is nothing to match the creation event against. Do not expect to recover the field on an `unknown` by re-reading the receipt yourself against the id you think it got.
+- **When the receipt cannot be read back**, that same payload carries `localDisputeIDUnavailable` with the reason instead — never a guessed number, so branch on the field being present rather than on its value.
+- **The template id is still not returned.** If a filing comes back `unknown`, the `txHash` is your only handle; resolve the dispute from it before doing anything else, and never by filing again.
+
+## Steps 2 and 3: Evidence, and the two tools that carry it
+
+Evidence is two calls, and only the second one touches a chain. `evidence_pin` publishes one
+Attachment to IPFS over HTTP — no wallet, no signer, no gas — and hands back its URI.
+`evidence_submit` then records an Evidence document — a `name`, a `description` and optionally that
+URI — against the dispute in a transaction of its own, separate from the one that created it, so
+the jurors deciding it read your account of what happened. Both are granted by the same Preset that
+grants `dispute_create`: if step 1 is in your `tools/list`, these two are beside it.
+
+| Tool | Statuses |
+| --- | --- |
+| `dispute_create` (step 1) | `simulated`, `mined`, `unknown` |
+| `evidence_pin` (step 2) | `checked`, `published` |
+| `evidence_submit` (step 3) | `simulated`, `mined`, `unknown` |
+
+**The two status vocabularies are different, and only one of them looks like step 1's.**
+`evidence_pin` answers `checked` or `published` and nothing else — a vocabulary of its own, sharing
+no value with either other tool, so do not wait for a pin to say `mined`. `evidence_submit` answers
+`simulated`, `mined` or `unknown`, which is exactly step 1's list, and on both a mined-and-failed
+transaction is [a refusal](#step-3-submit-the-evidence-document) rather than a status. So a branch
+written for step 1 can be reused for step 3, and a branch written for either is wrong for step 2.
+
+### Sequencing: publish the Attachment before you file
+
+<Steps>
+  <Step title="Step 2: evidence_pin">
+    Publish the Attachment first. `evidence_pin` takes no dispute id.
+  </Step>
+  <Step title="Step 1: dispute_create">
+    Create the dispute. The evidence period starts now.
+  </Step>
+  <Step title="Step 3: evidence_submit">
+    Submit the Evidence document, with the URI already in hand.
+  </Step>
+</Steps>
+
+Two facts about the clock, rather than about either call, decide the order:
+
+- **The evidence period starts when the dispute is created, and on Beta (`arbitrum-one`) it is a
+  floor of ten minutes** — see [The clock](#the-clock). Nothing you can call extends it. So run
+  step 2 *before* step 1: `evidence_pin` takes no dispute id and nothing about it is
+  dispute-specific, so a URI already in hand means none of that ten minutes goes on the upload.
+- **A late submission is not refused.** There is no period gate on chain: an Evidence document
+  submitted after the evidence period closes is still accepted and still indexed. What you lose is
+  readers, since jurors who have voted do not go back. A missed window is a reason to submit anyway
+  and say so, not a reason to give up on the record.
+
+### Step 2: Publish the Attachment
+
+```json evidence_pin request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"evidence_pin",
+  "arguments":{"attachment":"JVBERi0xLjQK…","extension":"pdf"}
+}}
+```
+
+<Warning>
+  **Publication is permanent and public, and there is no call that undoes it.** A published file is addressable by anyone holding the CID, for as long as anyone pins it — this service cannot withdraw it and neither can you. Do not call this to experiment, and do not send a document somebody has not decided to publish.
+</Warning>
+
+<ParamField body="attachment" type="string" required>
+  The file's bytes inline, base64 (RFC 4648 §4, padded). **Not** base64url and **not** a `data:` URI: both are refused rather than decoded leniently, because decoding them would publish bytes you did not send. No URL you supply is fetched — there is no argument that takes one.
+</ParamField>
+
+<ParamField body="extension" type="string" required>
+  The file type without a dot — `pdf`, `png`, `json`. One to ten lowercase letters or digits. It is not a filename: no filename is sent, because an Evidence document has no field for one.
+</ParamField>
+
+| `status` | Meaning | What to do |
+| --- | --- | --- |
+| `checked` | Your Preset does not publish. The file was read, sized and validated; **nothing was uploaded and no CID exists.** There is no `fileURI`. | Report it as a check. Never as a published Attachment, and never pass a URI you invented to step 3. |
+| `published` | The bytes are on IPFS. The result carries `fileURI` (normalised to `/ipfs/<cid>`), `cid` and `verified`. | Pass `fileURI` to step 3 as `fileUri`. |
+
+The CID is read back through a gateway and confirmed to address the bytes that were sent before a
+`published` result comes back — that check is always on and is not a Preset's choice. It proves the
+upload landed intact; it does not prove you sent the whole file, so if the bytes could have been
+truncated before they reached us, compare `cid` against your own.
+
+- **There is no size limit in this tool's schema, deliberately.** The ceiling belongs to the
+  upstream endpoint and it is measured against the whole realised upload request rather than the
+  file, so it moves. Too large a file comes back as `FILE_TOO_LARGE`, which names the limit that
+  actually applied. Do not hard-code a number from anywhere, this document included. Note that
+  base64 costs about a third on top of the file's own size, and it is the encoded form that travels
+  in your request body — so a large file meets the HTTP `413` above before it ever meets
+  `FILE_TOO_LARGE`.
+- **Retrying a failed pin is safe.** The same bytes give the same CID, nothing is spent and nothing
+  is on a chain. Nothing is deduplicated either, so a retry really does re-upload — that costs time,
+  not money or a second identity for the file.
+
+### Step 3: Submit the Evidence document
+
+```json evidence_submit request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"evidence_submit",
+  "arguments":{"dispute":"219","name":"Order 4412: what was promised and what arrived",
+               "description":"On 2026-09-01 the buyer …",
+               "fileUri":"/ipfs/bafy…","fileTypeExtension":"pdf"}
+}}
+```
+
+<ParamField body="dispute" type="string" required>
+  The Core dispute id — the number Kleros Court shows and the one step 1 returns as `coreDisputeID`. It is **not** the id `evidence_list` takes; see [Verifying a submission](#verifying-a-submission-needs-the-other-dispute-id). Digits only. **Another real dispute's id is accepted, indexed and wrong**, and nothing on chain refuses it, so confirm the number before you call.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  A short title, as a party would name it. Sent as literal text: a name beginning with `@`, or equal to `-`, is recorded exactly as you wrote it.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  The document's body — your account, in prose. **Do not put a bare URI here.** The chain accepts it and it indexes as a document with no argument in it; the jurors then read nothing. An Attachment goes in `fileUri`.
+</ParamField>
+
+<ParamField body="fileUri" type="string">
+  The `/ipfs/<cid>` URI of one Attachment — what step 2 returned, or one you pinned yourself. Recorded as given and **never fetched**, so it must already resolve for a juror. At most 1024 characters, with no whitespace, no control characters and no leading `-`.
+</ParamField>
+
+<ParamField body="fileTypeExtension" type="string">
+  The Attachment's extension without a dot, same shape as step 2's `extension`. Read by the subgraph only, and **refused with `FILE_URI_INVALID` if you send it without `fileUri`** — it describes that Attachment and means nothing alone.
+</ParamField>
+
+| `status` | Meaning | What to do |
+| --- | --- | --- |
+| `simulated` | The dispute was read and the call was simulated. **Nothing was sent and nothing was recorded.** | Report it as a simulation. Never as a submitted document. |
+| `mined` | The Evidence document is recorded and the gas is spent. | Verify with `evidence_list` on step 1's `localDisputeID` if you want the record; nothing else is owed. |
+| `unknown` | Broadcast, but no receipt arrived in time. The document is probably recorded. | **Do not submit again.** An `evidence_list` read cannot settle it for you — see below. Escalate with the `txHash`. |
+
+**`reverted` is not a status on this tool**, just as it is not on step 1. A submission that was mined and failed arrives as a refusal named `TRANSACTION_REVERTED` with `isError: true`, not as an ordinary result you branch on.
+
+Branch on `isError` first on every tool here: a refusal is `CODE: message` as plain text, so parsing it as JSON throws. On steps 1 and 3 alike, the absence of `isError` means the transaction is not known to have reverted: `simulated` sent nothing and `mined` succeeded, but `unknown` has no receipt, so it cannot say either way.
+
+`unknown` is prefixed with a plain-English warning before the JSON here exactly as it is on step 1, so `JSON.parse` on the whole text throws. Every other status on both tools is bare JSON; parse the last JSON object in the text if you parse defensively.
+
+A duplicate submission is untidy rather than harmful, which is the whole difference from step 1: it costs gas and shows the jurors the same document twice, but it pays no arbitration fee and creates no second dispute. That is why the rule after an uncertain outcome is _read back, then decide_ — not "never retry".
+
+<AccordionGroup>
+  <Accordion title="This spends gas, and no cost ceiling bounds it" icon="gas-pump">
+    A filing's spend is capped by your Preset; a submission has no equivalent, so what it costs follows the length of what you send. The only bound is the length caps on `name` (1 KiB) and `description` (64 KiB), which are there to stop a runaway rather than to price anything. Keep `description` to the argument you want read.
+  </Accordion>
+
+  <Accordion title="Anyone may submit, including the counterparty" icon="users">
+    Naming a party in step 1 gives them no standing and gives you no exclusivity. There is no access control on evidence.
+  </Accordion>
+
+  <Accordion title="evidence_list reads back what landed" icon="list-check">
+    `evidence_list` reads back what landed, whoever submitted, with the IPFS content resolved. It is in your `tools/list` today and needs no Preset. But it is keyed on the `localDisputeID` from step 1 rather than on the id you just submitted against, so read the next section before treating its answer as verification.
+  </Accordion>
+</AccordionGroup>
+
+### Verifying a submission needs the other dispute id
+
+<Warning>
+  **A Kleros v2 dispute has two ids**: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
+
+  On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
+
+  | Call | Result |
+  | --- | --- |
+  | `evidence_list` with `131` | `{"items":[]}`, twice, 75 seconds apart — while the document was on chain |
+  | `evidence_list` with `81` | the document, resolved |
+</Warning>
+
+The two ids are equal on Beta (`arbitrum-one`), `ethereum` and `gnosis` as a matter of those
+deployments' history rather than of the protocol, so code checked only against Beta passes and then
+fails here. The first production dispute created through this service, on 2026-09-11, is one more
+case where they are equal, which is what makes Beta a misleading place to test this rather than a
+reassuring one. The equality ends for every later id the first time any other arbitrable
+creates a dispute there, with no change on either side and no error to catch.
+
+Three rules follow, and they override anything else in this document:
+
+1. **An empty `evidence_list` is not proof of absence.** It is equally the symptom of the wrong id, and it arrives with a suggested command line asserting "no evidence submitted yet" as fact. `dispute_get`'s `evidenceCount` is `null` on the same dispute, so it cannot contradict it either.
+2. **Never submit again because a list came back empty.** That is the one inference this asymmetry makes unsafe, and it is the inference the wording invites.
+3. **One payload carries the arbitrable's id, and only one.** A `mined` step 1 returns it as `localDisputeID`, decoded from the creation transaction on your behalf. Step 3 does not echo it, `dispute_get` and `dispute_brief` do not carry it, and a dispute you did not create through this service never gave you one. Keep it with the `coreDisputeID` from the same result; if you do not have it, treat a submission as unverified and say so, rather than reporting it absent.
+
+Even with the right id, a list read is confirmation rather than proof: `evidence_list` reads an
+index rather than the chain, so an empty answer shortly after a submission is weak evidence of
+absence. The strongest confirmation a submission landed is still step 3's own `mined` result and
+its `txHash`.
+
+The translation is upstream's to do and is reported against AgentKit. `localDisputeID` is this service's answer in the meantime, and it stays useful either way.
+
+## Step 4: Poll for the first-round ruling
+
+<Check>
+  The answer to the question this note exists for: **yes, the current majority is readable before the dispute resolves.** `dispute_get` reads the arbitrator contract live on every call, so it carries a ruling for a dispute that is still in progress — you do not have to wait for execution, and you do not have to care about appeals to get a number.
+</Check>
+
+```json dispute_get request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"dispute_get",
+  "arguments":{"id":"<dispute id>","chain":"<the chain your Preset files on>"}
+}}
+```
+
+### The shape of the response
+
+`dispute_get` answers with a paged envelope, not a bare row. The dispute is the first element of
+`items`, and the fields below are read off **that**, not off the top level:
+
+```json dispute_get response
+{"items":[{"id":"219","status":"Vote","ruling":"0","tied":true, "…":"…","chain":"arbitrum-one"}],
+ "nextCursor":null,"hasMore":false,"chainStatus":[{"chain":"arbitrum-one","ok":true}]}
+```
+
+A client that reads `.status` off the parsed object gets `undefined`. Read `items[0].status`, and
+check `chainStatus` when a field you expected is missing.
+
+### The fields that matter
+
+<ResponseField name="status" type="string">
+  The current period: `Evidence`, `Commit`, `Vote`, `Appeal`, `Executed`. This is your state machine.
+</ResponseField>
+
+<ResponseField name="ruling" type="string">
+  The **current** winning option, live from the contract. Populated during the round, not only after it.
+</ResponseField>
+
+<ResponseField name="tied" type="boolean">
+  `true` means no option leads yet. **This is the field that makes `ruling` interpretable.**
+</ResponseField>
+
+<ResponseField name="ruled" type="boolean">
+  Whether the dispute reached execution. You do not need it to be `true`.
+</ResponseField>
+
+<ResponseField name="ruledSemantics" type="string">
+  What `ruled` means on this row. On `dispute_get` it is always `onchain` — read straight from the arbitrator, which is why `ruled` is trustworthy here. It reads `period-reached` on `dispute_list`, where it is not.
+</ResponseField>
+
+<ResponseField name="rulingLabel" type="string">
+  The human label for `ruling`. Convenience only — do not parse it.
+</ResponseField>
+
+<ResponseField name="rulingOptions" type="array">
+  The option list, each carrying the ruling **value** it explains. Match on that value; it is not an array index.
+</ResponseField>
+
+<ResponseField name="roundCount" type="number">
+  `1` while the first round is live. Above `1` means an appeal was funded.
+</ResponseField>
+
+<ResponseField name="deadline" type="string | null">
+  ISO 8601 end of the current period, and an upper bound rather than a schedule. `null` when the underlying value is absent — do not read its presence as proof the dispute is still running, and do not read `1970-01-01` as anything but an unset value.
+</ResponseField>
+
+<ResponseField name="lastPeriodChange" type="string">
+  ISO 8601 entry into the current period.
+</ResponseField>
+
+<ResponseField name="unresolvedFields / unresolvedReason">
+  Always present. Non-empty means part of the row could not be resolved — that is the dispute's state, not a service fault.
+</ResponseField>
+
+### The trap: `ruling: "0"` means two different things
+
+<CodeGroup>
+
+```json No majority yet (tied)
+{"id":"219","status":"Vote","ruling":"0","ruled":false,"tied":true,
+ "rulingLabel":"Invalid / Refuse to Arbitrate"}        // NO MAJORITY YET — keep polling
+```
+
+```json Real majority
+{"id":"218","status":"Vote","ruling":"2","ruled":false,"tied":false,
+ "rulingLabel":"No","roundCount":1}                    // a real current majority
+```
+
+</CodeGroup>
+
+Both rows were observed on `arbitrum-one` on 2026-09-10, in another court, and are shown for shape. `0` is both "refuse to arbitrate" and "nobody is ahead yet", and `rulingLabel` renders the refuse-to-arbitrate wording in **both** cases.
+
+<Info>
+  **`tied` is the discriminator.** A client that reads `ruling` without `tied` will report a vote that has not happened as a juror refusal.
+</Info>
+
+Two consequences worth designing around:
+
+- **Poll with `dispute_get`, never with `dispute_list`.** The list tool is a subgraph snapshot, it can lag the chain, and it does not carry `tied` at all — the exact field you need.
+- **A tie survives to the end.** If the appeal period expires with the round still tied, the ruling finalises as `0`. Your handling of "no majority" is not a transient state, it is a real outcome.
+
+### The stop condition
+
+You are done with the first round when `status` becomes `Appeal`: that period opens only once the round's votes are in, so the majority you read there is the first round's verdict.
+
+```text Polling loop
+poll dispute_get every 30 s
+  while status is Evidence, Commit or Vote        → keep waiting
+  when  status is Appeal or Executed, or ruled is true:
+        if tied is true                           → no majority: handle as "undecided"
+        else                                      → record ruling, rulingLabel, roundCount, and the time
+```
+
+<CardGroup cols={3}>
+  <Card title="Cadence: one call every 30 seconds is plenty" icon="clock">
+    Your key is metered at 30 requests per minute, a `429` carries no `Retry-After`, and the dispute will not move faster than the chain.
+  </Card>
+
+  <Card title="Cap the loop on wall-clock time" icon="stopwatch">
+    If nothing has reached `Appeal` well past the sum of the court's periods, alert a human rather than polling forever — a dispute stuck in `Evidence` usually means jurors have not all been drawn.
+  </Card>
+
+  <Card title="Record roundCount next to the ruling" icon="clipboard-list">
+    It is what makes your snapshot auditable later: it says the number you acted on was the first round's.
+  </Card>
+</CardGroup>
+
+### What each ruling value means
+
+`ruling` is a number; what it decides is your template's. `0` with `tied: false` is always a
+refusal to arbitrate, and every other value is the template answer whose id carries the same
+number — `1` is `0x01`, `2` is `0x02`, and so on. Your partner page has the table for your
+template, with the outcome each value stands for.
+
+Treat that table as the expectation, and `rulingOptions` on the dispute itself as the truth: match your handler on the `value` each option carries. Confirm the mapping once, on the first Testnet (`arbitrum-sepolia-testnet`) dispute, before wiring it to money.
+
+### Ignoring appeals: what you are actually choosing
+
+Reading the first-round majority and stopping is a legitimate choice. Be explicit about what it means:
+
+- The dispute keeps running without you. If an appeal is funded, `roundCount` increments and `status` goes back through `Commit` and `Vote` with more jurors, and **the final on-chain ruling may differ from the number you recorded**.
+- Nothing calls back into your system either way. These disputes are created through the generic Kleros arbitrable, so there is no `rule()` callback into your contracts: whatever settlement follows is your own action, taken on the number you read.
+- If you later want the final outcome, the same `dispute_get` call gives it: `ruled: true` with `status: "Executed"`, and `overridden: true` if a parent court changed it on appeal.
+
+## When something goes wrong
+
+<Tabs>
+  <Tab title="General">
+    | Symptom | Reading |
+    | --- | --- |
+    | HTTP `401` | Missing or unrecognised key. Decided before JSON-RPC — check the HTTP status first. |
+    | HTTP `429` | Over 30 requests per minute on your key. No `Retry-After`; back off blindly. |
+    | HTTP `400` with `-32600` | You sent a JSON-RPC batch. Every batch is refused, whatever its size; send one request per POST. |
+    | `WRITE_IN_PROGRESS` | Another write for your organisation — step 1, 2 or 3 — was still running. **Nothing was sent.** Call again once it has returned. |
+    | HTTP `413` | The HTTP request body was too large. A guard on the whole request, not a limit on any one argument, and decided before JSON-RPC — so it arrives as an HTTP status, never as a tool refusal. **Step 2 is the one call that can reach it**, since the file travels inline as base64; a step 2 body that trips this never reaches `evidence_pin`, so you get no `FILE_TOO_LARGE` and no result to parse. Everything else in this document is nowhere near it. |
+    | `isError: true` with prose | A tool refusal. There is **no error code field** — names like `IPFS_UNAVAILABLE` appear in the text only. Branch on `isError`, then read. |
+    | `unresolvedFields` non-empty | Partial resolution. Normal, and commonest on the Testnet (`arbitrum-sepolia-testnet`). Report it as the dispute's state, not an outage. Retrying does not help. |
+    | `IPFS_UNAVAILABLE` | The content needs repinning. Do not switch gateway — the one in use already fans out server-side. |
+    | A "suggested command" in a result | Results carry command lines **on success as well as failure**. You cannot run them. Read the tool and arguments out of them, or ignore them. Never show them to a user as something to run. |
+    | A green `/health` but failing calls | `/health` is unauthenticated and only says the HTTP process is up. Only a real tool call exercises the arbitration backend. |
+
+    On the write path — steps 1, 2 and 3 — the names in the other tabs appear in the refusal text. Each says something specific happened, or more usefully did not.
+
+    **Read the tables per step, not as one vocabulary.** Steps 1 and 3 overlap heavily — both sign, so both reach the wallet, the signer and the chain — but not completely: a cost ceiling belongs only to a filing, and a dispute id only to a submission. Step 2 overlaps neither, because it signs nothing and reads no chain.
+  </Tab>
+  <Tab title="Step 1: Create">
+    Step 1, creating the dispute:
+
+    | Name in the text | Reading |
+    | --- | --- |
+    | `INSUFFICIENT_BALANCE` | The wallet cannot cover the arbitration fee. **Nothing was sent.** Funding it is a human step on this side. |
+    | `COST_CEILING_EXCEEDED` | The quoted fee is above the ceiling your Preset sets. Nothing was sent, and you cannot raise it from your side. |
+    | `ZERO_ADDRESS_ALIAS` | You passed the zero address for a party. Omit the slot instead — that is how "unknown" is written. Nothing was filed. |
+    | `ALIASES_REQUIRED` | You called with no `aliases` at all — an empty argument object, or none. Nothing was filed. Send `{"aliases":{}}` if you mean to name no parties; see [Step 1](#step-1-create-the-dispute). |
+    | `UNKNOWN_ALIAS_SLOT`, `INVALID_ALIASES` | `aliases` named a slot your Preset does not have, or was not an object of slot to address. A JavaScript prototype name — `toString`, `constructor`, `__proto__` and the rest — is not a slot either, unless your Preset really declares one. An array is refused here too, `[]` included — it is not the way to say "no parties", `{}` is. An address that is not a string is `INVALID_ALIASES` naming the slot it arrived on. Nothing was filed. |
+    | `TEMPLATE_INVALID`, `POLICY_URI_INVALID`, `RULING_OPTIONS_INVALID`, `COURT_OUT_OF_RANGE`, `JURORS_INVALID`, `CHAIN_NOT_SUPPORTED`, `UNKNOWN`, `VALIDATION_ERROR` | Your Preset is misconfigured on this side. Nothing was sent; escalate rather than retrying. |
+    | `KEY_FILE_MISSING`, `KEY_FILE_PERMISSIONS` | The signer this service holds for you is missing or unusable. Nothing was sent, and it is a human step on this side. |
+    | `FILING_TIMED_OUT` | The filing did not finish in three minutes and was stopped. On a broadcasting Preset the transaction **may have been sent** — treat it exactly like `unknown`. |
+    | `FILING_CHILD_FAILED` | The filing process died without a readable result. Same rule: if the text says it may have been sent, treat it like `unknown`. |
+    | `TRANSACTION_REVERTED` | Mined and failed, so the dispute does not exist. The revert returned the arbitration fee, but the gas is spent. This is where `reverted` goes on this tool, as a refusal rather than a status. The text says the failure came after sending and that the outcome is known — no dispute, no arbitration fee spent — and tells you not to file again blind: escalate with the transaction hash it carries. Unlike the possibly-sent failures above, a second filing here does not pay a second fee, so creating the dispute again is legitimate — but it is a human's call once they have read why that transaction reverted. |
+    | `FILING_FAILED` | The Disputant CLI refused and named no code of its own, so this service supplied one. It carries no promise either way: read the text, and on a broadcasting Preset treat it as possibly sent unless the text says otherwise. |
+  </Tab>
+  <Tab title="Step 2: Pin">
+    Step 2, publishing the Attachment. **The safe list is closed and the default outside it is "in doubt"** — anything not named below, including a code this document has never seen, is reported on a publishing Preset as possibly published. The service fails closed rather than guessing, and steps 1 and 3 do the same with their own lists.
+
+    #### Nothing was published
+
+    These, and only these, mean nothing was published:
+
+    | Name in the text | Reading |
+    | --- | --- |
+    | `ATTACHMENT_INVALID` | `attachment` was not standard padded base64. Refused rather than decoded leniently. |
+    | `EXTENSION_INVALID` | `extension` was not one to ten lowercase letters or digits. Send `pdf`, not `.pdf`. |
+    | `FILE_UNREADABLE`, `FILE_EMPTY`, `FILE_TOO_LARGE` | Decided before a socket opens, on a checking Preset as much as a publishing one — which is what makes a check a real pre-flight. `FILE_TOO_LARGE` names the limit that applied; do not hard-code it. |
+    | `UNKNOWN`, `VALIDATION_ERROR` | The pin was refused before it began. |
+
+    #### In doubt
+
+    Everything else leaves publication in doubt on a publishing Preset, and the refusal text says so:
+
+    | Name in the text | Reading |
+    | --- | --- |
+    | `UPLOAD_FAILED`, `UPLOAD_MISMATCH` | `UPLOAD_FAILED` covers a response that could not be read; `UPLOAD_MISMATCH` means the bytes went out and something else came back. |
+    | `PIN_TIMED_OUT`, `PIN_CHILD_FAILED` | This service stopped waiting, or the pin process died without a readable result. |
+    | `PIN_FAILED` | The pin was refused, with no code of its own to report. |
+    | anything not named above | Treated as in doubt by default rather than assumed safe. |
+
+    **In doubt is not the same as lost, and the response to all of it is the same: retry.** The same bytes give the same CID, so a repeat publishes the same Attachment rather than a second one, and nothing is spent. What you must not do is report the file as unpublished.
+
+    No wallet, chain, gas or dispute code is reachable from step 2 at all: it signs nothing and reads no chain. A refusal naming one of those is not coming from this call.
+  </Tab>
+  <Tab title="Step 3: Submit">
+    Step 3, submitting the Evidence document:
+
+    | Name in the text | Reading |
+    | --- | --- |
+    | `DISPUTE_INVALID`, `NAME_INVALID`, `DESCRIPTION_INVALID`, `FILE_URI_INVALID`, `EXTENSION_INVALID` | Your arguments, refused here before anything is spawned: a non-numeric `dispute`, an empty or over-long `name` (1 KiB) or `description` (64 KiB), a `fileUri` that is empty, longer than 1024 characters, or carrying whitespace, a control character or a leading `-`, or a `fileTypeExtension` of the wrong shape or sent without `fileUri`. Note the units differ: `name` and `description` are capped in UTF-8 bytes, `fileUri` in characters. **Nothing was sent.** |
+    | `EVIDENCE_INVALID` | The document was refused upstream. Nothing was sent. |
+    | `DISPUTE_NOT_FOUND`, `DISPUTE_NOT_ADDRESSABLE` | The arbitrator cannot resolve that id, or a different arbitrable owns that dispute and its own tooling must file against it. Both are about reachability — **neither checks that the dispute is yours.** Nothing was sent. |
+    | `SIMULATION_REVERTED` | The call was simulated and would have failed. Nothing was sent. |
+    | `INSUFFICIENT_BALANCE` | The wallet cannot cover the gas. Nothing was sent; funding it is a human step on this side. |
+    | `WRONG_CHAIN`, `NUMBER_INVALID`, `CHAIN_NOT_SUPPORTED`, `UNKNOWN`, `VALIDATION_ERROR` | Your Preset is misconfigured on this side, or the endpoint answered for the wrong deployment. Nothing was sent; escalate rather than retrying. |
+    | `KEY_FILE_MISSING`, `KEY_FILE_PERMISSIONS`, `KEY_FILE_UNREADABLE`, `KEY_FILE_INVALID` | The signer this service holds for you is missing or unusable. Nothing was sent, and it is a human step on this side — a simulating Preset hits these too, because a signer is required even to simulate. |
+    | `TRANSACTION_REVERTED` | Mined and failed. Gas was spent and **nothing was recorded** — this is where `reverted` goes on this tool, as a refusal rather than a status. The text says the failure came after sending and that the outcome is known, and tells you not to submit again blind: escalate with the transaction hash it carries. Unlike the in-doubt failures below, there is nothing to read back — the document is not on record — so submitting again is legitimate, but it is a human's call once they have read why that transaction reverted. |
+    | `BROADCAST_FAILED`, `RPC_ERROR` | The node refused the signed transaction, or an RPC call failed. Treat the outcome as in doubt. |
+    | `SUBMISSION_TIMED_OUT`, `SUBMISSION_CHILD_FAILED` | This service stopped waiting, or the submission process died without a readable result. On a broadcasting Preset the text says whether the transaction may have gone out. |
+    | `SUBMISSION_FAILED` | The submission was refused, with no code of its own to report. Not an infrastructure hiccup and not transient: on a broadcasting Preset it is treated as possibly sent. |
+
+    The same closed-list rule applies: a code not named above is reported on a broadcasting Preset as possibly sent, rather than assumed safe.
+
+    **On any step 3 outcome that is in doubt, escalate rather than retry** — `evidence_list` does not settle it for you ([Verifying a submission](#verifying-a-submission-needs-the-other-dispute-id)), so a blind retry is guesswork. It is still cheaper than step 1's `unknown`, where a retry buys a second dispute and a second fee, but cheap is not a reason to guess.
+  </Tab>
+</Tabs>
+
+Anything you receive that is in none of these three tables and not in the read-path rows above is a code this document has not seen. Branch on `isError` first and escalate the text — do not pattern-match a code you have not been given a meaning for. On an unrecognised code, retry only step 2: a repeat pin of the same bytes publishes the same Attachment and spends nothing, while a repeat of step 1 or step 3 spends money against an outcome you have not established.
+
+## Before you go live
+
+<Steps>
+  <Step title="Read tools/list on connect and build against it">
+    It is the only statement of what your key can call. All three write tools arrive together or not at all, so a key that can create a dispute can also publish an Attachment and submit an Evidence document. Read the input schemas too, and honour their `required` arrays: `dispute_create` requires `aliases` even when it is empty, and a client that omits it is refused with `ALIASES_REQUIRED` on every call.
+  </Step>
+  <Step title="Check whether your Preset broadcasts">
+    One flag governs all three writes. If your `instructions` string says simulation, step 1 creates nothing and there is no dispute for step 4 to read, step 2 checks the file and publishes nothing, and step 3 records nothing. Arranging a broadcasting Preset is a human step on this side, not an argument you can pass.
+  </Step>
+  <Step title="Rehearse on the Testnet first">
+    Rehearse on the Testnet first (`arbitrum-sepolia-testnet`) and look at the dispute in the Court interface: the template renders there, and one that reads badly to a juror is much cheaper to find before Beta (`arbitrum-one`) than after.
+  </Step>
+  <Step title="Confirm on that first real run">
+    Confirm on that first real run, and assert on it in your client, that the `rulingOptions` values map onto your three answers the way your partner page's ruling table expects ([Step 4](#what-each-ruling-value-means)). The `mined` payload itself has now been read on a real filing — a Testnet (`arbitrum-sepolia-testnet`) dispute carried to a ruling — and it carries both identifiers: `coreDisputeID`, the number the Court interface shows, and `localDisputeID`, the one `evidence_list` keys on. Read the second from the creation result and keep it; no other call here returns it.
+  </Step>
+</Steps>
