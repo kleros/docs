@@ -40,24 +40,20 @@ Companion documents, deliberately not repeated here:
 | 3 | Submit the evidence against the dispute | ✅ `evidence_submit`, if your Preset carries it | before the evidence period closes — though a late one is still accepted |
 | 4 | Poll for the first-round ruling | ✅ `dispute_get` | the ruling waits for you |
 
-<Note>
-  **`tools/list` is the source of truth for what your key can call, not this table.** Read it on connect and build against what is in it. Read each tool's input schema from `tools/list` too, for the exact spelling of its arguments: the field tables below say what a call carries, not how the keys are typed.
-</Note>
+**`tools/list` is the source of truth for what your key can call, not this table.** Read it on connect and build against what is in it. Read each tool's input schema from `tools/list` too, for the exact spelling of its arguments: the field tables below say what a call carries, not how the keys are typed.
 
-<Info>
-  **All three write tools are granted per key, by one Preset and together.** `dispute_create`, `evidence_pin` and `evidence_submit` stand or fall as a set: if your key has no Preset all three are absent from `tools/list`, and calling one returns a JSON-RPC `-32601 Method not found` rather than a refusal you can read. That is a different condition from a Preset that only simulates, which is covered under [What comes back](#what-comes-back) and again under [Steps 2 and 3](#steps-2-and-3-evidence-and-the-two-tools-that-carry-it).
-</Info>
+**All three write tools are granted per key, by one Preset and together.** `dispute_create`, `evidence_pin` and `evidence_submit` stand or fall as a set: if your key has no Preset all three are absent from `tools/list`, and calling one returns a JSON-RPC `-32601 Method not found` rather than a refusal you can read. That is a different condition from a Preset that only simulates, which is covered under [What comes back](#what-comes-back) and again under [Steps 2 and 3](#steps-2-and-3-evidence-and-the-two-tools-that-carry-it).
 
 ## Deployment names, tied to the value you pass
 
 <Warning>
   Client-facing rule, and the one most likely to cost real money if it is missed:
-
-  | We say | You pass as `chain` | What it is |
-  | --- | --- | --- |
-  | **Beta** | `arbitrum-one` | Kleros v2 **live production**. Real disputes, real fees, real money. "Beta" is the release name, not a test network. |
-  | **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
 </Warning>
+
+| We say | You pass as `chain` | What it is |
+| --- | --- | --- |
+| **Beta** | `arbitrum-one` | Kleros v2 **live production**. Real disputes, real fees, real money. "Beta" is the release name, not a test network. |
+| **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
 
 You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. The `instructions` string you receive when you connect names your key's deployment, court and juror count, and says whether your Preset broadcasts or only simulates. **Read it on connect and believe it over any document**, this one included.
 
@@ -101,9 +97,9 @@ Three things that follow, and matter more than the numbers:
   </Accordion>
 </AccordionGroup>
 
-<Note>
+<Accordion title="What one real dispute actually did" icon="flask">
   Measured on Testnet (`arbitrum-sepolia-testnet`, court `8`) on 2026-09-10, with three jurors: creation to `status: "Executed"` with a final ruling took about **66 minutes**, against configured periods summing to well over two hours. Both halves of the rule above showed up in the same dispute — the commit and vote periods closed early once the jurors had acted, and the dispute then sat in `Vote` with its vote `deadline` already in the past, because a period does not advance itself when the clock runs out. Plan for a wide range, poll `status`, and never infer the period from the time.
-</Note>
+</Accordion>
 
 ## Step 1: Create the dispute
 
@@ -305,7 +301,7 @@ A duplicate submission is untidy rather than harmful, which is the whole differe
 
 ### Verifying a submission needs the other dispute id
 
-<Warning title="Two dispute ids">
+<Warning>
   **Measured 2026-09-10 on Testnet (`arbitrum-sepolia-testnet`), and this is the sharpest edge in this document.** A Kleros v2 dispute has two ids: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
   On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
