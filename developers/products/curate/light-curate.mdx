@@ -10,7 +10,7 @@ This covers Light Curate (V1). For V2 Curate, see the [Developers Curate section
 </Note>
 
 <Warning>
-**Curate V1 (Classic Curate and Light Curate) is being deprecated.** The V1 smart contracts stay deployed and unchanged, so existing lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Curate V1, and creating new lists through Kleros frontends is being disabled. Banners in the [Curate V1 app](https://curate.kleros.io) flag the change.
+**Classic Curate is being deprecated.** The Classic Curate contracts stay deployed and unchanged, so existing Classic lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Classic Curate, and creating Classic lists through Kleros frontends is being disabled. **Light Curate and Stake Curate are not affected** and remain fully supported; new lists, including the Kleros Verified registries shown on the [Curate app](https://curate.kleros.io) homepage, are created on Light Curate.
 </Warning>
 
 ---
@@ -316,7 +316,7 @@ Before touching MetaEvidence or deposits for an unfamiliar address:
 7. Call `addItem("/ipfs/<hash>")` with `msg.value = deposit`.
 
 <Note>
-Deploying a list does not make it visible on the Curate frontend. The public list-of-lists mechanism uses Curate Classic (`GeneralizedTCR`), not Light Curate's `addItem(string)`. Note that creating new lists through Kleros frontends is being disabled as part of the Curate V1 deprecation (see the notice at the top of this page).
+Deploying a list does not make it visible on the Curate frontend: it must also be registered in the list of lists. Since August 2026 the list of lists (the Kleros Verified registries on the Curate homepage) runs on Light Curate, at `0x2418D887d0d0Fe03b793A6aF4321fa488226A0b5` on Gnosis and `0x2aCF59a420cA888f46d46974f62570F8a38Cd4Da` on Ethereum Mainnet.
 </Note>
 
 ---

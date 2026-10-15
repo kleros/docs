@@ -172,9 +172,15 @@ The following table shows the production court configuration as deployed. Values
 | 30 | Oracle Court | 1 | 5,000 | 0.0069 | 31 | No |
 | 31 | Automated Curation | 10 | 2,600 | 0.00017 | 3 | No |
 | 32 | Corte de Defensores del Cliente | 29 | 8,400 | 0.0054 | 15 | No |
+| 33 | Commerce Court | 1 | 11,000 | 0.018 | 31 | Yes |
+| 34 | Agentic Commerce Court | 33 | 11,000 | 0.00027 | 7 | Yes |
  
 <Note>
 Courts 29 and 32 (Argentina Consumer Protection courts) use `DisputeKitGated` and require specific SBT eligibility tokens. See [Deployment Addresses V2](/reference/contracts/deployment-addresses) for SBT contract addresses.
+</Note>
+
+<Note>
+The **Agentic Commerce Court** (court 34, created August 2026) handles small-scale commercial disputes, particularly those arising from commercial interactions between AI agents. See its [policy on v2.kleros.builders](https://v2.kleros.builders/#/courts/34/purpose).
 </Note>
  
 ### Testnet Parameters (Arbitrum Sepolia)
@@ -186,7 +192,7 @@ Testnet court parameters are deliberately different from mainnet to allow faster
 | minStake | 2,300 PNK | 150 PNK |
 | feeForJuror | 0.005 ETH | 0.00001 ETH |
 | timesPerPeriod | ~3 days each | 12 hours each |
-| Courts available | 32 | 6 |
+| Courts available | 34 | 6 |
  
 Do not use testnet parameter values to estimate mainnet costs or draw probabilities.
 

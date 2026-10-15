@@ -309,6 +309,12 @@
               "developers/subgraph/endpoints",
               "developers/subgraph/queries"
             ]
+          },
+          {
+            "group": "AI Tools",
+            "pages": [
+              "ai-tools/kleros-cli"
+            ]
           }
         ]
       },
