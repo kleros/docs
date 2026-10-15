@@ -107,7 +107,7 @@ Three things that follow, and matter more than the numbers:
   </Accordion>
 </AccordionGroup>
 
-<Note title="What one real dispute actually did">
+<Note>
   Measured on Testnet (`arbitrum-sepolia-testnet`, court `8`) on 2026-09-10, with three jurors: creation to `status: "Executed"` with a final ruling took about **66 minutes**, against configured periods summing to well over two hours. Both halves of the rule above showed up in the same dispute — the commit and vote periods closed early once the jurors had acted, and the dispute then sat in `Vote` with its vote `deadline` already in the past, because a period does not advance itself when the clock runs out. Plan for a wide range, poll `status`, and never infer the period from the time.
 </Note>
 
@@ -323,7 +323,7 @@ truncated before they reached us, compare `cid` against your own.
 
 ### Verifying a submission needs the other dispute id
 
-<Warning title="Two dispute ids">
+<Warning>
   **Measured 2026-09-10 on Testnet (`arbitrum-sepolia-testnet`), and this is the sharpest edge in this document.** A Kleros v2 dispute has two ids: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
   On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
@@ -492,7 +492,7 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
 
 ### Ignoring appeals: what you are actually choosing
 
-<Info title="Ignoring appeals">
+<Info>
   Reading the first-round majority and stopping is a legitimate choice. Be explicit about what it means:
 
   - The dispute keeps running without you. If an appeal is funded, `roundCount` increments and `status` goes back through `Commit` and `Vote` with more jurors, and **the final on-chain ruling may differ from the number you recorded**.
