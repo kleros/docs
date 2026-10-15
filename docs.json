@@ -10,7 +10,7 @@
   },
   "favicon": "/logo/Kleros logo_updated_white square.svg",
   "background": {
-    "decoration": "gradient"
+    "decoration": "grid"
   },
   "navbar": {
     "links": [
