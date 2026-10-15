@@ -14,11 +14,23 @@ contains, and how it reaches the chain. The format itself is specified in the
 
 ## What a template contains
 
-The stored template is a JSON file carrying `title`, `description`, `question`, `answers`,
-`policyURI`, `category`, `specification`, `lang` and `version`. Every Preset on a partner's keys
-creates disputes from the same file; there is no per-deployment variant. The `policyURI` points at
-a pinned policy that governs wherever the template's summary is silent, and it is the same on every
-deployment.
+The stored template is a JSON file carrying `title`, `description`, `question`, `answers`, `policyURI`, `category`, `specification`, `lang` and `version`.
+
+```json Stored template
+{
+  "title": "…",
+  "description": "…",
+  "question": "…",
+  "answers": "…",
+  "policyURI": "…",
+  "category": "…",
+  "specification": "…",
+  "lang": "…",
+  "version": "…"
+}
+```
+
+Every Preset on a partner's keys creates disputes from the same file; there is no per-deployment variant. The `policyURI` points at a pinned policy that governs wherever the template's summary is silent, and it is the same on every deployment.
 
 Your template, like the rest of your Preset, is selected by the API key you send — the key itself,
 not any name attached to it. A new key is a new Preset.
@@ -28,35 +40,42 @@ not any name attached to it. A new key is a new Preset.
 Three groups of field are deliberately absent, and a template carrying any of them is refused when
 it is configured, so a dispute is never created from one:
 
-- **`aliases`** — injected per dispute from the caller's one argument. The slot names are the
-  Preset's own and are listed on each partner page; a slot the caller leaves out is absent from
-  the created dispute rather than zero-filled.
-- **`arbitratorChainID` and `arbitratorAddress`** — resolved for the Preset's deployment from the
-  pinned `@kleros/kleros-v2-contracts` at creation time, so no address is written down in the
-  template and a stale pair cannot be stored. The Testnet (`arbitrum-sepolia-testnet`) and the
-  Devnet (`arbitrum-sepolia-devnet`) share chain id `421614` and only the address separates them,
-  so a swapped pair would be invisible in a rendered template.
-- **`$schema` and `type`** — the Disputant CLI validates against a strict authoring schema that
-  has neither and rejects unknown fields outright.
+| Field | Why it is never in the template |
+| --- | --- |
+| **`aliases`** | Injected per dispute from the caller's one argument. The slot names are the Preset's own and are listed on each partner page; a slot the caller leaves out is absent from the created dispute rather than zero-filled. |
+| **`arbitratorChainID`** and **`arbitratorAddress`** | Resolved for the Preset's deployment from the pinned `@kleros/kleros-v2-contracts` at creation time, so no address is written down in the template and a stale pair cannot be stored. The Testnet (`arbitrum-sepolia-testnet`) and the Devnet (`arbitrum-sepolia-devnet`) share chain id `421614` and only the address separates them, so a swapped pair would be invisible in a rendered template. |
+| **`$schema`** and **`type`** | The Disputant CLI validates against a strict authoring schema that has neither and rejects unknown fields outright. |
 
 ## There is no registration step; the template travels on the transaction
 
-Nobody registers a template in advance and keeps an id. The rendered JSON is passed **inline on
-the creation call** — `DisputeResolver.createDisputeForTemplate`, whose `_disputeTemplate`
-parameter is a string — and the resolver registers it and reports the id it minted, so an id
-exists per dispute: the creation that made core dispute `131` on Testnet
-(`arbitrum-sepolia-testnet`) minted template `116`. The template id is not returned to you, and
-nothing you call takes one. A new version of a template is a change on this service's side;
-nothing on chain needs to be kept in step, and you call nothing differently.
+Nobody registers a template in advance and keeps an id.
+
+<Steps>
+  <Step title="Passed inline on the creation call">
+    The rendered JSON is passed **inline on the creation call** — `DisputeResolver.createDisputeForTemplate`, whose `_disputeTemplate` parameter is a string.
+  </Step>
+  <Step title="Registered by the resolver">
+    The resolver registers it and reports the id it minted, so an id exists per dispute: the creation that made core dispute `131` on Testnet (`arbitrum-sepolia-testnet`) minted template `116`.
+  </Step>
+  <Step title="Never returned to you">
+    The template id is not returned to you, and nothing you call takes one.
+  </Step>
+</Steps>
+
+A new version of a template is a change on this service's side; nothing on chain needs to be kept in step, and you call nothing differently.
 
 ## References
 
-- Dispute template format — the
-  [Kleros dispute template reference](https://docs.kleros.io/reference/data-formats/dispute-templates),
-  and its schema, `NewDisputeTemplate.schema.json` in `kleros/kleros-v2`:
-  `https://raw.githubusercontent.com/kleros/kleros-v2/dev/kleros-sdk/config/v2-disputetemplate/NewDisputeTemplate.schema.json`
-- Deployment addresses — `@kleros/kleros-v2-contracts` on npm. Resolve addresses from it or from
-  the tools rather than copying them.
-- Template preview tool (Testnet, `arbitrum-sepolia-testnet`) — paste a partner's template to see
-  it as a juror will:
-  `https://devtools.v2-testnet.kleros.builders/dispute-template`
+<CardGroup cols={3}>
+  <Card title="Dispute template format" icon="file-code">
+    The [Kleros dispute template reference](https://docs.kleros.io/reference/data-formats/dispute-templates), and its schema, [`NewDisputeTemplate.schema.json`](https://raw.githubusercontent.com/kleros/kleros-v2/dev/kleros-sdk/config/v2-disputetemplate/NewDisputeTemplate.schema.json) in `kleros/kleros-v2`.
+  </Card>
+
+  <Card title="Deployment addresses" icon="npm" href="https://www.npmjs.com/package/@kleros/kleros-v2-contracts">
+    `@kleros/kleros-v2-contracts` on npm. Resolve addresses from it or from the tools rather than copying them.
+  </Card>
+
+  <Card title="Template preview tool" icon="eye" href="https://devtools.v2-testnet.kleros.builders/dispute-template">
+    Testnet, `arbitrum-sepolia-testnet`. Paste a partner's template to see it as a juror will.
+  </Card>
+</CardGroup>
