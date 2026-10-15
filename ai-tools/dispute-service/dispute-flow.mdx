@@ -302,7 +302,7 @@ A duplicate submission is untidy rather than harmful, which is the whole differe
 ### Verifying a submission needs the other dispute id
 
 <Warning>
-  **Measured 2026-09-10 on Testnet (`arbitrum-sepolia-testnet`), and this is the sharpest edge in this document.** A Kleros v2 dispute has two ids: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
+  **A Kleros v2 dispute has two ids**: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
   On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
 
