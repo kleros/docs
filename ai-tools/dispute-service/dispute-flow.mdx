@@ -103,11 +103,11 @@ Three things that follow, and matter more than the numbers:
   </Accordion>
 
   <Accordion title="This court uses hidden votes" icon="eye-slash">
-    `hiddenVotes: true`, so jurors commit a hash first and reveal during the vote period. Nothing meaningful is readable from the ruling field until votes are revealed. Expect the useful value at the vote → appeal transition, not before.
+    This court uses hidden votes (`hiddenVotes: true`), so jurors commit a hash first and reveal during the vote period. Nothing meaningful is readable from the ruling field until votes are revealed. Expect the useful value at the vote → appeal transition, not before.
   </Accordion>
 </AccordionGroup>
 
-<Note>
+<Note title="What one real dispute actually did">
   Measured on Testnet (`arbitrum-sepolia-testnet`, court `8`) on 2026-09-10, with three jurors: creation to `status: "Executed"` with a final ruling took about **66 minutes**, against configured periods summing to well over two hours. Both halves of the rule above showed up in the same dispute — the commit and vote periods closed early once the jurors had acted, and the dispute then sat in `Vote` with its vote `deadline` already in the past, because a period does not advance itself when the clock runs out. Plan for a wide range, poll `status`, and never infer the period from the time.
 </Note>
 
@@ -165,7 +165,7 @@ field to branch on is `status`:
 
 **A `mined` payload carries a second identifier, and you must keep it.** `localDisputeID` is the arbitrable contract's own id for the same dispute — the id `evidence_list` is keyed on, and the one nothing else here returns ([Verifying a submission](#verifying-a-submission-needs-the-other-dispute-id)).
 
-- **It is on `mined` results only.** It is decoded from the creation transaction, so a `simulated` filing created no dispute to name, and an `unknown` one is reported before the receipt is read at all, so it carries a `txHash` and no `coreDisputeID` — and without that number there is nothing to match the creation event against. Do not expect to recover the field on an `unknown` by re-reading the receipt yourself against the id you think it got.
+- **It is decoded from the creation transaction, so it is on `mined` results only:** a `simulated` filing created no dispute to name, and an `unknown` one is reported before the receipt is read at all, so it carries a `txHash` and no `coreDisputeID` — and without that number there is nothing to match the creation event against. Do not expect to recover the field on an `unknown` by re-reading the receipt yourself against the id you think it got.
 - **When the receipt cannot be read back**, that same payload carries `localDisputeIDUnavailable` with the reason instead — never a guessed number, so branch on the field being present rather than on its value.
 - **The template id is still not returned.** If a filing comes back `unknown`, the `txHash` is your only handle; resolve the dispute from it before doing anything else, and never by filing again.
 
@@ -194,14 +194,14 @@ written for step 1 can be reused for step 3, and a branch written for either is 
 ### Sequencing: publish the Attachment before you file
 
 <Steps>
-  <Step title="evidence_pin: publish the Attachment">
-    Step 2 runs first. It takes no dispute id.
+  <Step title="Step 2: evidence_pin">
+    Publish the Attachment first. `evidence_pin` takes no dispute id.
   </Step>
-  <Step title="dispute_create: create the dispute">
-    Step 1 starts the evidence period.
+  <Step title="Step 1: dispute_create">
+    Create the dispute. The evidence period starts now.
   </Step>
-  <Step title="evidence_submit: submit the Evidence document">
-    Step 3 lands inside the evidence period, with the URI already in hand.
+  <Step title="Step 3: evidence_submit">
+    Submit the Evidence document, with the URI already in hand.
   </Step>
 </Steps>
 
@@ -323,7 +323,7 @@ truncated before they reached us, compare `cid` against your own.
 
 ### Verifying a submission needs the other dispute id
 
-<Warning>
+<Warning title="Two dispute ids">
   **Measured 2026-09-10 on Testnet (`arbitrum-sepolia-testnet`), and this is the sharpest edge in this document.** A Kleros v2 dispute has two ids: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
   On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
@@ -492,7 +492,7 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
 
 ### Ignoring appeals: what you are actually choosing
 
-<Info>
+<Info title="Ignoring appeals">
   Reading the first-round majority and stopping is a legitimate choice. Be explicit about what it means:
 
   - The dispute keeps running without you. If an appeal is funded, `roundCount` increments and `status` goes back through `Commit` and `Vote` with more jurors, and **the final on-chain ruling may differ from the number you recorded**.
@@ -541,9 +541,9 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
   <Tab title="Step 2: Pin">
     Step 2, publishing the Attachment. **The safe list is closed and the default outside it is "in doubt"** — anything not named below, including a code this document has never seen, is reported on a publishing Preset as possibly published. The service fails closed rather than guessing, and steps 1 and 3 do the same with their own lists.
 
-    <Check>
-      These, and only these, mean nothing was published:
-    </Check>
+    #### Nothing was published
+
+    These, and only these, mean nothing was published:
 
     | Name in the text | Reading |
     | --- | --- |
@@ -552,9 +552,9 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
     | `FILE_UNREADABLE`, `FILE_EMPTY`, `FILE_TOO_LARGE` | Decided before a socket opens, on a checking Preset as much as a publishing one — which is what makes a check a real pre-flight. `FILE_TOO_LARGE` names the limit that applied; do not hard-code it. |
     | `UNKNOWN`, `VALIDATION_ERROR` | The pin was refused before it began. |
 
-    <Warning>
-      Everything else leaves publication in doubt on a publishing Preset, and the refusal text says so:
-    </Warning>
+    #### In doubt
+
+    Everything else leaves publication in doubt on a publishing Preset, and the refusal text says so:
 
     | Name in the text | Reading |
     | --- | --- |
@@ -604,9 +604,9 @@ Treat that table as the expectation, and `rulingOptions` on the dispute itself a
     One flag governs all three writes. If your `instructions` string says simulation, step 1 creates nothing and there is no dispute for step 4 to read, step 2 checks the file and publishes nothing, and step 3 records nothing. Arranging a broadcasting Preset is a human step on this side, not an argument you can pass.
   </Step>
   <Step title="Rehearse on the Testnet first">
-    Use `arbitrum-sepolia-testnet` and look at the dispute in the Court interface: the template renders there, and one that reads badly to a juror is much cheaper to find before Beta (`arbitrum-one`) than after.
+    Rehearse on the Testnet first (`arbitrum-sepolia-testnet`) and look at the dispute in the Court interface: the template renders there, and one that reads badly to a juror is much cheaper to find before Beta (`arbitrum-one`) than after.
   </Step>
   <Step title="Confirm on that first real run">
-    Assert on it in your client, that the `rulingOptions` values map onto your three answers the way your partner page's ruling table expects ([Step 4](#what-each-ruling-value-means)). The `mined` payload itself has now been read on a real filing — a Testnet (`arbitrum-sepolia-testnet`) dispute carried to a ruling — and it carries both identifiers: `coreDisputeID`, the number the Court interface shows, and `localDisputeID`, the one `evidence_list` keys on. Read the second from the creation result and keep it; no other call here returns it.
+    Confirm on that first real run, and assert on it in your client, that the `rulingOptions` values map onto your three answers the way your partner page's ruling table expects ([Step 4](#what-each-ruling-value-means)). The `mined` payload itself has now been read on a real filing — a Testnet (`arbitrum-sepolia-testnet`) dispute carried to a ruling — and it carries both identifiers: `coreDisputeID`, the number the Court interface shows, and `localDisputeID`, the one `evidence_list` keys on. Read the second from the creation result and keep it; no other call here returns it.
   </Step>
 </Steps>
