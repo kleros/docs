@@ -26,22 +26,22 @@ For clients that want the read tools without adopting an MCP client library: POS
 
 ## Two things that will break your first request
 
-<Warning>
-  `Accept: application/json` on its own, and a missing `Accept` header, are both rejected before your request is read:
+<Info>
+  **Send both media types in `Accept`, or you get a 406.** `Accept: application/json` on its own, and a missing `Accept` header, are both rejected before your request is read:
 
   ```json 406 response
   {"jsonrpc":"2.0","error":{"code":-32000,"message":"Not Acceptable: Client must accept both application/json and text/event-stream"},"id":null}
   ```
-</Warning>
+</Info>
 
-<Warning>
-  The response is `content-type: text/event-stream` and looks like this, so `JSON.parse` on the raw body fails:
+<Info>
+  **A 200 comes back SSE-framed, not as a JSON body.** The response is `content-type: text/event-stream` and looks like this, so `JSON.parse` on the raw body fails:
 
   ```text 200 response body
   event: message
   data: {"result":{...},"jsonrpc":"2.0","id":1}
   ```
-</Warning>
+</Info>
 
 To parse the response:
 
