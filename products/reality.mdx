@@ -47,7 +47,7 @@ sequenceDiagram
     Answerers post increasingly large bonds to assert their answer. Each challenger must at least double the previous bond. This economic escalation filters out low-confidence answers.
   </Step>
   <Step title="Kleros Arbitration (if needed)">
-    If the bond escalation reaches the arbitration threshold, the dispute is sent to Kleros Court. Jurors evaluate the question and provided answers, then vote on the correct outcome.
+    If the bond escalation reaches the arbitration threshold, the dispute is sent to Kleros Court. Jurors evaluate the question and provided answers, then vote on the correct outcome. Court builds the answer options from the on-chain question and template. If the case page shows a notice that other interfaces display different options, vote according to the options shown in Court. If the options could not be verified, read the question carefully and, if in doubt, refuse to arbitrate.
   </Step>
   <Step title="Answer Finalized">
     The winning answer whether determined by bond escalation or Kleros ruling becomes the final oracle output.

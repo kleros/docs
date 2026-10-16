@@ -1,0 +1,171 @@
+---
+title: "Legal Framework"
+description: "The legal basis for Kleros Enterprise: contractual autonomy, ADR recognition and functional equivalence; Kleros as arbitration, mediation and expert determination; country frameworks in the UK, Mexico and Argentina; and the Jalisco enforcement precedent."
+---
+
+# Legal Framework
+
+This page covers the legal basis for using Kleros, how it fits each dispute resolution mechanism, the country-specific frameworks that apply, and the court-enforcement precedent.
+
+---
+
+## Legal Foundations
+
+### Contractual autonomy
+
+Parties can agree to govern their disputes through Kleros, either in a contract clause or in a standalone commitment agreement.
+
+In the most basic and widely applicable framework, Kleros is a dispute resolution mechanism grounded in a private agreement between the parties, protected by party autonomy and the rule of *pacta sunt servanda*: validly executed agreements bind the parties and must be performed in good faith (for example, Articles 958 and 961 of the Argentine Civil and Commercial Code, Article 1134 of the French Code civil, and Article 1256 of the Italian Codice civile).
+
+In this framework the parties do not confer jurisdiction on a third party or set up arbitral proceedings in the technical sense. They contractually undertake to accept the outcome of the Kleros protocol as final. The decision is binding because of that prior commitment, not because it is arbitration.
+
+### Global acceptance of alternative dispute resolution
+
+Most jurisdictions now recognize alternative dispute resolution (ADR) as a legitimate way to resolve private disputes outside the courts. Examples include the [United Nations Convention on International Settlement Agreements Resulting from Mediation](https://www.singaporeconvention.org/convention/text), the [EU Directive on Consumer ADR](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32013L0011), consumer and online dispute resolution (ODR) regulations in many jurisdictions, and growing judicial acceptance of consensual private adjudication. Mediation, expert determination, dispute boards and ODR systems are commonly recognized. This trend has paved the way for more explicit recognition of decentralized justice systems like Kleros (see [Country-Specific Frameworks](#country-specific-frameworks)).
+
+### Functional equivalence
+
+The principle of functional equivalence, foundational to the [UNCITRAL Model Law on Electronic Commerce (1996)](https://uncitral.un.org/en/texts/ecommerce/modellaw/electronic_commerce) and the [EU eIDAS Regulation (910/2014)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=uriserv:OJ.L_.2014.257.01.0073.01.ENG), holds that digital methods produce the same legal effects as their traditional counterparts when they fulfil the same function. The fact that Kleros runs on smart contracts, blockchain infrastructure and cryptographic signatures does not in itself prevent legal recognition or enforcement, as long as those mechanisms perform the functions of paper agreements and conventional procedures.
+
+For the procedural guarantees built into every case, see [Due Process Guarantees](/enterprise/how-it-works#due-process-guarantees).
+
+---
+
+## Kleros and Dispute Resolution Mechanisms
+
+### Kleros as arbitration
+
+A Kleros resolution can be enforceable in two ways. The first, more limited, is as a **contractual obligation**: if the parties agreed in advance to abide by the outcome, that commitment is generally enforceable under contract law. The second, much stronger, is as a **formal arbitral award**, which brings its own recognition, enforcement and review regime.
+
+When a Kleros decision qualifies as an arbitral award, it can be enforced in more than 170 countries under the [New York Convention (1958)](https://www.newyorkconvention.org/english), with a narrow set of grounds for refusal. Courts do not reassess the merits, only basic procedural compliance. A decision valid only as a contract requires ordinary litigation to enforce, faces broader judicial review, and offers no reliable cross-border enforcement.
+
+International arbitration law gives parties broad autonomy to design their own procedure, and nothing prevents them from designating Kleros. Frameworks such as the [US ADR Act](https://www.law.cornell.edu/uscode/text/28/651), the [EU ADR Directive 2013/11/EU](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A32013L0011) and the [UNCITRAL Model Law](https://uncitral.un.org/en/texts/arbitration/modellaw/commercial_arbitration) define extrajudicial electronic mechanisms broadly enough to include a system like Kleros. The UNCITRAL Model Law does not require a permanent institution.
+
+Kleros rulings can also be **self-executing**: a smart contract carries out the outcome automatically (transferring funds, unlocking resources), so judicial enforcement is rarely needed. What a court might review is annulment on the grounds in [New York Convention Article V](https://www.newyorkconvention.org/english): incapacity of the parties, lack of notice, excess of mandate or public policy. The protocol mitigates these risks: proceedings cannot begin without mutual digital consent, and every stage (juror assignment, evidence exchange, voting) is recorded on-chain.
+
+**Commonly raised concerns** are (i) the applicable law, since jurors may decide by equity rather than a national law; (ii) arbitrability in consumer disputes, which some jurisdictions restrict; (iii) due process without a traditional tribunal; and (iv) technological accessibility. None of these is a structural barrier. Each can be addressed through careful drafting: expressly agreeing to equity-based decisions, fixing the arbitration seat, clearly accepting Kleros's rules, and ensuring procedural accessibility.
+
+#### The hybrid model
+
+A practical way to settle remaining doubts is to place Kleros inside a traditional arbitration. In the **hybrid model**, a conventional arbitrator manages the process (evidence, notifications) and delegates the substantive decision to Kleros, then issues a formal award incorporating the Kleros verdict. The result is a conventional arbitral award, signed by an identified arbitrator and recognizable under the New York Convention. This is the structure used in the [Jalisco case](#court-enforcement-precedent).
+
+#### Responses to common objections
+
+| Objection | Response |
+| --- | --- |
+| No traditional arbitral tribunal | The New York Convention does not define or require an institution, only that the decision-maker was constituted per the parties' agreement (Art. V.1.d) |
+| Unconventional tribunal composition | International arbitration law imposes no specific model for appointing arbitrators |
+| Decision by equity, not national law | UNCITRAL Model Law Art. 28.3 expressly permits *ex aequo et bono* arbitration by agreement. Parties can also require decisions under the applicable law: Kleros V2 supports credential-gated courts whose juror panels hold specified credentials, for example KYC-verified lawyers |
+| No physical seat | The seat can be fixed in the arbitration agreement (Model Law Art. 20(1)) |
+| No handwritten signature | NY Convention Art. IV and Model Law Art. 31 do not require one, and most jurisdictions accept electronic signatures |
+| On-chain award format | Under the hybrid model, an arbitrator drafts and signs a conventional award adopting the Kleros resolution, as in Jalisco |
+| No oral or in-person hearing | Due process requires a reasonable opportunity to present one's case (Art. V.1.b), not a physical hearing. Kleros provides a structured evidence period |
+| Automation undermines due process | Automation is compatible with due process when rules are clear, timelines are fixed and review exists |
+| Juror economic incentives create partiality | The Convention does not prohibit economic incentives. Kleros's incentives align juror decisions with correctness |
+| No identified applicable law | Parties can choose rules, principles or equity in the arbitration agreement |
+| Implicit waiver of classical formalism | By choosing Kleros, parties accept a non-traditional form of arbitration; demanding formalism afterwards contradicts party autonomy and good faith |
+
+<Warning>
+Direct recognition of a Kleros decision as an arbitral award remains to be fully tested in courts. To date, only the Jalisco case has confirmed enforcement, so the arguments above are largely doctrinal.
+</Warning>
+
+### Kleros as mediation: the Mediation Bridge
+
+The **Kleros Mediation Bridge**, proposed by Robert Dean and Federico Ast, treats mediation and decentralized arbitration as one process:
+
+1. **Dispute decomposition:** a subject-matter mediator breaks the dispute into its essential elements.
+2. **Interest identification:** the mediator helps the parties surface underlying interests beyond their formal positions.
+3. **Binary outcome formulation:** the mediator and parties define concrete binary options for each part of the dispute.
+4. **Referral to Kleros:** the options and supporting evidence (contracts, communications, expert reports) are submitted to the protocol.
+5. **Protocol decision:** a randomly selected juror panel issues a majority verdict on each binary option.
+6. **Incorporation and enforcement:** the mediator helps the parties draft a **Master Settlement Agreement (MSA)** consolidating the outcomes, which may be enforced internationally under the [Singapore Convention on Mediation (2019)](https://www.singaporeconvention.org/).
+
+The model keeps flexibility while ensuring finality, reduces time and cost through binary decomposition, combines the mediator's judgment with Kleros's transparency, and produces an internationally enforceable instrument.
+
+### Kleros as expert determination
+
+Kleros also fits **expert determination**: a recognized form of ADR in which parties contractually delegate a specific question to an independent third party whose decision is final and binding. Expert determination is a creature of contract, not statute, so it avoids the more demanding requirements of formal arbitration law. Courts generally uphold "final and binding" expert determination clauses.
+
+Kleros fits this framework because it is a neutral third party that evaluates evidence against pre-agreed criteria; court policies define exactly which questions jurors decide; and in specialized courts jurors are expected to rule within their expertise, much like appointing a domain expert.
+
+Expert determination suits **factual or technical questions** (did a deliverable meet the specification? was content policy-compliant?) rather than complex legal questions. For disputes involving significant legal rights, consider Kleros as a first-tier determination with formal arbitration as a fallback.
+
+### Kleros as digital infrastructure for public institutions
+
+- **Municipality of Junín (Argentina):** the agreement between Kleros Cooperative and Junín is the first of its kind at municipal level. Junín's Consumer Protection Office uses Kleros as an internal deliberative tool to manage its case backlog, obtaining reasoned, non-binding opinions from a panel made up exclusively of Argentine lawyers whose credentials are attested on-chain with Soulbound Tokens. No legislative reform was needed: it runs on a direct executive agreement.
+- **Province of Mendoza (Argentina):** Kleros's first collaboration with a government entity. Kleros acts as a non-binding advisory mechanism for neighbourhood and consumer disputes in the [Lavalle Department](https://jusmendoza.gob.ar/avanza-la-experiencia-de-kleros-en-el-departamento-de-lavalle/), formally established by an administrative resolution of the Supreme Court of Mendoza. Outcomes carry persuasive weight while judicial authority is preserved.
+
+See [Case Studies](/enterprise/case-studies) for both.
+
+---
+
+## Country-Specific Frameworks
+
+### United Kingdom: Digital Dispute Resolution Rules (UKJT)
+
+The UK Jurisdiction Taskforce's November 2019 Legal Statement on Cryptoassets and Smart Contracts established that a smart contract can satisfy the requirements for contract formation and be legally binding. In April 2021 the Taskforce published its [Digital Dispute Resolution Rules (DDRRs)](https://lawtechuk.io/ukjt/digital-dispute-resolution-rules/), the first institutional arbitration rules designed for disputes arising from cryptoassets, distributed ledger technology and smart contracts.
+
+The DDRRs explicitly accommodate "automatic dispute resolution", including selection of a decision-maker by an automated process, and make such outcomes binding (Rule 4). They also give tribunals direct powers over blockchain assets (Rule 11), permit party anonymity (Rule 13), and set England and Wales as the default seat, within the New York Convention enforcement framework.
+
+### Mexico: MASC Law
+
+Mexico's [Ley General de Mecanismos Alternativos de Solución de Controversias](https://www.diputados.gob.mx/LeyesBiblio/pdf/LGMASC.pdf) formally recognizes decentralized justice systems as valid ADR mechanisms. Under certain conditions their decisions carry *res judicata* effect: they are final and binding, equivalent to a court judgment, and cannot be relitigated. It is one of the first national laws to explicitly accommodate blockchain-based dispute resolution.
+
+### Argentina: Resolution No. 893/2025 (Defensor del Cliente)
+
+[Resolution No. 893/2025](https://www.argentina.gob.ar/produccion/defensadelconsumidor/defensor-del-cliente), issued by the Undersecretariat for Consumer Protection and Commercial Loyalty (Ministry of Economy), modernizes the *Defensor del Cliente* (Customer Advocate) framework created by Resolution 394/2018. It now allows:
+
+- a fully digital procedure;
+- a Defensor that is either one person or a collegiate body with an odd number of members, including at least one lawyer specialized in consumer protection, a structure close to Kleros's multi-juror panels;
+- selection of collegiate members by random draw, mirroring Kleros's random juror selection;
+- a binding ruling that closes the dispute when the consumer agrees.
+
+This makes the framework structurally compatible with Kleros V2. Juror access is controlled with Soulbound Tokens (SBTs) that certify accreditation as Consumer Defenders: **SBT 1** for legal professionals trained in consumer protection, and **SBT 2** for accredited professionals from other disciplines with dispute resolution experience. Every panel includes at least one SBT 1 holder. See [Court Hierarchy](/court/court-hierarchy) for the courts that use this gating.
+
+---
+
+## Kleros Across Areas of Law
+
+### Consumer law
+
+Several jurisdictions, particularly in Latin America, restrict or prohibit mandatory arbitration clauses in consumer relationships. Consumer protection frameworks in Argentina, Brazil, Colombia and Mexico treat consumers as the weaker party and limit clauses that waive access to courts or regulators in advance. In Argentina, the Civil and Commercial Code and the [Ley 24.240 de Defensa del Consumidor](https://servicios.infoleg.gob.ar/infolegInternet/anexos/0-4999/638/texact.htm) significantly restrict arbitration in consumer contexts; Brazil's [Código de Defesa do Consumidor](https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm) has been interpreted restrictively for adhesion contracts.
+
+So Kleros cannot simply be written into a company's Terms of Service as a mandatory forum replacing the courts. The more robust structure is **asymmetric**: the company commits in advance to comply with the result, while the consumer keeps the right to reject it and go to court or to the regulator. In civil law systems this resembles *amigables componedores* or conciliation rather than mandatory arbitration. The consumer never waives access to the courts, consumer protection agencies or collective remedies, so Kleros operates as an additional remedy rather than a substitute.
+
+[Lemon Cash](/enterprise/case-studies#lemon-cash) uses this structure: users first go through Lemon's internal support; if the claim is rejected, they can escalate to Kleros. Lemon commits to comply with the decision, but the user remains free to reject it and continue through administrative or judicial channels.
+
+### Virtual asset service providers (VASPs)
+
+Modern VASP regulation prioritizes independent, transparent complaint handling:
+
+- **Argentina:** CNV General Resolution 1058/2025, Article 30, requires VASPs to process client claims in an expeditious, impartial and consistent way.
+- **European Union:** MiCA Article 71 requires crypto-asset service providers to handle complaints fairly and consistently.
+
+Using Kleros, a VASP hands decisions to a neutral third party, removing the conflict of interest of being judge and party. Jurors are selected at random and incentivized to rule according to the policy; the process, rules and ruling leave an immutable audit trail for regulators; and transactional disputes are resolved in days.
+
+### Insurance law
+
+Many insurance disputes turn on facts rather than law: whether a triggering event occurred, whether documentation meets policy requirements, whether a payout condition was met. Kleros can act as a neutral review layer for claims validation, which is especially relevant to parametric insurance, where payouts depend on predefined external events such as weather, flight delays or third-party data. Several jurisdictions recognize ADR and MASC frameworks for insurance disputes; [MetLife Mexico](/enterprise/case-studies#metlife-mexico) ran a pilot with Kleros within such a structure.
+
+### Corporate law
+
+Corporate disputes involve sophisticated parties with broad contractual freedom, which makes them a clear fit. Kleros can be built into shareholder agreements, founders' agreements, vesting arrangements, commercial contracts or governance structures, for disputes over milestone completion, share or compensation allocation, governance deadlocks, contributor performance or contract interpretation.
+
+A particularly useful structure combines **escrow** with dispute resolution: funds are released when milestones are met, and if a milestone is disputed, the Kleros ruling decides whether they are released, returned or redistributed. This resembles traditional escrow and expert determination, with automated execution. It is most useful when amounts are too small to justify litigation, continuity matters, disputes are technical, or parties want neutral review without formal arbitration.
+
+---
+
+## Court-Enforcement Precedent
+
+### The Jalisco case
+
+On 28 May 2021, a Mexican court granted enforcement of an award from a rental dispute in Guadalajara, Jalisco, whose merits had been decided by Kleros jurors under a contractual clause. The lease submitted any dispute to arbitration and instructed the arbitrator to use Kleros for the substantive decision. When the dispute arose, the arbitrator triggered the Kleros protocol, the jury ruled in favor of the landlord, and the arbitrator incorporated that result into a formal, signed award. A Mexican judge then recognized the award and ordered its enforcement.
+
+It is widely regarded as the first time a court enforced an award whose substantive outcome was decided by a decentralized protocol. [Read the full case](https://blog.kleros.io/how-to-enforce-blockchain-dispute-resolution-in-court-the-kleros-case-in-mexico/), and see [Famous Cases](/enterprise/famous-cases) for other notable disputes.
+
+---
+
+## Further Reading
+
+- [Kleros Fellowship reports](https://kleros.io/rd-fellowship)
+- [Research Papers](/research/papers)
