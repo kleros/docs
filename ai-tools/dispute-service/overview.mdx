@@ -3,7 +3,7 @@ title: "Kleros Dispute Service"
 description: "Create Kleros v2 disputes, submit evidence and read rulings through one authenticated MCP endpoint, without deploying an arbitrable contract."
 ---
 
-{/* Generated from the kleros-dispute-service repository. Edit it there and re-export; changes made here are overwritten. */}
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
 
 The Kleros Dispute Service lets a platform send its users' disputes to Kleros without deploying an
 arbitrable contract of its own. Over one authenticated endpoint you create a Kleros v2 dispute,
@@ -114,7 +114,7 @@ A dispute creation therefore takes almost no input (just the addresses of the pa
     ```
   </Step>
   <Step title="Read the instructions on connect">
-    On connect, the client receives an `instructions` string naming your key's deployment, court, juror count and whether it really creates disputes or only simulates them.
+    On connect, the client receives an `instructions` string. For a key that can create disputes, it names the `chain`, court and juror count your Preset files with, and whether it really creates disputes or only simulates them.
 
     <Warning>
       Believe it over any document, these pages included.
@@ -127,7 +127,7 @@ A dispute creation therefore takes almost no input (just the addresses of the pa
 From any other HTTP client, follow the raw HTTP JSON-RPC guide:
 
 <Card title="Calling the service as raw HTTP JSON-RPC" icon="code" href="/ai-tools/dispute-service/http-json-rpc">
-  One POST per call, no session, and two headers that trip up a first request.
+  One POST per call, no session, and the header and response framing that trip up a first request.
 </Card>
 
 ## Getting a key

@@ -3,12 +3,12 @@ title: "Calling the service as raw HTTP JSON-RPC"
 description: "Call the Kleros Dispute Service as plain JSON-RPC over HTTP: headers, SSE framing, authentication, rate limits and the traps in a first request."
 ---
 
-{/* Generated from the kleros-dispute-service repository. Edit it there and re-export; changes made here are overwritten. */}
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
 
 For clients that want the read tools without adopting an MCP client library: POST JSON-RPC to `/mcp` with a bearer token and parse the reply. This is supported, not a workaround.
 
 <Accordion title="Compatibility notes" icon="circle-info">
-  Verified 2026-09-08 against the deployed service and `@modelcontextprotocol/server` 2.0.0. Two shapes this guide never uses are refused with HTTP 400:
+  Verified 2026-09-08 against the deployed service on `@modelcontextprotocol/server` 2.0.0, and re-measured 2026-10-13 on 2.2.0, the version the service now runs. Two shapes this guide never uses are refused with HTTP 400:
 
   - A request that claims protocol revision `2026-07-28` without the `MCP-Protocol-Version` header is refused with `-32020` (since `@modelcontextprotocol/server` 2.2.0).
   - **A JSON-RPC batch is refused at any size, a batch of one included**. Send one request per POST.
@@ -84,7 +84,7 @@ Skipping `initialize` means you never receive the server's `instructions` string
   Unauthenticated. Required reading, not background.
 </Card>
 
-Treat that document as the source of truth. Two traps matter enough to name here, because both fail silently rather than erroring:
+Treat that document as the source of truth. Four traps matter enough to name here, because all of them fail silently rather than erroring:
 
 <AccordionGroup>
   <Accordion title="Pass chain explicitly" icon="link">
@@ -120,16 +120,16 @@ Send each JSON-RPC message in a POST of its own. A JSON-RPC array (a batch, of a
 
 The MCP protocol itself dropped JSON-RPC batching as of revision 2025-06-18, so a current MCP client never sends one.
 
-## One write at a time per organisation
+## One write at a time per key
 
-`dispute_create`, `evidence_pin` and `evidence_submit` run one at a time per organisation (strictly, per signer your key's Preset names).
+`dispute_create`, `evidence_pin` and `evidence_submit` run one at a time per key (strictly, per signer your key's Preset names), so your Beta and Testnet keys do not block each other.
 
 <Warning>
-  A write that arrives while another of your organisation's writes is still running is not queued. It comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**, so call it again once your other write has returned.
+  A write that arrives while another write on the same key is still running is not queued. It comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**, so call it again once your other write has returned.
 </Warning>
 
 <Tip>
-  If your client makes tool calls in parallel, serialise the writes. Reads are never held back by this, and other organisations' writes do not block yours.
+  If your client makes tool calls in parallel, serialise the writes. Reads are never held back by this, and writes on other keys do not block yours.
 </Tip>
 
 ## Limits and health
