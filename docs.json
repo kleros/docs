@@ -9,9 +9,6 @@
     "dark": "#f60c36"
   },
   "favicon": "/logo/Kleros logo_updated_white square.svg",
-  "background": {
-    "decoration": "gradient"
-  },
   "navbar": {
     "links": [
       {
@@ -319,9 +316,16 @@
           {
             "group": "AI Tools",
             "pages": [
-              "ai-tools/kleros-cli"
-            ]
-          }
+  "ai-tools/kleros-cli",
+  {
+    "group": "Dispute Service",
+    "pages": [
+      "ai-tools/dispute-service/overview",
+      "ai-tools/dispute-service/http-json-rpc",
+      "ai-tools/dispute-service/dispute-flow",
+      "ai-tools/dispute-service/dispute-templates"
+    ]
+  }
         ]
       },
       {
@@ -388,6 +392,15 @@
           {
             "group": "Changelog",
             "pages": [
+              "changelog/2026-10-12",
+              "changelog/2026-10-05",
+              "changelog/2026-09-28",
+              "changelog/2026-09-21",
+              "changelog/2026-09-14",
+              "changelog/2026-09-07",
+              "changelog/2026-08-31",
+              "changelog/2026-08-24",
+              "changelog/2026-08-17",
               "changelog/2026-08-10",
               "changelog/2026-08-03",
               "changelog/2026-07-27",

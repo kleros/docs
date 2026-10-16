@@ -1,0 +1,84 @@
+---
+title: "Dispute templates"
+description: "What every Dispute Service template contains, what it never contains, and how it travels inline on the dispute creation transaction."
+---
+
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
+
+A dispute template is the document a juror opens: the title, what is at stake, the parties, the
+question, and the answers to choose from. Each partner has one, fixed by its Preset, and its
+contents — what jurors are told to look for, what each answer means — are on that partner's own
+page. This page covers what every template here has in common: what it contains, what it never
+contains, and how it reaches the chain. The format itself is specified in the
+[Kleros dispute template reference](https://docs.kleros.io/reference/data-formats/dispute-templates).
+
+## What a template contains
+
+The stored template is a JSON file carrying `title`, `description`, `question`, `answers`, `policyURI`, `category`, `specification`, `lang` and `version`.
+
+```json Stored template
+{
+  "title": "…",
+  "description": "…",
+  "question": "…",
+  "answers": [
+    {"id": "0x01", "title": "…", "description": "…"},
+    {"id": "0x02", "title": "…", "description": "…"}
+  ],
+  "policyURI": "…",
+  "category": "…",
+  "specification": "…",
+  "lang": "…",
+  "version": "…"
+}
+```
+
+Every Preset on a partner's keys creates disputes from the same file; there is no per-deployment variant. The `policyURI` points at a pinned policy that governs wherever the template's summary is silent, and it is the same on every deployment.
+
+Your template, like the rest of your Preset, is selected by the API key you send — the key itself,
+not any name attached to it. A new key is a new Preset.
+
+## What is never in it
+
+Three groups of field are deliberately absent, and a template carrying any of them is refused when
+it is configured, so a dispute is never created from one:
+
+| Field | Why it is never in the template |
+| --- | --- |
+| **`aliases`** | Injected per dispute from the caller's one argument. The slot names are the Preset's own and are listed on each partner page; a slot the caller leaves out is absent from the created dispute rather than zero-filled. |
+| **`arbitratorChainID`** and **`arbitratorAddress`** | Resolved for the Preset's deployment from the pinned `@kleros/kleros-v2-contracts` at creation time, so no address is written down in the template and a stale pair cannot be stored. The Testnet (`arbitrum-sepolia-testnet`) and the Devnet (`arbitrum-sepolia-devnet`) share chain id `421614` and only the address separates them, so a swapped pair would be invisible in a rendered template. |
+| **`$schema`** and **`type`** | The Disputant CLI validates against a strict authoring schema that has neither and rejects unknown fields outright. |
+
+## There is no registration step; the template travels on the transaction
+
+Nobody registers a template in advance and keeps an id.
+
+<Steps>
+  <Step title="Passed inline on the creation call">
+    The rendered JSON is passed **inline on the creation call** — `DisputeResolver.createDisputeForTemplate`, whose `_disputeTemplate` parameter is a string.
+  </Step>
+  <Step title="Registered by the resolver">
+    The resolver registers it and reports the id it minted, so an id exists per dispute: the creation that made core dispute `131` on Testnet (`arbitrum-sepolia-testnet`) minted template `116`.
+  </Step>
+  <Step title="Never returned to you">
+    The template id is not returned to you, and nothing you call takes one.
+  </Step>
+</Steps>
+
+A new version of a template is a change on this service's side; nothing on chain needs to be kept in step, and you call nothing differently.
+
+## References
+
+<CardGroup cols={3}>
+  <Card title="Dispute template format" icon="file-code">
+    The [Kleros dispute template reference](https://docs.kleros.io/reference/data-formats/dispute-templates), and its schema, [`NewDisputeTemplate.schema.json`](https://raw.githubusercontent.com/kleros/kleros-v2/dev/kleros-sdk/config/v2-disputetemplate/NewDisputeTemplate.schema.json) in `kleros/kleros-v2`. A stored template here is an authoring subset: it omits fields that schema requires, such as the arbitrator pair, so it will not validate against it as-is.
+  </Card>
+
+  <Card title="Deployment addresses" icon="npm" href="https://www.npmjs.com/package/@kleros/kleros-v2-contracts">
+    `@kleros/kleros-v2-contracts` on npm. Resolve addresses from it or from the tools rather than copying them.
+  </Card>
+
+  <Card title="Template preview tool" icon="eye" href="https://devtools.v2-testnet.kleros.builders/dispute-template">
+    Testnet, `arbitrum-sepolia-testnet`. Paste a partner's template to see it as a juror will.
+  </Card>
+</CardGroup>

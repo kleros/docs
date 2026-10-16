@@ -1,0 +1,30 @@
+---
+title: "September 28, 2026"
+description: "Court case links now keep their network, Curate and Scout support Arc Mainnet addresses, Foresight shows your total traded amount, and Court V2 fixes for appeal reward withdrawals and keeper bots."
+---
+
+## New features
+
+### Network-specific case links in Court
+
+Case pages in [Kleros Court](/court/overview) now keep the network in the URL. When you share a case link, it opens on the correct chain, such as Ethereum or Gnosis. If your wallet is on a different network, Court asks you to switch instead of showing the wrong case.
+
+### Arc Mainnet support in Curate and Scout
+
+[Curate](/products/curate) and [Scout](/products/scout) now recognize addresses on Arc Mainnet (chain ID 5042). You can submit and browse Arc entries, with links to the Arc block explorer.
+
+### Total traded amount in Foresight
+
+The trade wallet in [Foresight](/products/foresight) now shows a **Total Traded** value next to your sDAI balance. It sums the sDAI you have committed to predictions this session. Deposits made in xDAI or Foresight Credits count once they are converted to sDAI.
+
+## Updates
+
+### Faster chart loading in Foresight
+
+The [Foresight](/products/foresight) market chart now shows a placeholder while it loads. Cached data appears right away and updates as fresh prices arrive, so the page no longer sits empty on first load.
+
+## Bug fixes
+
+**Appeal reward withdrawals for one-sided appeals** — In Kleros Court V2, the button to withdraw appeal rewards now works when only one side funded an [appeal](/court/appeals). Contributors can reclaim their funds from these cases.
+
+**Keeper bot fixes in Court V2** — The keeper bot now withdraws appeal contributions on behalf of contributors correctly. It can also resume juror drawing partway through the drawing phase, so disputes no longer stall if the bot starts mid-phase.
