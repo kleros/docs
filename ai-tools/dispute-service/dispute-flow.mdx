@@ -3,7 +3,7 @@ title: "One dispute, from creation to a ruling"
 description: "One dispute end to end: publish the attachment, create the dispute, submit evidence, poll the first-round ruling, and every refusal code on the way."
 ---
 
-{/* Generated from the kleros-dispute-service repository. Edit it there and re-export; changes made here are overwritten. */}
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
 
 The functional walkthrough of one dispute end to end: publish the attachment, create the dispute,
 put the evidence in front of the jurors, and read the first-round ruling back. It is the same for
@@ -47,15 +47,15 @@ Companion documents, deliberately not repeated here:
 ## Deployment names, tied to the value you pass
 
 <Warning>
-  Client-facing rule, and the one most likely to cost real money if it is missed:
+  Every deployment name maps to one `chain` value, and mistaking one for the other is the error most likely to cost real money.
+
+  | We say | You pass as `chain` | What it is |
+  | --- | --- | --- |
+  | **Beta** | `arbitrum-one` | Kleros v2 **live production**. Real disputes, real fees, real money. "Beta" is the release name, not a test network. |
+  | **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
 </Warning>
 
-| We say | You pass as `chain` | What it is |
-| --- | --- | --- |
-| **Beta** | `arbitrum-one` | Kleros v2 **live production**. Real disputes, real fees, real money. "Beta" is the release name, not a test network. |
-| **Testnet** | `arbitrum-sepolia-testnet` | Kleros v2 public testing. Test data only. |
-
-You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. The `instructions` string you receive when you connect names your key's deployment, court and juror count, and says whether your Preset broadcasts or only simulates. **Read it on connect and believe it over any document**, this one included.
+You do not pass `chain` to `dispute_create` — your Preset fixes it, along with the court, the juror count and the template. A partner holds one API key per deployment, and **which key you send decides where the dispute is created**; your partner page lists your keys. For a key that can create disputes, the `instructions` string you receive when you connect names the `chain`, court and juror count your Preset files with, and says whether it broadcasts or only simulates. **Read it on connect and believe it over any document**, this one included.
 
 Both deployments are exercised in that order: a dispute is created on the Testnet (`arbitrum-sepolia-testnet`), checked in the Court interface, and only then created on Beta (`arbitrum-one`).
 
@@ -122,8 +122,10 @@ Three things that follow, and matter more than the numbers:
 
 ### What comes back
 
-The result is the filing tool's own JSON payload, verbatim — with one exception noted below. The
-field to branch on is `status`:
+The result is the filing tool's own JSON payload, passed through with three changes: upstream's
+`message` field is removed, a `mined` result gains `localDisputeID` or `localDisputeIDUnavailable`
+([The two dispute ids](#the-two-dispute-ids)), and an `unknown` result is prefixed with a warning,
+noted below. The field to branch on is `status`:
 
 | `status` | Meaning | What to do |
 | --- | --- | --- |
@@ -135,9 +137,9 @@ field to branch on is `status`:
 
 A failure comes back as `isError: true` with text shaped `CODE: message` — for example `INSUFFICIENT_BALANCE: …`. There is no machine-readable code field to switch on; match a short leading phrase at most, and expect the prose to move between releases. When a failure text says the transaction **may have been sent**, treat it exactly like `unknown` above.
 
-**Make one write at a time.** Steps 1, 2 and 3 run one at a time for your organisation. A write sent while another of yours is still running comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**: wait for the other write to return, then call again. It is never queued for you, so a client that makes tool calls in parallel must serialise these three. Reads such as `dispute_get` are never held back.
+**Make one write at a time.** Steps 1, 2 and 3 run one at a time per key (strictly, per signer your key's Preset names), so your Beta and Testnet keys do not block each other. A write sent while another of yours is still running comes back at once as `isError: true` with text beginning `WRITE_IN_PROGRESS: `. **Nothing was sent**: wait for the other write to return, then call again. It is never queued for you, so a client that makes tool calls in parallel must serialise these three. Reads such as `dispute_get` are never held back.
 
-**`unknown` is the exception to "verbatim".** That one result is prefixed with a plain-English warning before the JSON, so `JSON.parse` on the whole text throws. Every other status is bare JSON. If you parse defensively, parse the last JSON object in the text rather than the whole of it.
+**`unknown` carries a prefix.** That one result is prefixed with a plain-English warning before the JSON, so `JSON.parse` on the whole text throws. Every other status is bare JSON. If you parse defensively, parse the last JSON object in the text rather than the whole of it.
 
 **A simulation cannot be escalated into a filing by you.** Whether your Preset broadcasts is set on this service, not passed as an argument. If a real filing is wanted and your instructions say you are in simulation, say so and let a human arrange it.
 
@@ -176,13 +178,13 @@ written for step 1 can be reused for step 3, and a branch written for either is 
 ### Sequencing: publish the Attachment before you file
 
 <Steps>
-  <Step title="Step 2: evidence_pin">
+  <Step title="Pin first (`evidence_pin`)">
     Publish the Attachment first. `evidence_pin` takes no dispute id.
   </Step>
-  <Step title="Step 1: dispute_create">
+  <Step title="Then create (`dispute_create`)">
     Create the dispute. The evidence period starts now.
   </Step>
-  <Step title="Step 3: evidence_submit">
+  <Step title="Then submit (`evidence_submit`)">
     Submit the Evidence document, with the URI already in hand.
   </Step>
 </Steps>
@@ -234,8 +236,10 @@ truncated before they reached us, compare `cid` against your own.
   file, so it moves. Too large a file comes back as `FILE_TOO_LARGE`, which names the limit that
   actually applied. Do not hard-code a number from anywhere, this document included. Note that
   base64 costs about a third on top of the file's own size, and it is the encoded form that travels
-  in your request body — so a large file meets the HTTP `413` above before it ever meets
-  `FILE_TOO_LARGE`.
+  in your request body. The request limit is sized to admit every file the upload would accept, so
+  a file just over the ceiling gets `FILE_TOO_LARGE`; only one far over it meets the HTTP `413` in
+  [When something goes wrong](#when-something-goes-wrong) first, with no result to parse. Handle
+  both.
 - **Retrying a failed pin is safe.** The same bytes give the same CID, nothing is spent and nothing
   is on a chain. Nothing is deduplicated either, so a retry really does re-upload — that costs time,
   not money or a second identity for the file.
@@ -283,7 +287,7 @@ Branch on `isError` first on every tool here: a refusal is `CODE: message` as pl
 
 `unknown` is prefixed with a plain-English warning before the JSON here exactly as it is on step 1, so `JSON.parse` on the whole text throws. Every other status on both tools is bare JSON; parse the last JSON object in the text if you parse defensively.
 
-A duplicate submission is untidy rather than harmful, which is the whole difference from step 1: it costs gas and shows the jurors the same document twice, but it pays no arbitration fee and creates no second dispute. That is why the rule after an uncertain outcome is _read back, then decide_ — not "never retry".
+A duplicate submission is untidy rather than harmful, which is the whole difference from step 1: it costs gas and shows the jurors the same document twice, but it pays no arbitration fee and creates no second dispute. That makes an uncertain outcome here cheaper than step 1's `unknown`, but no read settles it: escalate with the `txHash`, and do not submit again.
 
 <AccordionGroup>
   <Accordion title="This spends gas, and no cost ceiling bounds it" icon="gas-pump">
@@ -304,7 +308,7 @@ A duplicate submission is untidy rather than harmful, which is the whole differe
 <Warning>
   **A Kleros v2 dispute has two ids**: the **Core** id the arbitrator issues and Kleros Court displays, and the **arbitrable contract's own** id. `evidence_submit` takes the Core id and translates it. `evidence_list` takes the arbitrable's id and translates nothing.
 
-  On the first real dispute created through this service the Core id was `131` and the arbitrable's was `81`:
+  On the first real dispute created through this service, on Testnet (`arbitrum-sepolia-testnet`) on 2026-09-10, the Core id was `131` and the arbitrable's was `81`:
 
   | Call | Result |
   | --- | --- |
@@ -433,7 +437,7 @@ Two consequences worth designing around:
 
 ### The stop condition
 
-You are done with the first round when `status` becomes `Appeal`: that period opens only once the round's votes are in, so the majority you read there is the first round's verdict.
+You are done with the first round when `status` becomes `Appeal`: that period opens once the vote period has closed, so the majority you read there is the first round's verdict.
 
 ```text Polling loop
 poll dispute_get every 30 s
@@ -483,8 +487,8 @@ Reading the first-round majority and stopping is a legitimate choice. Be explici
     | HTTP `401` | Missing or unrecognised key. Decided before JSON-RPC — check the HTTP status first. |
     | HTTP `429` | Over 30 requests per minute on your key. No `Retry-After`; back off blindly. |
     | HTTP `400` with `-32600` | You sent a JSON-RPC batch. Every batch is refused, whatever its size; send one request per POST. |
-    | `WRITE_IN_PROGRESS` | Another write for your organisation — step 1, 2 or 3 — was still running. **Nothing was sent.** Call again once it has returned. |
-    | HTTP `413` | The HTTP request body was too large. A guard on the whole request, not a limit on any one argument, and decided before JSON-RPC — so it arrives as an HTTP status, never as a tool refusal. **Step 2 is the one call that can reach it**, since the file travels inline as base64; a step 2 body that trips this never reaches `evidence_pin`, so you get no `FILE_TOO_LARGE` and no result to parse. Everything else in this document is nowhere near it. |
+    | `WRITE_IN_PROGRESS` | Another write on your key (strictly, its signer) — step 1, 2 or 3 — was still running. **Nothing was sent.** Call again once it has returned. |
+    | HTTP `413` | The HTTP request body was too large. A guard on the whole request, not a limit on any one argument, and decided before JSON-RPC — so it arrives as an HTTP status, never as a tool refusal. **Step 2 is the one call that can reach it**, since the file travels inline as base64; the limit admits every file the upload would accept, so a file just over the upload's ceiling still gets `FILE_TOO_LARGE`, and only one far over it trips this first — then it never reaches `evidence_pin` and there is no result to parse. Handle both. Everything else in this document is nowhere near it. |
     | `isError: true` with prose | A tool refusal. There is **no error code field** — names like `IPFS_UNAVAILABLE` appear in the text only. Branch on `isError`, then read. |
     | `unresolvedFields` non-empty | Partial resolution. Normal, and commonest on the Testnet (`arbitrum-sepolia-testnet`). Report it as the dispute's state, not an outage. Retrying does not help. |
     | `IPFS_UNAVAILABLE` | The content needs repinning. Do not switch gateway — the one in use already fans out server-side. |
