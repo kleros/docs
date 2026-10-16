@@ -168,6 +168,12 @@
             "group": "Enterprise",
             "pages": [
               "enterprise/enterprise",
+              "enterprise/how-it-works",
+              "enterprise/comparison",
+              "enterprise/legal",
+              "enterprise/use-cases",
+              "enterprise/case-studies",
+              "enterprise/getting-started",
               "enterprise/ecosystem",
               "enterprise/famous-cases"
             ]
@@ -310,6 +316,7 @@
           {
             "group": "AI Tools",
             "pages": [
+              "ai-tools/kleros-cli",
               {
                 "group": "Dispute Service",
                 "pages": [
@@ -522,6 +529,16 @@
     ]
   },
   "redirects": [
+    {
+      "source": "/products/enterprise",
+      "destination": "/enterprise/enterprise",
+      "permanent": true
+    },
+    {
+      "source": "/products/court/famous-kleros-cases",
+      "destination": "/enterprise/famous-cases",
+      "permanent": true
+    },
     {
       "source": "/changelog/2026-05-18",
       "destination": "changelog/2026-05-19",

@@ -17,9 +17,9 @@ The Dispute Resolver (formerly "Resolve") is a V1 web app at [resolve.kleros.io]
 ## Technical notes
 
 - **File uploads**: evidence uploads go through Atlas to IPFS, with a SIWE info message at the upload step
-- **Evidence display**: the interface fetches data from dynamic scripts for flexible evidence display, and normalizes PoH evidence payloads (including older submissions and non-object payloads)
+- **Evidence display**: the interface normalizes PoH evidence payloads (including older submissions and non-object payloads). Since October 2026, Dispute Resolver and Court only run case display scripts that Kleros has reviewed. If a case uses a script that has not been reviewed, its data is treated as invalid and jurors are advised to refuse to arbitrate until the script is reviewed
 - **MetaEvidence**: fetched via an API-based approach
-- **Realitio cases**: ruling options display correctly for Realitio disputes
+- **Realitio cases**: answer options are built from the on-chain Reality.eth question and its template, as in Court. A notice appears on the case page when other interfaces display different options, or when the question parameters are malformed or the options cannot be verified
 - **Dispute creation**: the create-dispute form validates inputs before submission
 
 ---

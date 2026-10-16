@@ -153,6 +153,7 @@ Vea supports multiple underlying bridge protocols:
 ## VeaShi
 
 - The VeaShi package packages Hashi and Vea contracts for consumption by Kleros V2 (March 2026).
+- New VeaShi routes connect Ethereum and Arbitrum with Robinhood (chain ID 4217), Tempo (chain ID 4663, plus a Sepolia testnet route) and ARC (chain ID 5042). Route addresses ship in `@kleros/veashi-sdk` v0.1.0 (September 2026).
 - `veashi-sdk` was published to npm as `@kleros/veashi-sdk` v0.0.2 (May 2026).
 - LayerZero contracts were moved under an adapter layout for consistency (May 2026).
 - The Hashi executor was decoupled from the relayer - splitting message indexing from execution and introducing state-file logic for pending messages that don't yet meet the Hashi threshold (May 2026).
@@ -169,10 +170,11 @@ Vea supports multiple underlying bridge protocols:
 
 - The Envio HyperIndex indexer was integrated into the VeaShi scanner, with the existing subgraph kept as a fallback (June 2026).
 - The VeaShi scanner was moved into the Vea monorepo (June 2026).
+- The separate Envio indexers were merged into one, and the Vea inbox and outbox subgraphs were migrated to it (August 2026).
 
 ## VeaScan
 
-[VeaScan](https://veascan.io) is the block explorer for Vea bridge transactions. It displays pending claims, challenge status, and relay history.
+[VeaScan](https://veascan.io) is the block explorer for Vea bridge transactions. It displays pending claims, challenge status, and relay history. Since August 2026, VeaScan and the VeaShi scanner are a single application, so Vea and VeaShi bridge transactions are viewed in one place, with transaction hashes linking out to the relevant block explorers.
 
 ---
 
@@ -186,7 +188,7 @@ Vea supports multiple underlying bridge protocols:
     Bridge contract source code
   </Card>
   <Card title="VeaScan Explorer" icon="magnifying-glass" href="https://veascan.io">
-    Bridge transaction explorer
+    Explorer for Vea and VeaShi bridge transactions
   </Card>
   <Card title="L2 Integration Guide" icon="link" href="/developers/crosschain/l2-integration">
     Integrate from a foreign chain

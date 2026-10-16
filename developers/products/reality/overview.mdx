@@ -30,6 +30,7 @@ Technical notes for integrators:
 - **Zodiac / SafeSnap**: the Kleros Reality Module works with Snapshot through the Gnosis Zodiac Safe configuration. The Zodiac bots validate keccak hashes for Reality questions automatically (issuing a warning rather than failing when a hash cannot be verified), normalize Reality links to consistent casing, and handle Reality questions with no Snapshot proposal attached.
 - **Monitoring**: integrations can be monitored using ENS, Snapshot, and contract addresses (as done for Panther Protocol).
 - **Court display**: Court V1 displays "Invalid" instead of "Refuse to Arbitrate" for Reality cases.
+- **Verified answer options**: Court V1 (since October 2026) and Dispute Resolver build the answer options of Reality.eth cases from the on-chain question and its template, not from the arbitrable's display script, so crafted question parameters cannot change the options jurors see. Both show a notice on the case page when other interfaces display different options, or when the parameters are malformed or the options cannot be verified.
 - **Networks**: the Realitio integration extends to the Base Sepolia testnet, and the cross-chain Realitio proxy is actively maintained.
 
 For the full SafeSnap integration walkthrough, see the [Integration Guide](/developers/products/reality/integration).
