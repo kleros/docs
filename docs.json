@@ -68,6 +68,7 @@
             "group": "Welcome",
             "pages": [
               "welcome/introduction",
+              "welcome/choose-integration-path",
               "welcome/faq"
             ]
           },
@@ -316,7 +317,13 @@
           {
             "group": "AI Tools",
             "pages": [
+              "ai-tools/overview",
+              "ai-tools/kleros-skills",
               "ai-tools/kleros-cli",
+              "ai-tools/agentic-commerce-court",
+              "ai-tools/agent-reputation",
+              "ai-tools/trivium",
+              "ai-tools/mcp-server",
               {
                 "group": "Dispute Service",
                 "pages": [
