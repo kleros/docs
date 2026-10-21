@@ -68,7 +68,6 @@
             "group": "Welcome",
             "pages": [
               "welcome/introduction",
-              "welcome/choose-integration-path",
               "welcome/faq"
             ]
           },
