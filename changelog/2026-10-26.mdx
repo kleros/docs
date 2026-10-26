@@ -1,0 +1,22 @@
+---
+title: "October 26, 2026"
+description: "Chain-specific links in Kleros Court, more reliable escrow creation in Escrow V1, and a token search fix in Escrow V2."
+---
+
+## New features
+
+### Chain-specific links in Court
+
+Every page in [Kleros Court](/court/overview) now includes the chain ID at the start of its URL, for example `/1/cases/1000` on Ethereum or `/100/courts` on Gnosis. A link you copy now opens on the chain it came from.
+
+- Older links without a chain ID, including `?requiredChainId=` links, still work. Court rewrites them to the new format.
+- If you connect a wallet on another chain, a case page stays on its own chain. Other pages follow your wallet.
+- Back and Forward follow the current chain, except on case pages.
+
+## Bug fixes
+
+**Creating ETH escrows in Escrow V1** — Creating an ETH escrow no longer fails after the escrow is already on-chain, and no longer asks you to try again. Once your transaction succeeds, the [Escrow](/products/escrow) app confirms the escrow, clears the form, and opens your transactions so you can't submit the same escrow twice. If you cancel or replace the transaction in your wallet, the app no longer claims the escrow was created.
+
+**Amount field in Escrow V1** — The amount stepper in the create flow no longer goes below 0.
+
+**Token search in Escrow V2** — Typing a partial address in the token search no longer adds it as a token.
