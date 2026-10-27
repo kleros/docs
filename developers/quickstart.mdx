@@ -8,7 +8,7 @@ Kleros arbitration can be integrated on either protocol version:
 - **V1** uses the ERC-792 arbitration standard (`IArbitrable` / `IArbitrator`) on Ethereum Mainnet and Gnosis Chain. See [ERC-792](/developers/arbitrable-apps/erc-792) and [ERC-1497](/developers/arbitrable-apps/erc-1497) for the full V1 standards.
 - **V2** uses `IArbitrableV2` / `IArbitratorV2` on Arbitrum, with dispute templates and cross-chain support.
 
-The steps below show both. Pick the version that matches the network you are deploying to. For contract addresses, see [Deployment Addresses](/reference/contracts/deployment-addresses-v1).
+The steps below show both. Pick the version that matches the network you are deploying to. For contract addresses, see [Deployment Addresses V2](/reference/contracts/deployment-addresses) and [Deployment Addresses V1](/reference/contracts/deployment-addresses-v1).
 
 ## Installation
 
@@ -22,7 +22,9 @@ yarn add @kleros/kleros-v2-contracts
 ```
 
 ```bash forge
-forge install kleros/kleros-v2-contracts
+# Foundry: install the npm package, then map the import path
+npm install @kleros/kleros-v2-contracts
+echo "@kleros/kleros-v2-contracts/=node_modules/@kleros/kleros-v2-contracts/" >> remappings.txt
 ```
 </CodeGroup>
 
@@ -30,15 +32,14 @@ forge install kleros/kleros-v2-contracts
 
 ```solidity
 // Core contracts
-address constant KLEROS_CORE = 0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA;
-address constant DISPUTE_KIT_CLASSIC = 0x9c1dB86677E43Be2E1Af6D3b68D8B276D7E9b6E8;
+address constant KLEROS_CORE = 0x991d2df165670b9cac3B022f4B68D65b664222ea; // proxy
+address constant DISPUTE_KIT_CLASSIC = 0x70B464be85A547144C72485eBa2577E5D3A45421; // proxy
 
-// For cross-chain disputes
-address constant HOME_GATEWAY = 0x9c1dB86677E43Be2E1Af6D3b68D8B276D7E9b6E8;
+// For cross-chain disputes, see the Gateways reference: /reference/contracts/gateways
 ```
 
 <Warning>
-Always verify addresses on the [official repository](https://github.com/kleros/kleros-v2) before deploying to production.
+Always verify addresses against [Deployment Addresses V2](/reference/contracts/deployment-addresses) and the [official repository](https://github.com/kleros/kleros-v2) before deploying to production.
 </Warning>
 
 ## Minimal Integration
@@ -217,19 +218,20 @@ Register templates on-chain or reference via IPFS URI.
 
 ## SDK (Optional)
 
-For frontend integration, use the Kleros SDK:
+For frontend integration, use the Kleros SDK (`npm install @kleros/kleros-sdk`):
 
 ```typescript
-import { KlerosSDK } from '@kleros/kleros-v2-sdk';
+import { getDispute } from '@kleros/kleros-sdk';
 
-const sdk = new KlerosSDK({ chainId: 42161 });
-
-// Get dispute details
-const dispute = await sdk.getDispute(disputeID);
-
-// Submit evidence
-await sdk.submitEvidence(disputeID, evidenceURI);
+// Read a dispute's details, populated from its dispute template
+const dispute = await getDispute({
+  disputeId: 123n,
+  coreSubgraph: '<Kleros Core subgraph URL>',
+  dtrSubgraph: '<Dispute Template Registry subgraph URL>',
+});
 ```
+
+Subgraph URLs are listed in [Subgraph Endpoints](/developers/subgraph/endpoints). Evidence is submitted on-chain through the EvidenceModule; see [Deployment Addresses V2](/reference/contracts/deployment-addresses).
 
 ## Next Steps
 

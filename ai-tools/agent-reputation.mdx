@@ -1,0 +1,84 @@
+---
+title: "Agent Reputation"
+description: "Agent Reputation by Kleros: open Stake Curate registries where ERC-8004 AI agents are verified against a published policy, backed by collateral and open to challenge."
+---
+
+[Agent Reputation by Kleros](https://agent-reputation.kleros.io/) is open registry infrastructure for discovering, collateralizing and evaluating **ERC-8004** AI agents. An agent is listed against a published policy, puts collateral behind its claim, and can be challenged by anyone who shows that it breaks the policy. Disputes are resolved by Kleros.
+
+<Note>
+Agent Reputation is a **public testnet** product. Community moderation is still a preview.
+</Note>
+
+---
+
+## Why It Exists
+
+With millions of agents, discovery becomes a trust problem. Agents act too fast for manual checks, and they need a way to find and filter each other that does not depend on review farming, scams or badges with unclear provenance. Before an agent gets a card, an API key, private data or clearance for a sensitive task, it can prove expertise, identity, language or jurisdiction against openly verifiable rules, and keep access only while it complies.
+
+You can also create your own standard: a registry with your own rules.
+
+---
+
+## How It Works
+
+Each Verified Agents registry is a **Stake Curate** registry (a permissionless generalized token-curated registry, or pGTCR): an open list governed by a public policy, collateral, challenges and dispute resolution. No central operator pre-approves listings. See [Stake Curate](/products/stake-curate) for the underlying mechanism.
+
+| Action | What happens |
+| --- | --- |
+| **Submit** | The owner lists an agent with collateral. This takes two transactions: one approves the registry to move the ERC-20 stake, the second submits the item and attaches the native-token arbitration fee |
+| **Stake more** | More collateral can rank a compliant agent higher in stake-ranked views. It does not buy compliance, and the full amount stays exposed to challenges |
+| **Challenge** | Anyone can challenge a listing by showing it violates the policy. A challenge needs its own collateral and arbitration fee. A successful challenger can receive the contract-defined reward from the disputed collateral |
+| **Withdraw** | The owner can leave through a two-step withdrawal. An unchallenged withdrawal returns the stake and unused arbitration deposit; gas is not refunded. The item stays challengeable during the waiting period |
+
+### Listing status
+
+| Status | Meaning |
+| --- | --- |
+| **Active** | The agent has live collateral and currently complies with the registry policy |
+| **Challenged** | Compliance is under review |
+| **Removed** | A successful challenge and dispute found the listing non-compliant |
+| **Withdrawn** | The owner left voluntarily, without a successful challenge. This is not a non-compliance ruling |
+
+<Warning>
+**A certificate is purpose-specific, not a general endorsement.** It attests only that the agent met the skills, capabilities, evidence and criteria listed in that registry's policy, published by its issuer. It does not establish the agent's overall reliability, security, operator quality or future behavior. Always read the live policy, check the current status and evidence, and confirm the agent identity and chain. Describe a listed agent as verified *for the policy-defined scope*, never just "verified".
+</Warning>
+
+A good challenge uses durable, verifiable evidence tied to a specific policy clause: timestamps, reproducible tests, the agent's identifiers and content-addressed files.
+
+---
+
+## Agent Identity Across Chains
+
+ERC-8004 agent numbers are scoped to the registry where the identity was created, so the same number can appear on several chains. Agent Reputation matches both the agent number and its CAIP-10 chain and account context, so an identity on one chain is not confused with another.
+
+The Testnet/Mainnet selector on the site chooses the **verification registry**. That is independent from the source chain where the agent's ERC-8004 identity lives. You can look up any agent by number and source network, even if it is not collateralized or certified.
+
+---
+
+## Registries
+
+| Verification environment | Chain | Chain ID | Registry |
+| --- | --- | --- | --- |
+| Testnet | Ethereum Sepolia | `11155111` | `0x3162df9669affa8b6b6ff2147afa052249f00447` |
+| Mainnet | Ethereum | `1` | `0x118155741eea23f56b3bd59b0c1342d5daaa6d07` |
+
+Confirm addresses against the live [`llms.txt`](https://agent-reputation.kleros.io/llms.txt) before any transaction.
+
+---
+
+## For AI Agents
+
+Agent Reputation publishes agent-readable routing files:
+
+- [`/llms.txt`](https://agent-reputation.kleros.io/llms.txt) and [`/llms-full.txt`](https://agent-reputation.kleros.io/llms-full.txt)
+- [`/SKILL.md`](https://agent-reputation.kleros.io/SKILL.md), which routes to a registry-specific overlay for Sepolia or mainnet
+
+These overlays only supply the registry, explorer, indexer and ERC-8004 contract constants. For the contract mechanics (submissions, challenges, evidence, appeals, withdrawals), the agent must load the full [Kleros Skills](/ai-tools/kleros-skills) package and follow its `kleros-curate` Stake Curate instructions, read every value live, simulate each write, and get user approval before signing.
+
+---
+
+## Links
+
+- [Agent Reputation app](https://agent-reputation.kleros.io/)
+- [FAQ](https://agent-reputation.kleros.io/faq)
+- [Kleros Skills](/ai-tools/kleros-skills)

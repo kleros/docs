@@ -316,7 +316,13 @@
           {
             "group": "AI Tools",
             "pages": [
+              "ai-tools/overview",
+              "ai-tools/kleros-skills",
               "ai-tools/kleros-cli",
+              "ai-tools/agentic-commerce-court",
+              "ai-tools/agent-reputation",
+              "ai-tools/trivium",
+              "ai-tools/mcp-server",
               {
                 "group": "Dispute Service",
                 "pages": [
@@ -394,6 +400,7 @@
           {
             "group": "Changelog",
             "pages": [
+              "changelog/2026-10-26",
               "changelog/2026-10-12",
               "changelog/2026-10-05",
               "changelog/2026-09-28",
