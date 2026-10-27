@@ -349,7 +349,7 @@ npx hardhat test --network hardhat --fork https://arb1.arbitrum.io/rpc
 ```solidity
 function testWithRealKleros() public {
     // Use actual mainnet KlerosCore address
-    IArbitratorV2 realArbitrator = IArbitratorV2(0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA);
+    IArbitratorV2 realArbitrator = IArbitratorV2(0x991d2df165670b9cac3B022f4B68D65b664222ea);
     
     uint256 cost = realArbitrator.arbitrationCost(extraData);
     // Verify cost is reasonable

@@ -1,0 +1,64 @@
+---
+title: "Kleros Skills"
+description: "Kleros Skills are knowledge packs that teach any AI agent how to work with Kleros: upload evidence to IPFS, operate Curate registries and read on-chain arbitration state."
+---
+
+[Kleros Skills](https://skills.kleros.io) packages Kleros protocol knowledge so an AI agent can read it on demand. Each skill is a self-contained `SKILL.md` file at a predictable path that tells the agent what exists, how it works and what to check before acting. Skills work with Claude, ChatGPT, Cursor, Codex, OpenClaw and other agents.
+
+<Note>
+Kleros Skills is in beta. Two skills are live and more are being added.
+</Note>
+
+---
+
+## Use It in Any Agent
+
+Paste this line into your agent at the start of a session:
+
+```text
+Read https://skills.kleros.io/SKILL.md and follow it before interacting with Kleros protocol.
+```
+
+The router file at `https://skills.kleros.io/SKILL.md` points the agent to the right skill for the task. Individual skills live at `https://skills.kleros.io/<skill>/SKILL.md`.
+
+### Set it up once
+
+To skip the prompt in every session, add the same line to your tool's persistent instructions:
+
+| Tool | Where to add it |
+| --- | --- |
+| Codex | An `AGENTS.md` file in your repository root |
+| Cursor | A rule file at `.cursor/rules/kleros-skills.mdc` |
+| Claude Code, OpenClaw and others | Your tool's project or global instructions file |
+
+[skills.kleros.io](https://skills.kleros.io) has copy-ready setup for each tool.
+
+---
+
+## Available Skills
+
+| Skill | What it does | Networks |
+| --- | --- | --- |
+| [Kleros IPFS Upload](https://skills.kleros.io/kleros-ipfs-upload/SKILL.md) | Uploads one Kleros file per paid request through the Kleros x402 gateway: dispute evidence, MetaEvidence JSON, court policies, Curate item metadata and juror justifications. Costs $0.01 USDC per upload on Base, gasless for the payer. Returns pinned CIDs | Base (payment) |
+| [Kleros Curate](https://skills.kleros.io/kleros-curate/SKILL.md) | Operates token-curated registries end to end: submit items, challenge requests, fund appeals, deploy and verify lists. Covers Light Curate, Stake Curate (PGTCR) and the Scout registries | Ethereum, Gnosis, Sepolia |
+
+The IPFS upload skill is for Kleros content only. For generic IPFS uploads with no Kleros context, use a general pinning service instead.
+
+### Coming soon
+
+| Skill | Scope |
+| --- | --- |
+| Kleros CLI | Query courts, disputes, evidence, jurors, stakes and policy from the command line, MCP or HTTP. See [Kleros CLI](/ai-tools/kleros-cli) for the tool itself |
+| Agent Verification | Verify ERC-8004 agents through Kleros arbitration and build on-chain reputation. See [Agent Reputation](/ai-tools/agent-reputation) |
+| Kleros Escrow V1 | Create, fund and resolve Escrow V1 transactions, and follow rulings back into payment release |
+| Kleros Escrow V2 | The same for Escrow V2 |
+| Arbitrable App Builder | Entry point for building Kleros-arbitrable applications: pick the pattern, contract and policy |
+| Why Kleros | When and why to choose Kleros over alternatives |
+| Kleros Protocol | Crypto-economics and design choices: staking, drawing, voting, coherence and appeals |
+| Contract Addresses | Canonical Kleros contract addresses across networks |
+
+---
+
+## Contribute and Report Issues
+
+The skills are open source in [kleros/kleros-skills](https://github.com/kleros/kleros-skills). If a skill is broken or confusing, agents can fetch the feedback skill linked from the router, or you can open an issue in that repository.

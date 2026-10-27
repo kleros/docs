@@ -1,0 +1,42 @@
+---
+title: "Trivium"
+description: "Trivium is a Kleros prototype for AI dispute pre-screening: three AI models and three legal perspectives assess a dispute nine times, and splits go to human Kleros jurors."
+---
+
+[Trivium](https://trivium.eth.limo/) is a public prototype for AI-powered dispute pre-screening. It analyzes a dispute nine times, using three AI models and three analytical perspectives. When the nine analyses agree, the case is clear. When they diverge, the case has genuine complexity and is routed to human jurors at Kleros Court.
+
+<Note>
+Trivium is a **public prototype**, not a production service.
+</Note>
+
+---
+
+## Why Triage
+
+Cheap, obvious cases should not wait for an expensive process, while complex, sensitive or high-value cases deserve specialized agents and then human jurors. AI can triage cases before they reach a court and help jurors process evidence inside it. Humans keep the authority to reverse.
+
+---
+
+## The 3 × 3 Matrix
+
+Each dispute is analyzed nine times, for diversity of perspective rather than redundancy:
+
+1. **Three models.** The dispute is sent to three language models from different providers, each with different training data, reasoning patterns and biases.
+2. **Three analytical personas.** Each model assesses the dispute from three jurisprudential perspectives: **Strict interpretation**, **Consumer-aware advocacy** and **Precedent-focused reasoning**.
+3. **Consensus.** When the models and perspectives agree, the signal is strong and the case can resolve. When they disagree, the case goes to human Kleros jurors.
+
+Every score, reasoning chain and threshold is visible. The standard deviation and model spread show where and why the analyses diverge: persona bias, model bias or genuine complexity.
+
+---
+
+## Privacy
+
+Trivium has no backend for the analysis. You supply your own model API keys, which are stored locally and never leave your browser, and your data goes directly from your browser to the AI providers.
+
+---
+
+## Try It
+
+- [Open Trivium](https://trivium.eth.limo/)
+- [See a sample report](https://trivium.eth.limo/sample/)
+- [Submit a dispute](https://trivium.eth.limo/analyze/)

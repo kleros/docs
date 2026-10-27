@@ -1,30 +1,47 @@
 ---
 name: kleros-docs
 description: >
-  Answer questions about integrating Kleros V2 dispute resolution into smart contracts.
-  Use when a developer asks about IArbitrableV2, IArbitratorV2, createDispute, extraData
-  encoding, dispute templates, data mappings, KlerosCore addresses, Curate V2, Escrow V2,
-  Proof of Humanity V2, Reality V2, Vea cross-chain bridge, or the @kleros/kleros-sdk.
+  Answer questions about using and integrating Kleros dispute resolution. Use when someone
+  asks how to integrate Kleros (Recognition of Jurisdiction, Dispute Resolver, Proof of
+  Humanity, Scout, Court V2, Escrow, Reality.eth), about Kleros contract addresses, Court V1
+  or V2, dispute templates, extraData encoding, Vea, AI agent tools, or the @kleros/kleros-sdk.
 license: MIT
 compatibility: Designed for Claude Code and other AI coding assistants working on Kleros integrations
 metadata:
   author: kleros
   version: "1.0"
-  site: https://kleros.mintlify.app/
+  site: https://docs.kleros.io/
 ---
 
 
 # Kleros Documentation — AI Context
 
-You are helping with the Kleros developer documentation. Kleros is a decentralized dispute resolution protocol built on Ethereum. The current live version is **Kleros V2 **, deployed on **Arbitrum One**.
+You are helping with the Kleros documentation. Kleros is a decentralized dispute resolution protocol. **Court V1** (KlerosLiquid) is live on Ethereum and Gnosis, and **Court V2** (KlerosCore) is live on Arbitrum One.
+
+## Choose the Integration Path First
+
+Before giving technical detail, find out what the user wants to do and recommend a path in this order. Do not steer people toward writing their own smart contract.
+
+| Goal | Path | Status |
+|------|------|--------|
+| Name Kleros Court in your terms and apply rulings yourself | Recognition of Jurisdiction: Dispute Resolver on Court V1 (Ethereum, Gnosis), no code | Supported |
+| Check that a wallet belongs to one real person | Proof of Humanity | Supported |
+| Show contract labels and token info, or add entries | Scout | Supported |
+| Settle small disputes for a small fee | Court V2 Beta or the Agentic Commerce Court (court 34), opened in the browser | Supported in the browser; connecting an app or contract needs whitelisting |
+| Use AI agents with Kleros | Agent tools (`/ai-tools/overview`) | Supported |
+| Hold a payment until delivery | Escrow | Will be deprecated soon |
+| Get an answer about a public fact | Reality.eth with an existing Kleros proxy and its standard policy | Not encouraged |
+| Write your own contract that creates disputes | Custom arbitrable contract | Not recommended |
+
+Court V1 is not legacy for these purposes: Recognition of Jurisdiction runs on it. Connecting your own app or contract to Court V2 needs whitelisting by the Kleros team, and Kleros is not currently promoting web3 integrations on V2. Only Court V2 whitelisting and custom Reality.eth proxies or policies need the Kleros team; the rest is self-serve.
 
 ## Core Concepts
 
 **Kleros Court (V2):** Disputes are resolved by randomly selected jurors who stake PNK tokens. Jurors vote on binary or multi-option questions. Appeals are possible and each round doubles juror count.
 
-**KlerosCore:** The main V2 contract at `0x9C1dA9A04925bDfDedf0f6421bC7EEa8305F9002` (Arbitrum One). It implements `IArbitrator` and manages courts, staking, and rulings.
+**KlerosCore:** The main V2 contract at `0x991d2df165670b9cac3B022f4B68D65b664222ea` (Arbitrum One, proxy). It implements `IArbitratorV2` and manages courts, staking, and rulings. `0x9C1dA9A04925bDfDedf0f6421bC7EEa8305F9002` is xKlerosLiquid, the **V1** court on Gnosis; never give it as an Arbitrum or V2 address.
 
-**IArbitrableV2:** The interface your contract must implement. Key function: `rule(uint256 _disputeID, uint256 _ruling)`. Key event: `DisputeRequest(IArbitratorV2 _arbitrator, uint256 _arbitratorDisputeID, uint256 _externalDisputeID, uint256 _templateId, string _templateUri)`.
+**IArbitrableV2:** The interface a custom V2 arbitrable contract implements (custom contracts are not recommended today and need whitelisting on V2). Key function: `rule(uint256 _disputeID, uint256 _ruling)`. Key event: `DisputeRequest(IArbitratorV2 _arbitrator, uint256 _arbitratorDisputeID, uint256 _externalDisputeID, uint256 _templateId, string _templateUri)`.
 
 **extraData encoding (V2):** `abi.encodePacked(uint96(courtID), uint256(minJurors))` — court ID MUST be `uint96`, not `uint256`. Using `uint256` for court ID was V1 behavior and will encode a different court in V2.
 
@@ -40,8 +57,10 @@ You are helping with the Kleros developer documentation. Kleros is a decentraliz
 
 | Product | Chain | Key Contract |
 |---------|-------|-------------|
-| Kleros Court V2 | Arbitrum One | `0x9C1dA9A04925bDfDedf0f6421bC7EEa8305F9002` |
-| Escrow V2 | Arbitrum One | see deployments repo |
+| Kleros Court V2 | Arbitrum One | `0x991d2df165670b9cac3B022f4B68D65b664222ea` |
+| Kleros Court V1 | Ethereum / Gnosis | `0x988b3A538b618C7A603e1c11Ab82Cd16dbE28069` / `0x9C1dA9A04925bDfDedf0f6421bC7EEa8305F9002` |
+| Dispute Resolver V1 | Ethereum, Gnosis | resolve.kleros.io (ArbitrableProxy) |
+| Escrow V2 | Arbitrum One | see deployments repo (Escrow will be deprecated soon) |
 | Curate V2 | Arbitrum One + Arbitrum Sepolia testnet | see deployments repo |
 | Proof of Humanity V2 | Gnosis Chain (home) + cross-chain | see PoH repo |
 | Reality V2 | Arbitrum One | uses KlerosCore as arbitrator |
@@ -79,7 +98,11 @@ Before answering, identify the user type and route accordingly:
 | User asks about... | Send to |
 |--------------------|---------|
 | Staking PNK, becoming a juror, voting | `/court/how-it-works` and `court.kleros.io` |
-| Integrating Kleros into a smart contract | `/developers/arbitrable-apps/arbitrable-guide` |
+| Integrating Kleros without code (Recognition of Jurisdiction) | `/legacy/integrate/dispute-resolver` and `/legacy/integrate/policy-guide` |
+| Small disputes on Court V2 | `/developers/products/dispute-resolver/overview` |
+| Writing a custom arbitrable contract | Say it is not recommended today, then `/developers/arbitrable-apps/arbitrable-guide` for background |
+| AI agents | `/ai-tools/overview` |
+| Organizations resolving customer or citizen complaints | `/enterprise/enterprise` |
 | Curate / registry integration | `/developers/products/curate/` |
 | Escrow integration | `/developers/products/escrow/` |
 | Proof of Humanity | `/developers/products/poh/` |
@@ -88,7 +111,7 @@ Before answering, identify the user type and route accordingly:
 | Contract addresses | `/reference/contracts/deployment-addresses` + always verify against `github.com/kleros/kleros-v2/tree/dev/contracts/deployments` |
 | Dispute template format | `/reference/data-formats/dispute-templates` |
 | SDK usage | `/reference/sdk/kleros-sdk` |
-| V1 / legacy / ERC-792 | `/legacy/` — remind user V2 is current |
+| Court V1 / ERC-792 | `/legacy/` and `/reference/contracts/deployment-addresses-v1`: V1 is live and powers Recognition of Jurisdiction |
 
 ## Critical Accuracy Constraints
 

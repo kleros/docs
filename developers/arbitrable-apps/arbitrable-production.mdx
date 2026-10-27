@@ -147,7 +147,7 @@ Court parameters (minStake, feeForJuror, session timings) are governed and can c
   ],
   "policyURI": "/ipfs/Qm...",                // ✓ Accessible
   "arbitratorChainID": "42161",              // ✓ Correct chain
-  "arbitratorAddress": "0x9C1dA9A04925bDfDedf0f6421bC7EEa8305F9002"  // ✓ KlerosCore on Arbitrum One
+  "arbitratorAddress": "0x991d2df165670b9cac3B022f4B68D65b664222ea"  // ✓ KlerosCore on Arbitrum One
 }
 ```
 
@@ -227,7 +227,7 @@ Kleros disputes follow a fixed phase sequence. Understand the timing impact on y
 
 | Contract | Expected | Deployed |
 |----------|----------|----------|
-| KlerosCore | `0x33d0b8879...` | ▢ Match |
+| KlerosCore | `0x991d2df1...` | ▢ Match |
 | Your Arbitrable | - | ▢ Verified |
 | Dispute Template | - | ▢ Accessible |
 
@@ -319,7 +319,7 @@ Contact the Kleros team via [Discord](https://discord.gg/MhXQGCyHd9) or `integra
 
 | Contract | Address |
 |----------|---------|
-| KlerosCore (proxy) | `0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA` |
+| KlerosCore (proxy) | `0x991d2df165670b9cac3B022f4B68D65b664222ea` |
 | SortitionModule | Verify from [deployments](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments/arbitrum) |
 | DisputeKitClassic | Verify from deployments |
 | DisputeTemplateRegistry | Verify from deployments |
@@ -327,7 +327,7 @@ Contact the Kleros team via [Discord](https://discord.gg/MhXQGCyHd9) or `integra
 
 ```solidity
 // Querying court parameters on-chain
-IKlerosCore core = IKlerosCore(0x33d0b8879368acD8ca868e656Ade97bBcfeB12BA);
+IKlerosCore core = IKlerosCore(0x991d2df165670b9cac3B022f4B68D65b664222ea);
 
 // Get arbitration cost for General Court (ID 1) with 3 jurors
 bytes memory extraData = abi.encodePacked(uint96(1), uint256(3));
