@@ -1,0 +1,99 @@
+---
+title: "KlerosCore"
+description: "Referencia del contrato KlerosCore: métodos createDispute, arbitrationCost, financiación de apelaciones, selección de jurados, transiciones de periodo y ejecución de fallos."
+---
+
+
+
+Contrato árbitro central de Kleros V2. Gestiona la creación de disputas, la selección de jurados, las transiciones de periodo, las apelaciones y la ejecución de fallos.
+
+**Versión**: 0.10.0 | **Proxy**: UUPS actualizable
+
+## Métodos clave
+
+### `createDispute(uint256 _numberOfChoices, bytes _extraData) payable → uint256`
+Crea una nueva disputa. Quien llama debe enviar suficiente ETH (o ERC-20 aprobado) para cubrir el costo del arbitraje. El `extraData` codifica el `courtID` de destino (como `uint96`) y `minJurors` (como `uint256`).
+
+### `arbitrationCost(bytes _extraData) view → uint256`
+Devuelve la tarifa de arbitraje actual (en ETH) para la configuración de corte/jurados especificada.
+
+### `appeal(uint256 _disputeID, uint256 _numberOfChoices, bytes _extraData) payable`
+Gestiona las apelaciones, incluidos los saltos de corte y de dispute kit.
+
+### `execute(uint256 _disputeID, uint256 _round, uint256 _iterations)`
+Distribuye los stakes de PNK y las tarifas entre los jurados según la coherencia de su voto.
+
+### `executeRuling(uint256 _disputeID)`
+Finaliza la disputa y llama a `rule()` en el contrato Arbitrable.
+
+### `currentRuling(uint256 _disputeID) view → (uint256 ruling, bool tied, bool overridden)`
+Devuelve el fallo actual y su estado:
+
+| Valor devuelto | Tipo | Descripción |
+|--------|------|-------------|
+| `ruling` | `uint256` | Opción ganadora actual. `0` significa "Negarse a arbitrar" o que aún no hay mayoría. |
+| `tied` | `bool` | `true` cuando dos o más opciones tienen el mismo número de votos. Una disputa empatada tendrá por defecto el fallo `0` si el periodo de apelación vence sin resolución. Diseña siempre tus contratos para manejar el fallo `0` de forma explícita. |
+| `overridden` | `bool` | `true` cuando la corte superior cambió el fallo en apelación. Útil para monitoreo o analítica: el callback final `rule()` en tu contrato arbitrable ya refleja el valor anulado. |
+
+### `setStake(uint96 _courtID, uint256 _newStake)`
+Staking de jurados: requiere la aprobación previa de PNK. En el despliegue Neo, el staking también requiere que el jurado posea el NFT `KlerosV2NeoEarlyUser`.
+ 
+## Parámetros de inicialización
+ 
+El contrato se inicializa con los siguientes parámetros clave (relevantes para integradores y propuestas de gobernanza):
+ 
+| Parámetro | Descripción |
+|---|---|
+| `_governor` | Dirección con plenos derechos de gobernanza (pausa, actualización, cambios de parámetros) |
+| `_guardian` | Dirección de emergencia: solo puede pausar |
+| `_pinakion` | Dirección del contrato del token PNK |
+| `_jurorProsecutionModule` | Dirección autorizada para activar la ejecución de penalizaciones a jurados fuera del flujo normal de disputas |
+| `_disputeKit` | Dispute kit inicial registrado en la corte raíz |
+| `_sortitionModuleAddress` | Dirección del contrato SortitionModule |
+| `_wNative` | Dirección del token nativo envuelto (WETH en Arbitrum): se usa para conversiones de tarifas en ERC-20 |
+
+## Roles de gobernanza
+
+- **Governor** Pausar/reanudar, cambiar parámetros, actualizar, cambiar roles
+- **Guardian** Solo puede pausar (respuesta de emergencia)
+
+Cuando está en pausa: el staking y las recompensas quedan bloqueados. La creación de disputas, la votación y las apelaciones continúan.
+
+## Soporte de tarifas en ERC-20
+ 
+V2 admite el pago de tarifas de arbitraje en tokens ERC-20 aceptados (por ejemplo, WETH, DAI) además de ETH:
+ 
+```solidity
+// Pay arbitration fees with ERC-20
+IERC20 feeToken = IERC20(wethAddress);
+uint256 cost = arbitrator.arbitrationCost(extraData, feeToken);
+feeToken.approve(address(arbitrator), cost);
+arbitrator.createDispute(choices, extraData, feeToken, cost);
+```
+ 
+<Warning>
+El soporte de tarifas en ERC-20 solo está disponible al interactuar directamente con KlerosCore en Arbitrum. El `ForeignGateway` (usado para el arbitraje cross-chain desde Ethereum/Gnosis) **no** admite tarifas en ERC-20: a través del gateway solo se acepta ETH.
+</Warning>
+ 
+## Dispute Kits
+ 
+La Corte General admite los cuatro dispute kits. El kit activo se selecciona mediante `extraData` al crear la disputa. Kits actuales en Arbitrum One:
+ 
+| ID del kit | Nombre | Descripción |
+|---|---|---|
+| 1 | DisputeKitClassic | Votación por pluralidad estándar |
+| 2 | DisputeKitShutter | Commit-reveal con cifrado de Shutter |
+| 3 | DisputeKitGated | Restringido por token de elegibilidad (SBT) |
+| 4 | DisputeKitGatedShutter | Restringido + commit-reveal de Shutter |
+
+## Eventos
+
+| Evento | Descripción |
+|---|---|
+| `DisputeCreation` | Nueva disputa creada |
+| `AppealDecision` | Disputa apelada |
+| `CourtJump` | Disputa escalada a la corte superior |
+| `Ruling` | Fallo final ejecutado |
+| `TokenAndETHShift` | Recompensa/penalización aplicada al jurado |
+
+[Ver código fuente](https://github.com/kleros/kleros-v2/blob/master/contracts/src/arbitration/KlerosCore.sol)

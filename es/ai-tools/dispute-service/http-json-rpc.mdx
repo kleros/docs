@@ -1,0 +1,151 @@
+---
+title: "Llamar al servicio mediante HTTP JSON-RPC directo"
+description: "Llama a Kleros Dispute Service como JSON-RPC simple sobre HTTP: encabezados, formato SSE, autenticación, límites de tasa y las trampas de una primera solicitud."
+---
+
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
+
+Para clientes que quieren las herramientas de lectura sin adoptar una biblioteca de cliente MCP: envía JSON-RPC por POST a `/mcp` con un token bearer y analiza la respuesta. Esto está soportado, no es una solución provisional.
+
+<Accordion title="Notas de compatibilidad" icon="circle-info">
+  Verificado el 2026-09-08 contra el servicio desplegado sobre `@modelcontextprotocol/server` 2.0.0, y medido de nuevo el 2026-10-13 sobre 2.2.0, la versión que el servicio ejecuta ahora. Dos formas que esta guía nunca usa se rechazan con HTTP 400:
+
+  - Una solicitud que declara la revisión de protocolo `2026-07-28` sin el encabezado `MCP-Protocol-Version` se rechaza con `-32020` (desde `@modelcontextprotocol/server` 2.2.0).
+  - **Un lote JSON-RPC se rechaza sea cual sea su tamaño, incluido un lote de uno**. Envía una solicitud por POST.
+
+  Una llamada simple como la que se describe a continuación no se ve afectada.
+</Accordion>
+
+## Funciona, y no necesitas `initialize`
+
+`/mcp` responde sin estado a una solicitud que no declara ninguna revisión de protocolo, una solicitud a la vez. Un `tools/call` simple devuelve un resultado sin handshake, sin ID de sesión y sin nada que mantener activo entre llamadas.
+
+<Check>
+  Cada llamada es independiente. No hay ninguna sesión que establecer, reanudar o cerrar.
+</Check>
+
+## Dos cosas que harán fallar tu primera solicitud
+
+<Info>
+  **Envía ambos tipos de medio en `Accept`, o recibirás un 406.** `Accept: application/json` por sí solo, y la ausencia del encabezado `Accept`, se rechazan antes de que se lea tu solicitud:
+
+  ```json 406 response
+  {"jsonrpc":"2.0","error":{"code":-32000,"message":"Not Acceptable: Client must accept both application/json and text/event-stream"},"id":null}
+  ```
+</Info>
+
+<Info>
+  **Un 200 llega con formato SSE, no como un cuerpo JSON.** La respuesta es `content-type: text/event-stream` y tiene este aspecto, por lo que `JSON.parse` sobre el cuerpo sin procesar falla:
+
+  ```text 200 response body
+  event: message
+  data: {"result":{...},"jsonrpc":"2.0","id":1}
+  ```
+</Info>
+
+Para analizar la respuesta:
+
+1. Toma la línea que empieza por `data:`.
+2. Quita ese prefijo.
+3. Analiza lo que queda.
+
+<Note>
+  A pesar del formato, se trata de una única solicitud/respuesta: un frame y luego la conexión se cierra. `GET /mcp` devuelve un 404: no hay ningún stream al que suscribirse.
+</Note>
+
+## Una llamada que funciona
+
+```sh curl highlight={4} icon=terminal
+curl -sS https://kleros-dispute-service.fly.dev/mcp \
+  -H "authorization: Bearer $KEY" \
+  -H "content-type: application/json" \
+  -H "accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"dispute_list","arguments":{"chain":"arbitrum-one"}}}'
+```
+
+`tools/list` funciona con el mismo POST simple y devuelve el esquema de entrada de cada herramienta. Lee de ahí los nombres de los argumentos en lugar de adivinarlos, y lee el arreglo `required` además de las propiedades, porque en la superficie de escritura es determinante.
+
+<Warning>
+  `dispute_create` requiere `aliases` incluso cuando quien llama no nombra a ninguna parte:
+
+  | Argumentos | Resultado |
+  | --- | --- |
+  | `"arguments":{}` | Un rechazo (`ALIASES_REQUIRED`) en lugar de una disputa |
+  | `"arguments":{"aliases":{}}` | La llamada que crea una disputa sin nadie nombrado |
+
+  Nada obliga a que un payload escrito a mano pase por el esquema, así que este es el único lugar en el que un cliente que solo lee los nombres de las propiedades se aparta silenciosamente de lo que acepta el servicio.
+</Warning>
+
+## Lee esto antes de confiar en un resultado
+
+Omitir `initialize` significa que nunca recibes la cadena `instructions` del servidor, que es donde está escrita la semántica del arbitraje. A un cliente MCP se le entrega al conectarse; a ti no. Obtenla tú mismo:
+
+<Card title="Documento de skill" icon="book-open" href="https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md">
+  Sin autenticación. Lectura obligatoria, no material de contexto.
+</Card>
+
+Trata ese documento como la fuente de verdad. Cuatro trampas son lo bastante importantes como para mencionarlas aquí, porque todas fallan en silencio en lugar de producir un error:
+
+<AccordionGroup>
+  <Accordion title="Pasa chain de forma explícita" icon="link">
+    `dispute_get`, `dispute_list` y `evidence_list` se distribuyen entre cadenas cuando lo omites: entre `ethereum`, luego `gnosis` y luego `arbitrum-one`, agotadas en ese orden. La primera página es íntegramente de `ethereum`, por lo que un resultado ausente significa "todavía no en `ethereum`", no "no existe".
+  </Accordion>
+
+  <Accordion title="arbitrum-one es Kleros v2 Beta, el despliegue de producción en vivo" icon="triangle-exclamation">
+    `chain: "arbitrum-one"` es Kleros v2 Beta, y Beta es el despliegue de producción en vivo: disputas reales, tarifas de arbitraje reales, dinero real. El nombre describe la versión, no la red. El despliegue de pruebas públicas con datos de prueba es `chain: "arbitrum-sepolia-testnet"`. Un cliente que interpretó "Beta" como una testnet ya ha respondido una pregunta sobre disputas en vivo con datos de prueba.
+  </Accordion>
+
+  <Accordion title="arbitrum-sepolia está retirado" icon="ban">
+    `arbitrum-sepolia` está retirado y ahora se rechaza. Antes designaba la _Devnet_, que ahora es `arbitrum-sepolia-devnet`, por lo que un buscar y reemplazar hacia el `arbitrum-sepolia-testnet` anunciado funciona y lee en silencio un despliegue distinto. En relación con esto, cualquier `chain` que no se pueda resolver ahora es un error: antes caía en una distribución en vivo entre tres cadenas de producción que se reportaba como `success`.
+  </Accordion>
+
+  <Accordion title="Las llamadas fallidas a herramientas no llevan código de error" icon="circle-exclamation">
+    El resultado es `isError: true` más texto renderizado: sin campo de código ni `structuredContent`. AgentKit genera internamente códigos como `CHAIN_REQUIRED` y `CHAIN_NOT_SUPPORTED`, y son reales en su línea de comandos, pero la capa MCP solo emite el mensaje, por lo que nunca te llegan. Ramifica según `isError`; trata el texto como prosa que cambia entre versiones.
+  </Accordion>
+</AccordionGroup>
+
+El documento de skill también explica qué significa `ruled` en cada generación de Kleros, por qué `dispute_get` y `dispute_list` pueden discrepar al respecto y qué herramientas se niegan por completo a distribuirse entre cadenas.
+
+## Una solicitud por POST
+
+Envía cada mensaje JSON-RPC en su propio POST. Un arreglo JSON-RPC (un lote, de cualquier longitud, incluida 1) se rechaza con HTTP 400 antes de que se ejecute ninguna herramienta:
+
+```json 400 batch refusal
+{"jsonrpc":"2.0","error":{"code":-32600,"message":"Invalid Request: JSON-RPC batches are not accepted. Send one request per POST."},"id":null}
+```
+
+<Note>
+  El rechazo se decide después de que tu clave se comprueba y se contabiliza, por lo que un lote rechazado igualmente consume una solicitud de tu límite.
+</Note>
+
+El propio protocolo MCP eliminó los lotes JSON-RPC a partir de la revisión 2025-06-18, por lo que un cliente MCP actual nunca envía uno.
+
+## Una escritura a la vez por clave
+
+`dispute_create`, `evidence_pin` y `evidence_submit` se ejecutan de una en una por clave (estrictamente, por firmante que nombra el Preset de tu clave), por lo que tus claves de Beta y Testnet no se bloquean entre sí.
+
+<Warning>
+  Una escritura que llega mientras otra escritura con la misma clave sigue en ejecución no se pone en cola. Vuelve de inmediato como `isError: true` con un texto que empieza por `WRITE_IN_PROGRESS: `. **No se envió nada**, así que vuelve a llamarla cuando tu otra escritura haya terminado.
+</Warning>
+
+<Tip>
+  Si tu cliente hace llamadas a herramientas en paralelo, serializa las escrituras. Las lecturas nunca se retienen por esto, y las escrituras con otras claves no bloquean las tuyas.
+</Tip>
+
+## Límites y estado
+
+Tu clave se contabiliza a **30 solicitudes por minuto**, por clave. Una solicitud es un POST y, como un POST lleva exactamente una llamada, una solicitud es una llamada a una herramienta.
+
+| Estado | Cuerpo | Causa |
+| --- | --- | --- |
+| 429 | `{"error":"rate limit exceeded"}` | Superar el límite de tasa |
+| 401 | `{"error":"unauthorized"}` | Un token ausente o no reconocido |
+| 413 | `{"error":"request body too large"}` | Un cuerpo de solicitud demasiado grande: una protección sobre el tamaño de toda la solicitud HTTP, no un límite sobre ningún argumento concreto, y las llamadas normales están muy lejos de alcanzarlo |
+
+<Tip>
+  Ninguno de los tres tiene formato JSON-RPC: todos son JSON simple, y todos se deciden antes de que tu solicitud llegue a la capa JSON-RPC, así que comprueba primero el estado HTTP.
+</Tip>
+
+<Note>
+  `/health` no requiere autenticación para que la plataforma pueda sondearlo. Un `/health` en verde significa que el proceso HTTP está activo; no significa que el backend de arbitraje sea accesible, lo cual solo se comprueba con una llamada real a una herramienta.
+</Note>

@@ -1,0 +1,48 @@
+---
+title: "Especificación de las cortes"
+description: "Especificación de las cortes de Kleros V2: estructura de árbol jerárquico, minStake, feeForJuror, votos ocultos, timesPerPeriod y otros parámetros on-chain de las cortes."
+---
+
+
+
+Las cortes se organizan en un árbol jerárquico cuya raíz es la Corte General. Cada corte tiene parámetros configurables almacenados on-chain en KlerosCore.
+
+## Parámetros de las cortes
+
+```typescript
+{
+  name: string;               // Documentation-only (set in PolicyRegistry)
+  id: number;                 // Unique court identifier
+  parent: number;             // Parent court ID (root references itself)
+  hiddenVotes: boolean;       // Whether votes use commit-reveal
+  minStake: string;          // Minimum PNK to stake (wei)
+  feeForJuror: string;       // Juror fee per dispute (wei)
+  alpha: string;             // Stake weight (basis points)
+  jurorsForCourtJump: string; // Juror threshold for appeal to parent
+  timesPerPeriod: number[];   // [evidence, commit, vote, appeal] in seconds
+}
+```
+
+## Reglas de jerarquía
+
+- El ID de corte 0 está reservado para la futura **Forking Court**
+- El ID de corte 1 es la **Corte General** (raíz actual)
+- Cada corte que no sea raíz debe tener una corte superior válida
+- Las cortes hijas heredan de sus cortes superiores los dispute kits admitidos
+- Las apelaciones que superan `jurorsForCourtJump` escalan a la corte superior
+
+## Ejemplo
+
+```json
+{
+  "name": "General Court",
+  "id": 1,
+  "parent": 1,
+  "hiddenVotes": true,
+  "minStake": "2300000000000000000000",
+  "feeForJuror": "5000000000000000",
+  "alpha": "10000",
+  "jurorsForCourtJump": "511",
+  "timesPerPeriod": [280800, 583200, 583200, 388800]
+}
+```

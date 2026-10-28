@@ -1,0 +1,38 @@
+---
+title: "Formato de evidencia"
+description: "Especificación del formato de evidencia de Kleros V2: esquema JSON con los campos title, description, fileURI, fileTypeExtension y fileHash para almacenamiento en IPFS o Arweave."
+---
+
+
+
+La evidencia en Kleros V2 se almacena off-chain (IPFS/Arweave) y se referencia on-chain mediante URI.
+
+## Estructura JSON de la evidencia
+
+```json
+{
+  "title": "Delivery Confirmation",
+  "description": "Screenshot showing the package was delivered on time",
+  "fileURI": "/ipfs/QmFileHash...",
+  "fileTypeExtension": "png",
+  "fileHash": "0x..."
+}
+```
+
+## Campos
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `title` | string | Sí | Título breve de la evidencia |
+| `description` | string | Sí | Descripción de lo que muestra la evidencia |
+| `fileURI` | string | No | URI del archivo de evidencia |
+| `fileTypeExtension` | string | No | Extensión del archivo (pdf, png, etc.) |
+| `fileHash` | string | No | Hash del archivo para verificar su integridad |
+
+## Envío
+
+La evidencia se envía llamando al método correspondiente del contrato Arbitrable o del módulo de evidencia, pasando el URI de IPFS del JSON de evidencia.
+
+## Evidencia moderada
+
+El contrato `ModeratedEvidenceModule` proporciona protección contra spam en el envío de evidencia mediante un mecanismo de impugnación con fianza. Esto es especialmente útil para disputas en cadenas L2, donde los costos de gas son bajos y el spam es barato.

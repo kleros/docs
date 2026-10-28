@@ -1,0 +1,27 @@
+---
+title: "Governor V1"
+description: "Documentación de Kleros Governor V1: ejecución on-chain de las votaciones de gobernanza de Snapshot en Ethereum Mainnet, con arbitraje de Kleros Court en caso de conflictos."
+---
+
+# Governor V1
+
+<Note>
+Governor V1 está probado en producción en Ethereum L1 y sigue activo para integraciones web3. Hay una versión V2 disponible: [Governor V2](/es/products/governor) en Arbitrum.
+</Note>
+
+Kleros Governor V1 se desplegó en Ethereum Mainnet como parte de la transición de una gobernanza basada en Aragon a una gobernanza totalmente descentralizada mediante votación en Snapshot y ejecución on-chain (consulta la [KIP-30](https://forum.kleros.io/t/kip-30-migrate-governance-to-snapshot/469)).
+
+El contrato Governor gestiona períodos de envío en los que los miembros de la comunidad envían listas de transacciones correspondientes a votaciones de gobernanza aprobadas. Si solo se envía una lista, se ejecuta automáticamente. Si se envían listas en conflicto, una disputa en Kleros Court determina la correcta.
+
+---
+
+## Cómo funcionaba Governor V1
+
+1. Se aprueba una votación de gobernanza en Snapshot
+2. Cualquiera envía a Governor una lista de transacciones que implementa los cambios aprobados
+3. Durante el período de envío, otros pueden enviar listas alternativas
+4. Si solo hay una lista: ejecución automática
+5. Si hay varias listas: disputa en Kleros Court para determinar la correcta
+6. Tras la resolución, las transacciones de la lista ganadora se ejecutan on-chain
+
+Consulta [Governor V2](/es/products/governor) para ver la versión actual en Arbitrum.

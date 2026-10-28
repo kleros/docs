@@ -1,0 +1,30 @@
+---
+title: "Governor"
+description: "Descripción general para desarrolladores de Kleros Governor V2, que cubre el contrato on-chain KlerosGovernor, el ciclo de vida de las propuestas y el flujo de arbitraje activado por disputas."
+---
+
+Governor V2 es un producto V2. Esta página documenta solo los detalles técnicos.
+
+---
+
+## Qué es Governor V2
+
+- Un contrato de gobernanza on-chain (`KlerosGovernor`) para ejecutar decisiones de la comunidad
+- Las propuestas pasan por un período de envío y, si se disputan, se resuelven mediante Kleros Court
+- Admite simulaciones de transacciones mediante Tenderly antes del envío
+
+---
+
+## Arquitectura
+
+- Una entrada ficticia precargada en `submissions[0]` reserva el listID 0 para la opción "Refuse to Arbitrate" en la plantilla de disputa
+- Construido sobre el paquete de contratos v2 `^2.0.0-rc.2`, usando la firma de `DisputeRequest` de 3 parámetros
+- Una suite completa de pruebas en Foundry cubre KlerosGovernor de extremo a extremo: 1.820 líneas de código de prueba en 15 archivos
+- Se ejecutan simulaciones de Tenderly para las propuestas de transacciones antes del envío
+- Los contratos y las plantillas están desplegados y verificados, y el contrato Governor se encuentra en su propio repositorio
+
+---
+
+## Enlaces
+
+- Repositorio: [github.com/kleros/governor-v2](https://github.com/kleros/governor-v2)

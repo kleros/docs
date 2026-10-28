@@ -1,0 +1,54 @@
+---
+title: "Árbitro centralizado"
+description: "Guía heredada de V1 del panel Centralized Arbitrator: despliega un árbitro de prueba para depurar aplicaciones arbitrables antes de conectarlas a KlerosLiquid V1 en Ethereum."
+---
+
+# Árbitro centralizado
+
+[centralizedarbitrator.kleros.io](https://centralizedarbitrator.kleros.io)
+
+El panel Centralized Arbitrator permite a cualquier persona desplegar y operar rápidamente un árbitro centralizado desde una interfaz gráfica. Sirve como herramienta de prueba y depuración para las aplicaciones arbitrables que se integran con Kleros Court.
+
+---
+
+## Cómo funciona
+
+1. Accede al [panel](https://centralizedarbitrator.kleros.io) y conecta una billetera MetaMask en tu red de destino.
+2. Elige entre:
+   - **Desplegar uno nuevo**: Tu dirección de Ethereum se convierte en la propietaria que puede establecer fallos y modificar la tarifa de arbitraje.
+   - **Seleccionar uno existente**: Introduce la dirección de un árbitro centralizado desplegado previamente.
+3. Establece o modifica la tarifa de arbitraje según sea necesario.
+4. Sigue las disputas entrantes desde tu aplicación arbitrable, fíltralas por estado y emite fallos directamente desde la interfaz.
+
+---
+
+## Compatibilidad de redes
+
+El Centralized Arbitrator puede usarse en Ethereum Mainnet y en las testnets de Ethereum. Contacta al equipo de Kleros para solicitar soporte para testnets adicionales.
+
+---
+
+## Caso de uso
+
+El flujo de trabajo típico es:
+
+1. Desplegar un árbitro centralizado en una testnet
+2. Apuntar tu contrato arbitrable a la dirección de este árbitro
+3. Crear disputas de prueba desde tu aplicación
+4. Emitir fallos manualmente desde el panel para verificar que tu contrato los gestiona correctamente
+5. Una vez conforme, cambiar la dirección del árbitro de tu contrato a Kleros Court (KlerosCore)
+
+Esto te permite probar el ciclo de vida completo de una disputa (creación, evidencia, fallo, apelación) bajo tu control antes de pasar a producción con arbitraje descentralizado.
+
+---
+
+## Recursos
+
+<CardGroup cols={2}>
+  <Card title="Abrir Centralized Arbitrator" icon="rocket" href="https://centralizedarbitrator.kleros.io">
+    centralizedarbitrator.kleros.io
+  </Card>
+  <Card title="Crear una aplicación arbitrable" icon="code" href="/es/developers/arbitrable-apps/arbitrable-overview">
+    Guía de integración en la pestaña Desarrolladores
+  </Card>
+</CardGroup>

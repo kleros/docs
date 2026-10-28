@@ -1,0 +1,152 @@
+---
+title: "Endpoints de subgraphs"
+description: "Endpoints GraphQL de los subgraphs core y DRT de Kleros V2 y de los subgraphs V1 en Arbitrum, Ethereum y Gnosis, servidos a través de la red descentralizada de The Graph y Goldsky."
+---
+
+
+
+Todos los subgraphs de Kleros están desplegados en The Graph. Usa estos endpoints para consultar datos de Kleros mediante GraphQL.
+
+Todos los subgraphs publicados por Kleros en la red descentralizada de The Graph aparecen en el [perfil de despliegue de Kleros en Graph Explorer](https://thegraph.com/explorer/profile/0x7f3a845bf7aa9eb6da3dc53518ff22a2f65612e6?chain=arbitrum-one&view=Subgraphs). Cada página de Explorer muestra el ID del subgraph y la URL de consulta exacta.
+
+<Note>
+**Infraestructura:** los subgraphs se migraron de Alchemy a Goldsky tras el cierre del servicio de subgraphs de Alchemy (diciembre de 2025–enero de 2026). El subgraph core 0.18.1 y el subgraph DRT 0.14.0 se desplegaron en Goldsky (noviembre de 2025), y el GTCR Indexer alcanzó la v0.1.7 con una rama de Envio (abril de 2026). Algunas aplicaciones usan Envio HyperIndex como indexador principal y un subgraph como respaldo.
+</Note>
+
+<Warning>
+Los endpoints de subgraphs en la red descentralizada requieren una **clave de API de Graph**. Obtén una en [thegraph.com/studio](https://thegraph.com/studio). En los mapeos de plantillas verás `{{{graphApiKey}}}`: el Kleros SDK lo inyecta en tiempo de ejecución.
+</Warning>
+
+---
+
+## Subgraphs V2 (Arbitrum)
+
+### Subgraph core (KlerosCore, cortes, disputas, jurados, stakes)
+
+
+
+
+| Entorno | Red | Página de Explorer | ID del subgraph |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [kleros-v2-coreneo](https://thegraph.com/explorer/subgraphs/3U95wXKP8fBpkMNn8mbroVkUTuh6KtHGa456pTixx9B2) | `3U95wXKP8fBpkMNn8mbroVkUTuh6KtHGa456pTixx9B2` |
+| Testnet | Arbitrum Sepolia | [kleros-v2-core-testnet](https://thegraph.com/explorer/subgraphs/77xeh3UeBCzHokbVtkeaH42vXsFh6MRe4JpZSPddoXZo) | `77xeh3UeBCzHokbVtkeaH42vXsFh6MRe4JpZSPddoXZo` |
+| Devnet | Arbitrum Sepolia | [kleros-v2-core-devnet](https://thegraph.com/explorer/subgraphs/4Rg3NAW99hX8RDD281ycfeRWxp92k6RdqpW3pf6imGTS) | `4Rg3NAW99hX8RDD281ycfeRWxp92k6RdqpW3pf6imGTS` |
+
+**Patrón de URL de consulta en la red descentralizada:**
+```
+https://gateway.thegraph.com/api/{YOUR_API_KEY}/subgraphs/id/{SUBGRAPH_ID}
+```
+
+### Subgraph del Dispute Template Registry
+
+| Entorno | Red | Página de Explorer | ID del subgraph |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [kleros-v2-drt](https://thegraph.com/explorer/subgraphs/FktCcvKHN9mdcyNMK1jgnKwf5AwmVXka4kATxXX3HmKT) | `FktCcvKHN9mdcyNMK1jgnKwf5AwmVXka4kATxXX3HmKT` |
+| Testnet | Arbitrum Sepolia | [kleros-v2-drt-arbisep-testnet](https://thegraph.com/explorer/subgraphs/EZjJCfxBiQ9B9RtfQDTzNKx34nckSnBWDNaLZPficnHp) | `EZjJCfxBiQ9B9RtfQDTzNKx34nckSnBWDNaLZPficnHp` |
+
+---
+
+## Subgraphs de productos V2
+
+### Escrow V2
+
+| Entorno | Red | Página de Explorer | ID del subgraph |
+| --- | --- | --- | --- |
+| Mainnet | Arbitrum One | [escrow-v2-neo](https://thegraph.com/explorer/subgraphs/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW) | `96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW` |
+| Devnet | Arbitrum Sepolia | [escrow-v2-devnet](https://thegraph.com/explorer/subgraphs/3aZxYcZpZL5BuVhuUupqVrCV8VeNyZEvjmPXibyPHDFQ) | `3aZxYcZpZL5BuVhuUupqVrCV8VeNyZEvjmPXibyPHDFQ` |
+
+URL de consulta completa (mainnet):
+```
+https://gateway.thegraph.com/api/{YOUR_API_KEY}/subgraphs/id/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW
+```
+
+### Curate V2
+
+El subgraph de Curate V2 está en desarrollo activo. Hay un despliegue de devnet publicado como [curate-v2-devnet](https://thegraph.com/explorer/subgraphs/H93eWJbDpYKAtkLmsMn7Su3ZLZwAwLN5VoyvQH4NbGAv). Consulta el [repositorio curate-v2](https://github.com/kleros/curate-v2/tree/master/subgraph) para ver el despliegue más reciente.
+
+---
+
+## Subgraphs V1
+
+Estos indexan productos V1 de Kleros que siguen en uso activo.
+
+<Note>
+El servicio alojado de The Graph (URL `thegraph.com/hosted-service/...`) se ha cerrado. Los antiguos endpoints del servicio alojado ya no funcionan.
+</Note>
+
+### Curate V1
+
+| Red | Página de Explorer | ID del subgraph |
+| --- | --- | --- |
+| Ethereum Mainnet | [legacy-curate-mainnet](https://thegraph.com/explorer/subgraphs/A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ) | `A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ` |
+| Gnosis Chain | [legacy-curate-gnosis](https://thegraph.com/explorer/subgraphs/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8) | `9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8` |
+
+La aplicación Curate en [curate.kleros.io](https://curate.kleros.io) consulta estos endpoints públicos de Goldsky, que no requieren clave de API:
+
+```
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-mainnet/0.0.3/gn
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-gnosis/0.0.3/gn
+https://api.goldsky.com/api/public/project_cmgx9all3003atlp2bqha1zif/subgraphs/pgtcr-sepolia/0.0.3/gn
+```
+
+### Proof of Humanity V1
+
+La aplicación Proof of Humanity en [app.proofofhumanity.id](https://app.proofofhumanity.id) consulta este endpoint público de Studio:
+
+```
+https://api.studio.thegraph.com/query/61738/proof-of-humanity-mainnet/version/latest
+```
+
+También puedes consultar PoH V1 directamente on-chain: llama a `isRegistered(address)` en `0xC5E9dDebb09Cd64DfaCab4011A0D5cEDaf7c9BDb` en Ethereum Mainnet.
+
+### Otros productos V1
+
+Para Escrow V1, Linguo, Tokens y otras apps V1, consulta el [perfil de despliegue de Kleros en Graph Explorer](https://thegraph.com/explorer/profile/0x7f3a845bf7aa9eb6da3dc53518ff22a2f65612e6?chain=arbitrum-one&view=Subgraphs) y los [repositorios de subgraphs de Kleros en GitHub](https://github.com/orgs/kleros/repositories?q=subgraph).
+
+---
+
+## Consultar subgraphs
+
+Todos los subgraphs exponen una API GraphQL. Consúltalos con cualquier cliente GraphQL:
+
+
+
+
+
+```typescript
+const SUBGRAPH_URL =
+  `https://gateway.thegraph.com/api/${process.env.GRAPH_API_KEY}/subgraphs/id/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW`;
+
+const response = await fetch(SUBGRAPH_URL, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    query: `{
+      courts(first: 10) {
+        id
+        policy { policy }
+        minStake
+        timesPerPeriod
+      }
+    }`
+  })
+});
+
+const { data } = await response.json();
+```
+
+<Note>
+Las direcciones en las respuestas de los subgraphs siempre están en **hexadecimal en minúsculas** (sin checksum EIP-55). Escribe siempre en minúsculas las direcciones en las variables de tus consultas, o el subgraph no devolverá resultados.
+</Note>
+
+---
+
+
+<CardGroup cols={2}>
+  <Card title="Ejemplos de consultas" icon="magnifying-glass" href="/es/developers/subgraph/queries">
+    Consultas GraphQL comunes para disputas, cortes y jurados
+  </Card>
+  <Card title="Descripción general de los subgraphs" icon="database" href="/es/developers/subgraph/overview">
+    Arquitectura y configuración del desarrollo local
+  </Card>
+</CardGroup>

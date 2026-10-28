@@ -1,0 +1,215 @@
+---
+title: "Descripción general"
+description: "Kleros Court es un protocolo de arbitraje descentralizado que usa jurados aleatorios, staking de PNK e incentivos criptoeconómicos en Ethereum (V1) y Arbitrum (V2)."
+sidebarTitle: "Descripción general"
+
+---
+
+<Frame>
+  <img src="/images/court-hero.png" alt="Interfaz de Kleros Court" />
+</Frame>
+
+# Kleros Court
+
+**Kleros Court** es un protocolo descentralizado de resolución de disputas que ofrece servicios de arbitraje para smart contracts y aplicaciones descentralizadas. Funciona seleccionando al azar jurados de un grupo, a quienes un mecanismo criptoeconómico basado en la teoría de juegos incentiva a resolver las disputas con honestidad.
+
+Piensa en ello como un poder judicial descentralizado para la Web3. Cuando surge una disputa, se sortean jurados al azar, estos revisan la evidencia, votan sobre el resultado y se ejecuta la decisión mayoritaria, todo ello sin intermediarios centralizados.
+
+Kleros Court tiene dos versiones. **V1** es el protocolo probado en producción que funciona en Ethereum desde 2018. **V2** es la actualización de nueva generación en Arbitrum con una arquitectura modular.
+
+---
+
+## V1: protocolo en producción
+
+Court V1 se lanzó en Ethereum Mainnet en 2018 y ha resuelto más de 1,500 disputas. Su smart contract principal es **KlerosLiquid**, un único contrato (monolítico) que combina el staking de jurados, la selección aleatoria, la votación y la gestión de disputas.
+
+<Frame >
+  <img src="/images/v1-court.png" alt="Interfaz de Court V1, captura de pantalla pendiente" />
+</Frame>
+
+| Aspecto | Court V1 |
+| --- | --- |
+| **Red** | Ethereum L1 (también Gnosis Chain) |
+| **Contrato principal** | KlerosLiquid (monolítico) |
+| **Estándares** | ERC-792 (arbitraje), ERC-1497 (evidencia) |
+| **Staking** | El PNK permanece en la wallet del jurado |
+| **Votación** | Commit-reveal con agregación por pluralidad |
+| **RNG** | Basado en blockhash |
+| **Cortes** | Árbol jerárquico de subcortes con la General Court como raíz |
+
+Los jurados hacen staking de PNK directamente desde su wallet en una subcorte, son sorteados al azar con una probabilidad proporcional a su stake y luego confirman (commit) y revelan sus votos sobre la evidencia presentada. Los jurados coherentes reciben recompensas; los jurados incoherentes pierden parte de su stake.
+
+---
+
+## V2: actualización de nueva generación
+
+Court V2 se ejecuta en Arbitrum L2 y reemplaza el contrato monolítico por un diseño modular: **KlerosCore** coordina las disputas, el **SortitionModule** gestiona la selección de jurados y los **DisputeKits** intercambiables proporcionan el mecanismo de resolución. Las disputas entre cadenas se retransmiten a través del **puente VEA**.
+
+---
+
+## Capacidades clave
+
+<CardGroup cols={2}>
+
+<Card title="Selección aleatoria de jurados" icon="shuffle">
+  Los jurados se sortean al azar entre quienes hacen staking, ponderados por su stake de PNK
+</Card>
+
+<Card title="Incentivos criptoeconómicos" icon="coins">
+  El voto honesto se recompensa; los votos incoherentes conllevan la penalización (slashing) del stake
+</Card>
+
+<Card title="Cortes jerárquicas" icon="sitemap">
+  Cortes especializadas para distintos tipos de disputas, con apelaciones a las cortes padre
+</Card>
+
+<Card title="Dispute Kits modulares" icon="puzzle-piece">
+  Mecanismos de resolución intercambiables: Classic, Shutter (cifrado), Gated (elegibilidad por SBT) y GatedShutter
+</Card>
+
+<Card title="Soporte multicadena" icon="link">
+  Disputas de cualquier cadena EVM resueltas en Arbitrum mediante el puente Vea
+</Card>
+
+<Card title="Ejecución sin confianza" icon="shield-check">
+  Los smart contracts ejecutan los fallos automáticamente
+</Card>
+
+</CardGroup>
+
+---
+
+## Cómo funciona
+
+En esencia, Kleros funciona mediante un proceso sencillo pero potente:
+
+<Steps>
+
+<Step title="Creación de la disputa">
+  Una aplicación se encuentra ante una situación conflictiva y crea una disputa en Kleros, pagando los honorarios de arbitraje.
+</Step>
+
+<Step title="Selección de jurados">
+  Los jurados se sortean al azar entre quienes han hecho staking de PNK en la corte correspondiente. La probabilidad de selección es proporcional al stake.
+</Step>
+
+<Step title="Evidencia y votación">
+  Los jurados revisan la evidencia presentada por ambas partes y emiten sus votos durante el periodo de votación.
+</Step>
+
+<Step title="Resolución">
+  Se ejecuta la decisión mayoritaria. Los jurados coherentes reciben recompensas; los jurados incoherentes pierden una parte de su stake.
+</Step>
+
+</Steps>
+
+### La estructura de incentivos
+
+El sistema está diseñado para que **no necesites confiar en nadie**:
+
+- Los **jurados** tienen incentivos para votar con honestidad (o pierden su PNK en staking)
+- Las **partes en disputa** pagan honorarios solo por la resolución, sin comisión del protocolo
+- Los **apelantes** pueden impugnar los fallos financiando rondas adicionales
+
+Esto crea un sistema autorregulado en el que el comportamiento deshonesto se castiga económicamente.
+
+---
+
+## Componentes principales
+
+| Componente | Propósito |
+| --- | --- |
+| **KlerosCore** | El contrato árbitro principal que coordina las disputas y ejecuta los fallos |
+| **Sortition Module** | Gestiona la selección de jurados mediante un sistema de tres fases para evitar manipulaciones |
+| **Dispute Kits** | Mecanismos de resolución modulares (Classic, Shutter, Ranked Choice, etc.) |
+| **Vea Bridge** | Permite la resolución de disputas entre cadenas desde cadenas foráneas |
+
+---
+
+## ¿Quién usa Kleros Court?
+
+- **Protocolos DeFi**: resuelven disputas de oráculos, impugnaciones de liquidaciones y conflictos de gobernanza
+- **Mercados de predicción**: liquidan los resultados de los mercados con arbitraje descentralizado
+- **Servicios de escrow**: liberan fondos según fallos imparciales de terceros
+- **DAOs**: gestionan disputas con colaboradores e impugnaciones de propuestas
+- **Protocolos de seguros**: resuelven reclamaciones sin una autoridad centralizada
+- **Marketplaces de NFT**: resuelven disputas de autenticidad y propiedad
+
+---
+
+## Qué cambió en V2
+
+V2 mantiene el mismo modelo criptoeconómico que V1 y cambia cómo se implementa y dónde se ejecuta:
+
+| Componente | V1 | V2 |
+| --- | --- | --- |
+| **Red** | Ethereum L1 y Gnosis Chain | Arbitrum L2 |
+| **Contrato principal** | KlerosLiquid (monolítico) | KlerosCore (modular) |
+| **Selección de jurados** | Integrada en KlerosLiquid | SortitionModule (separado) |
+| **Resolución de disputas** | Un único mecanismo | DisputeKits intercambiables (Classic, Shutter, Gated, GatedShutter) |
+| **Multicadena** | Despliegues separados en Ethereum y Gnosis, sin retransmisión entre cadenas | Multicadena mediante el puente VEA |
+| **Staking** | El PNK permanece en la wallet | El PNK se transfiere al contrato |
+| **RNG** | Fuente única | Mejorado con mecanismos de respaldo |
+
+<Note>
+Kleros V2 se encuentra actualmente en beta, con más de 100 disputas procesadas con éxito. El sistema está en proceso de revisión interna y auditorías externas.
+</Note>
+
+---
+
+## Estado actual
+
+Según la actualización de desarrollo de mayo de 2026:
+
+- **Court V2**: se integró el dispute kit de coherencia parcial y se integró la simplificación de contratos en los dispute kits (junio de 2026).
+- **Court V1**: las recompensas por staking de abril se incluyeron en el exportador de recompensas. Desde agosto de 2026, las recompensas por staking se muestran en [rewards.kleros.io](https://rewards.kleros.io), que reemplazó la página de recompensas integrada en la aplicación.
+
+Sigue el desarrollo en el [blog de Kleros - actualizaciones para desarrolladores](https://blog.kleros.io/tag/developer/).
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={3}>
+
+<Card title="Cómo funciona" icon="cogs" href="/es/court/how-it-works">
+  Análisis en profundidad del proceso de resolución de disputas
+</Card>
+
+<Card title="Jerarquía de cortes" icon="sitemap" href="/es/court/court-hierarchy">
+  Comprende la estructura y la especialización de las cortes
+</Card>
+
+<Card title="Apelaciones" icon="scale-balanced" href="/es/court/appeals">
+  Descubre cómo funcionan las apelaciones y la escalada
+</Card>
+
+<Card title="Arquitectura de V2" icon="layer-group" href="/es/court/architecture">
+  Principios de diseño, visión multicadena y modelo de seguridad
+</Card>
+
+</CardGroup>
+
+---
+
+## Enlaces rápidos
+
+<CardGroup cols={2}>
+
+<Card title="Abrir la Court" icon="rocket" href="https://v2.kleros.builders">
+  Abre la aplicación de Kleros Court
+</Card>
+
+<Card title="Conviértete en jurado" icon="user-plus" href="/es/tutorials/juror-tutorial-v1">
+  Tutorial paso a paso de staking y votación
+</Card>
+
+<Card title="Direcciones de contratos" icon="file-contract" href="/es/reference/contracts/deployment-addresses">
+  Direcciones de despliegue de Court V2
+</Card>
+
+<Card title="Kleros SDK" icon="code" href="/es/reference/sdk/kleros-sdk">
+  Integra Kleros en tu aplicación
+</Card>
+
+</CardGroup>

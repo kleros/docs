@@ -1,0 +1,157 @@
+---
+title: "Integración con L2"
+description: "Usa el Foreign Gateway y el puente Vea para crear disputas de Kleros desde contratos arbitrables desplegados en Ethereum, Gnosis u otras cadenas L2."
+---
+
+## Descripción general
+
+Kleros Court V2 funciona en Arbitrum One (la "cadena local" o home chain). Si tu contrato arbitrable está en otra cadena (Ethereum Mainnet, Gnosis Chain u otra L2), interactúas con Kleros a través del **Foreign Gateway** desplegado en tu cadena. El gateway gestiona la comunicación entre cadenas mediante [Vea](/es/developers/crosschain/vea-bridge).
+
+Desde la perspectiva de tu contrato, el Foreign Gateway actúa como el árbitro: le llamas a `createDispute()` y recibes los fallos de él.
+
+---
+
+## Arquitectura de los gateways
+
+```
+Your Chain (Foreign)                    Arbitrum (Home)
+┌──────────────┐                       ┌──────────────┐
+│  Your        │──createDispute()──►   │              │
+│  Arbitrable  │                       │  Kleros      │
+│  Contract    │◄──rule()───────────   │  Core        │
+└──────┬───────┘                       └──────┬───────┘
+       │                                      │
+┌──────▼───────┐                       ┌──────▼───────┐
+│  Foreign     │◄───── Vea Bridge ────►│  Home        │
+│  Gateway     │                       │  Gateway     │
+└──────────────┘                       └──────────────┘
+```
+
+El Foreign Gateway:
+- Replica `arbitrationCost()` localmente para que tu contrato pueda consultar las tarifas sin llamadas entre cadenas
+- Asigna un `disputeID` local por compatibilidad con versiones anteriores
+- Calcula un `disputeHash` para identificar de forma única las disputas entre cadenas
+- Recibe los fallos del Home Gateway mediante Vea y llama a `rule()` en tu contrato
+
+---
+
+## Crear una disputa desde una cadena externa
+
+### Paso 1: implementar IArbitrableV2
+
+Tu contrato debe implementar la interfaz `IArbitrableV2`:
+
+```solidity
+import {IArbitrableV2, IArbitratorV2} from "@kleros/kleros-v2-contracts/interfaces/IArbitrableV2.sol";
+
+contract MyArbitrable is IArbitrableV2 {
+    IArbitratorV2 public immutable foreignGateway;
+
+    constructor(address _foreignGateway) {
+        foreignGateway = IArbitratorV2(_foreignGateway);
+    }
+
+    function createDispute() external payable {
+        uint256 cost = foreignGateway.arbitrationCost(extraData);
+        require(msg.value >= cost, "Insufficient fee");
+
+        uint256 disputeID = foreignGateway.createDispute{value: msg.value}(
+            numberOfChoices,
+            extraData
+        );
+        // Store disputeID and map to your internal state
+    }
+
+    function rule(uint256 _disputeID, uint256 _ruling) external override {
+        require(msg.sender == address(foreignGateway), "Only arbitrator");
+        // Enforce the ruling
+    }
+}
+```
+
+### Paso 2: consultar el costo de arbitraje
+
+El Foreign Gateway replica el esquema de tarifas de Kleros Core, por lo que `arbitrationCost()` devuelve la tarifa correcta sin una llamada entre cadenas:
+
+```solidity
+// extraData encodes: courtID (uint96) + numberOfJurors (uint256)
+bytes memory extraData = abi.encodePacked(
+    uint96(1),    // General Court
+    uint256(3)    // 3 jurors
+);
+
+uint256 fee = foreignGateway.arbitrationCost(extraData);
+```
+
+### Paso 3: recibir el fallo
+
+Cuando Kleros Court alcanza un fallo definitivo, el Home Gateway lo envía mediante Vea al Foreign Gateway. El Foreign Gateway llama a `rule()` en tu contrato:
+
+```solidity
+function rule(uint256 _disputeID, uint256 _ruling) external override {
+    require(msg.sender == address(foreignGateway), "Only arbitrator");
+    // _ruling: 0 = refused to rule, 1..N = ruling options
+    enforceRuling(_disputeID, _ruling);
+}
+```
+
+---
+
+## Identificador de disputas entre cadenas
+
+Las disputas tienen ID diferentes en cada cadena:
+
+| Identificador | Cadena | Propósito |
+| --- | --- | --- |
+| `localDisputeID` | Cadena externa | ID incremental asignado por el Foreign Gateway por compatibilidad con versiones anteriores |
+| `disputeHash` | Ambas cadenas | Hash único calculado a partir de `(chainId, blockHash, arbitrable, disputeID, choices, extraData)` |
+| `homeDisputeID` | Arbitrum | ID asignado por KlerosCore |
+
+El Foreign Gateway establece la correspondencia entre `localDisputeID` y `disputeHash`. El Home Gateway establece la correspondencia entre `disputeHash` y `homeDisputeID`.
+
+---
+
+## Presentación de evidencia
+
+La evidencia puede presentarse tanto en la cadena externa como en la cadena local. El frontend de Court V2 consolida la evidencia de ambas cadenas supervisando los registros de eventos de ambos gateways.
+
+En la cadena externa, emite eventos de evidencia desde tu contrato arbitrable:
+
+```solidity
+emit Evidence(foreignGateway, disputeID, msg.sender, evidenceURI);
+```
+
+---
+
+## Consideraciones de tiempo
+
+| Fase | Tiempo |
+| --- | --- |
+| Externa → local (creación de la disputa) | 5–10 minutos mediante el Simple Bridge |
+| Local → externa (transmisión del fallo, camino feliz) | Periodo de impugnación configurable, normalmente más rápido que el puente nativo |
+| Local → externa (transmisión del fallo, camino no feliz) | ~7 días (puente nativo Arbitrum → Ethereum) |
+
+Diseña tu aplicación para gestionar el retraso entre la creación de la disputa y la entrega del fallo. El periodo de evidencia en Kleros Court proporciona un margen suficiente en la mayoría de los casos.
+
+---
+
+## Contrato Foreign Gateway
+
+Desde la perspectiva de tu contrato, el Foreign Gateway implementa `IArbitratorV2`:
+
+```solidity
+interface IForeignGateway is IArbitratorV2 {
+    function homeChainID() external view returns (uint256);
+    function homeGateway() external view returns (address);
+
+    // Inherited from IArbitratorV2:
+    function createDispute(uint256 _choices, bytes calldata _extraData)
+        external payable returns (uint256 disputeID);
+    function arbitrationCost(bytes calldata _extraData)
+        external view returns (uint256 cost);
+}
+```
+
+<Warning>
+  Las direcciones de los contratos Foreign Gateway pueden cambiar durante el periodo beta de V2 a medida que se actualizan los contratos. Verifica siempre el despliegue actual antes de integrarte.
+</Warning>

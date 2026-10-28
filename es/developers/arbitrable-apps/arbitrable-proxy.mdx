@@ -1,0 +1,81 @@
+---
+title: "Arbitrable Proxy"
+description: "Contrato proxy genérico ERC-792 para crear disputas en Kleros, presentar evidencia y financiar apelaciones de forma colectiva sin un contrato arbitrable personalizado."
+---
+
+
+
+<Note>
+Esta página cubre el ArbitrableProxy de V1, el contrato detrás de la aplicación [Dispute Resolver](/es/developers/products/dispute-resolver/overview) de V1 (resolve.kleros.io). La interfaz `IDisputeResolver` de V1 permite que los contratos personalizados de V1 usen esa aplicación para la evidencia y la financiación de apelaciones.
+
+En V2 no existe un ArbitrableProxy ni una aplicación Dispute Resolver independiente. La creación de disputas está integrada en la interfaz de [Court V2](/es/court/overview), respaldada por el contrato `DisputeResolver` de V2 (consulta [Descripción general de Arbitrable](/es/developers/arbitrable-apps/arbitrable-overview)).
+</Note>
+
+---
+
+## Descripción general
+
+El ArbitrableProxy es un contrato genérico que implementa la interfaz Arbitrable de ERC-792. Permite que cualquiera cree disputas en Kleros Court sin construir un contrato arbitrable personalizado.
+
+Se encarga de:
+- La creación de disputas con tribunal y número de jurados configurables
+- La presentación de evidencia por cualquier parte
+- La financiación colectiva de apelaciones
+- El retiro de recompensas/tarifas tras la resolución
+
+---
+
+## Cuándo usarlo
+
+- Necesitas disputas independientes sin un contrato personalizado
+- Quieres añadir la creación de disputas a un sistema existente con un desarrollo mínimo
+- Tu contrato arbitrable necesita soporte para la financiación colectiva de apelaciones y no quieres implementarlo tú mismo
+
+---
+
+## Funciones clave
+
+```solidity
+// Create a dispute
+function createDispute(
+    bytes calldata _arbitratorExtraData,
+    string calldata _metaevidenceURI,
+    uint256 _numberOfRulingOptions
+) external payable returns (uint256 disputeID);
+
+// Submit evidence
+function submitEvidence(
+    uint256 _localDisputeID,
+    string calldata _evidenceURI
+) external;
+
+// Fund an appeal for a specific ruling
+function fundAppeal(
+    uint256 _localDisputeID,
+    uint256 _ruling
+) external payable;
+
+// Withdraw rewards after resolution
+function withdrawFeesAndRewards(
+    uint256 _localDisputeID,
+    address payable _beneficiary,
+    uint256 _round,
+    uint256 _ruling
+) external;
+```
+
+---
+
+## Recursos
+
+<CardGroup cols={3}>
+  <Card title="Estándar ERC-792" icon="file-contract" href="/es/developers/arbitrable-apps/erc-792">
+    Especificación de la interfaz de arbitraje
+  </Card>
+  <Card title="Dispute Resolver (V1)" icon="gavel" href="/es/developers/products/dispute-resolver/overview">
+    Aplicación web para crear disputas de V1 a través del ArbitrableProxy
+  </Card>
+  <Card title="DisputeResolver de V2" icon="diagram-project" href="/es/developers/arbitrable-apps/arbitrable-overview">
+    Contrato de V2 detrás de la creación de disputas en la interfaz de Court V2
+  </Card>
+</CardGroup>

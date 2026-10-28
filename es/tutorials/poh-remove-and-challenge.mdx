@@ -1,0 +1,128 @@
+---
+title: "PoH: eliminar e impugnar"
+description: "Impugna perfiles de Proof of Humanity 2.0 que no cumplen las normas, inicia la eliminación de perfiles, sigue la disputa en Kleros Court y vuelve a enviar solicitudes de humanidad rechazadas."
+---
+
+# Tutorial de Proof of Humanity: eliminar e impugnar
+
+Este tutorial cubre cómo impugnar perfiles, eliminar perfiles y volver a enviar perfiles en el registro de Proof of Humanity 2.0.
+
+Para registrarte y avalar, consulta el [tutorial de registro y avales](/es/tutorials/poh-register-and-vouch).
+
+---
+
+## Impugnar una solicitud
+
+<Steps>
+  <Step title="Explora y revisa perfiles">
+    Visita la [aplicación de PoH](https://v2.poh.id/) y filtra los perfiles **In Review** o **Removal Proposed** con el filtro del lado derecho. Haz clic en cada perfil para verificar que cumple las pautas de PoH. Busca deepfakes, contenido inapropiado o infracciones de las pautas.
+<Frame >
+  <img src="/images/status-poh.png"  />
+</Frame>
+<Frame >
+  <img src="/images/inreview-poh.png"  />
+</Frame>
+    Herramientas de detección que pueden ayudar:
+
+    - [Deepware.ai](https://deepware.ai)
+    - [Sensity.ai](https://sensity.ai)
+    - Software de reconocimiento de voz para audio generado por computadora
+  </Step>
+  <Step title="Envía una impugnación">
+    1. Haz clic en el botón naranja **Challenge** en la parte superior derecha del perfil
+    2. Selecciona el motivo de la infracción y proporciona una justificación
+    3. Haz clic en **Challenge request** y envía la transacción
+
+    El depósito del impugnador es una cantidad bloqueada de ETH o xDAI que disuade las impugnaciones frívolas. Una impugnación exitosa te devuelve tu depósito más el depósito del solicitante (menos las tarifas de arbitraje). Una impugnación fallida implica perder tu depósito.
+  <Frame >
+  <img src="/images/challenge-poh.png"  />
+</Frame>
+<Frame >
+  <img src="/images/disputed-poh.png"  />
+</Frame>
+  </Step>
+  <Step title="Sigue la disputa">
+    La impugnación pasa a [Kleros Court](/es/court/overview) para la votación del jurado. Envía evidencia desde la parte inferior de la página del perfil y supervisa el progreso durante 5-7 días. Hay opciones de apelación disponibles si no estás de acuerdo con el fallo.
+  <Frame >
+  <img src="/images/submitevidence.png"  />
+</Frame>
+<Frame >
+  <img src="/images/evidencedetails-poh.png"  />
+</Frame>
+  </Step>
+</Steps>
+
+
+---
+
+## Eliminar un perfil
+
+### Elimina tu propio perfil (estado Needs Vouch)
+
+Haz clic en el botón **Withdraw** en la página de tu perfil para recuperar tu depósito.
+<Frame >
+  <img src="/images/withdraw-poh.png"  />
+</Frame>
+
+### Eliminar perfiles registrados o Verified Human
+
+1. Abre el perfil y haz clic en **Revoke**
+2. Bloquea un depósito (se reembolsa si la eliminación tiene éxito)
+3. Opcionalmente, envía evidencia que respalde la revocación
+<Frame >
+  <img src="/images/revoke-poh.png"  />
+</Frame>
+<Frame >
+  <img src="/images/revokedeposit-poh.png"  />
+</Frame>
+
+Ejemplos de evidencia:
+
+- **Autoeliminación desde la misma dirección**: titúlala "Self-removal of submission" y confirma tu condición de solicitante mediante la dirección.
+- **Autoeliminación desde una dirección diferente**: titúlala "Self-removal of submission" e incluye una grabación de video en la que digas: "I want to revoke my own submission from the Proof of Humanity registry".
+- **Eliminación de un envío malicioso**: titúlala "Removal of deepfake submission" e incluye informes de análisis de deepfake como evidencia.
+
+<Frame >
+  <img src="/images/revoketitle-poh.png"  />
+</Frame>
+### Eliminar perfiles en revisión
+
+Utiliza el proceso de impugnación descrito anteriormente.
+
+---
+
+## Volver a enviar un perfil
+
+### Desde una nueva dirección
+
+1. Asegúrate de que el perfil anterior muestre el estado **Revoked** (consulta `https://v2.poh.id/PoHID`)
+2. Elimínalo si es necesario siguiendo los pasos anteriores
+3. Conecta la nueva dirección y envía un perfil nuevo
+<Frame >
+  <img src="/images/revokedstatus-poh.png"  />
+</Frame>
+
+### Desde la misma dirección
+
+1. Verifica que el perfil anterior esté **Revoked**
+2. Elimínalo si es necesario
+3. Haz clic en el botón **Resubmit Profile** en la parte inferior izquierda del perfil
+
+### Volver a solicitar un perfil vencido o próximo a vencer
+
+Los perfiles vencen dos años después del registro. Vuelve a solicitarlo para demostrar que sigues existiendo y que controlas la dirección.
+<Frame >
+  <img src="/images/expired-poh.png"  />
+</Frame>
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={2}>
+  <Card title="Tutorial de registro y avales" icon="user-plus" href="/es/tutorials/poh-register-and-vouch">
+    Registra tu propio perfil en Proof of Humanity
+  </Card>
+  <Card title="Página del producto Proof of Humanity" icon="fingerprint" href="/es/products/proof-of-humanity">
+    Descubre cómo funciona el registro
+  </Card>
+</CardGroup>

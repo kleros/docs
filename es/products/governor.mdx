@@ -1,0 +1,109 @@
+---
+title: "Governor"
+description: "Kleros Governor permite a las DAO ejecutar en cadena las votaciones de Snapshot con ejecución optimista, utilizando Kleros Court para resolver listas de transacciones en competencia."
+---
+
+# Governor
+
+<img src="/images/governor-hero.png" alt="Interfaz de Kleros Governor" />
+
+**Kleros Governor** permite a las DAO y a las organizaciones en cadena ejecutar decisiones de gobernanza con un mecanismo de resolución de disputas integrado como respaldo. Utiliza un modelo de ejecución optimista: cualquiera puede enviar una lista de transacciones para su ejecución y, si nadie la impugna, las transacciones se ejecutan. Si se envían varias listas en competencia, Kleros Court resuelve el conflicto.
+
+Governor es el mecanismo que la propia Kleros utiliza para gestionar los parámetros del protocolo, las configuraciones de las cortes y las actualizaciones de contratos.
+
+---
+
+## V1 - Protocolo en producción
+
+Governor V1 funciona en Ethereum Mainnet. Se desplegó como parte de la transición hacia una gobernanza totalmente descentralizada mediante votaciones en Snapshot y ejecución en cadena (consulta [KIP-30](https://forum.kleros.io/t/kip-30-migrate-governance-to-snapshot/469)). Utiliza el mismo modelo de ejecución optimista que V2, con una implementación más sencilla:
+
+
+
+1. Se aprueba una votación de gobernanza en Snapshot
+2. Cualquiera envía a Governor una lista de transacciones que implementa los cambios aprobados
+3. Durante el período de envío, otros pueden enviar listas en competencia
+4. Si solo se envía una lista, se ejecuta automáticamente
+5. Si se envían varias listas, una disputa en Kleros Court determina la correcta
+6. Tras la resolución, las transacciones de la lista ganadora se ejecutan en cadena
+
+---
+
+## V2 - Actualización de nueva generación
+
+Governor V2 funciona en Arbitrum y mantiene el mismo modelo de ejecución optimista. Las secciones siguientes describen la implementación de V2.
+
+---
+
+## Capacidades clave
+
+<CardGroup cols={3}>
+  <Card title="Ejecución optimista" icon="forward">
+    Las transacciones se ejecutan automáticamente si no se impugnan durante el período de envío
+  </Card>
+  <Card title="Resolución de disputas" icon="gavel">
+    Las listas de transacciones en competencia se resuelven por los jurados de Kleros Court
+  </Card>
+  <Card title="Envío sin permisos" icon="plus">
+    Cualquiera puede enviar una lista de transacciones aportando un depósito
+  </Card>
+</CardGroup>
+
+---
+
+## Cómo funciona
+
+Governor opera por sesiones. Cada sesión sigue este flujo:
+
+<Steps>
+  <Step title="Período de envío">
+    Cualquiera puede enviar una lista de transacciones que desee que Governor ejecute. Cada envío requiere un depósito y debe realizarse durante la primera mitad de la ventana de envío (los retiros también solo son posibles durante esta primera mitad).
+  </Step>
+  <Step title="Aprobación / Disputa">
+    Cuando termina el período de envío, ocurre una de estas tres cosas:
+
+    - **Cero envíos:** La sesión se cierra y comienza una nueva.
+    - **Un envío:** La lista de transacciones se aprueba y se ejecuta. Se devuelve el depósito del remitente.
+    - **Varios envíos:** Se crea una disputa en Kleros Court. Los jurados deciden qué lista debe ejecutarse. El número de opciones es igual al número de listas enviadas.
+  </Step>
+  <Step title="Ejecución">
+    La lista de transacciones aprobada se ejecuta en cadena. Las transacciones de la lista se procesan secuencialmente.
+  </Step>
+</Steps>
+
+### Retirar un envío
+
+Los remitentes pueden retirar su lista de transacciones durante la primera mitad del período de envío, siempre que sea dentro del `withdrawTimeout` posterior al envío. Esto les devuelve el depósito y retira la lista de la consideración.
+
+---
+
+## Casos de uso
+
+**Gobernanza del protocolo**: Kleros utiliza Governor para gestionar los parámetros de sus propios contratos: actualizar las configuraciones de las cortes, incluir tokens de comisión en listas blancas, ajustar los parámetros de staking y actualizar contratos.
+
+**Ejecución para DAO**: Cualquier DAO puede usar Governor para ejecutar operaciones de tesorería, cambios de parámetros o llamadas a contratos con una red de seguridad de resolución de disputas.
+
+**Alternativa a la multifirma**: Governor ofrece una alternativa descentralizada a las billeteras multifirma para las organizaciones que desean una ejecución de gobernanza transparente y sin permisos.
+
+---
+
+## En qué se diferencia Governor de la gobernanza tradicional
+
+| Tradicional | Kleros Governor |
+|-------------|----------------|
+| Las propuestas se votan antes de la ejecución | Las transacciones se envían de forma optimista y solo se impugnan si hay controversia |
+| Conjunto fijo de votantes (poseedores de tokens, firmantes de la multifirma) | Cualquiera puede enviar; los jurados de Kleros resuelven las disputas |
+| A menudo lenta (períodos de votación de varios días) | Rápida cuando no hay impugnaciones; la resolución de disputas solo añade tiempo si es necesario |
+| Requiere quórum | No se necesita quórum para envíos únicos |
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={2}>
+  <Card title="Usar Governor" icon="arrow-right" href="https://governor.kleros.io">
+    Abre la aplicación Governor
+  </Card>
+  <Card title="Resumen de la gobernanza" icon="landmark" href="/es/governance/overview">
+    Conoce la gobernanza de Kleros y las KIP
+  </Card>
+</CardGroup>

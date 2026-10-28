@@ -1,0 +1,36 @@
+---
+title: "13 de julio de 2026"
+description: "Página de recompensas de Curate, página de inicio de Foresight más rápida con bloqueo de predicciones al terminar el temporizador, nueva ruta Arbitrum–Base en Vea y manejo de IPFS reforzado en todos los productos."
+---
+
+## Nuevas funciones
+
+### Página de recompensas de Curate en Curate clásico
+
+[Kleros Curate](/es/products/curate) (clásico) ahora tiene una página dedicada de recompensas de Curate que enumera todas las distribuciones de recompensas desde el inicio, con enlaces directos de IPFS a cada instantánea. Los colaboradores pueden rastrear las recompensas históricas sin salir de la app.
+
+### Ruta Arbitrum ↔ Base en Vea
+
+El [puente Vea](/es/developers/crosschain/vea-bridge) añade una nueva ruta Arbitrum ↔ Base, con las direcciones de broadcast correspondientes publicadas en la referencia de [direcciones de despliegue de Vea](/es/developers/crosschain/vea-deployment-addresses). El SDK Veashi ahora exporta las nuevas rutas y los tipos actualizados para que los integradores puedan construir directamente sobre ellos.
+
+## Actualizaciones
+
+### Página de inicio y páginas de mercado de Foresight más rápidas
+
+[Kleros Foresight](/es/products/foresight) acelera la carga inicial de la página de inicio con marcadores de posición tipo skeleton para las secciones de mercados, ganancias/pérdidas y participación, además de un banner de mercados resueltos. Los gráficos de mercado ahora se sirven desde una caché de CDN extendida con el procesamiento de datos trasladado al servidor, y la ventana emergente "Predict All" y la guía de primera visita se cargan bajo demanda para que la estructura de la página se renderice antes.
+
+### Las predicciones se bloquean al terminar el período de trading
+
+Los mercados de [Foresight](/es/products/foresight) ahora desactivan automáticamente los campos de predicción (incluidos el control deslizante, la carga de CSV y el flujo "Predict All") una vez que expira el temporizador del período de trading, lo que evita envíos que el contrato rechazaría.
+
+### Carga diferida de las tarjetas de proyectos en Foresight
+
+Las tarjetas de financiación de proyectos de Foresight ahora cargan su contenido solo cuando abres el acordeón, lo que reduce el trabajo innecesario en páginas con muchos proyectos.
+
+## Corrección de errores
+
+**Manejo de IPFS y URL reforzado en todos los productos**: [Kleros Court](/es/court/overview), [Curate](/es/products/curate), [Escrow](/es/products/escrow) y [Dispute Resolver](/es/developers/products/dispute-resolver/overview) ahora comparten una política más estricta para las URI de IPFS: los CID sin prefijo (v0 y v1) y las URI con prefijo se validan y normalizan de forma coherente en adjuntos, detalles de casos, modales de reclamo, evidencia y vistas previas de archivos. Las URL absolutas `http(s)` pasan sin cambios, y las solicitudes rechazadas ya no se almacenan en caché, de modo que los reintentos obtienen el contenido recuperado.
+
+**Navegación de adjuntos en Escrow**: [Kleros Escrow](/es/products/escrow) ahora codifica como URL las rutas de los adjuntos en la barra de navegación Explorar, lo que corrige los enlaces rotos de archivos con caracteres especiales, y soluciona un fallo de estilo en la tarjeta de vista previa del archivo adjunto.
+
+**Sección de gráficos de Foresight**: el gráfico de mercado de Foresight ahora se renderiza mediante un componente de sección dedicado con un almacenamiento en caché adecuado, lo que resuelve problemas intermitentes de datos obsoletos y saltos de diseño en las páginas de mercado.

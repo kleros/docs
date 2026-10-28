@@ -1,0 +1,204 @@
+---
+title: "Tutorial de Escrow"
+description: "Guía paso a paso de Kleros Escrow V1 en Ethereum: crea un pago de criptomonedas o de servicios, libera o reembolsa fondos y eleva una disputa a Kleros Court cuando sea necesario."
+---
+
+# Tutorial de Escrow
+
+Este tutorial recorre una transacción de escrow completa en [Kleros Escrow V1](https://escrow.kleros.io): crear un pago, ejecutarlo o liquidarlo, y elevar una disputa si algo sale mal.
+
+<Note>
+Este tutorial cubre la aplicación Escrow V1 en Ethereum Mainnet. Para conocer las diferencias entre Escrow V1 y V2, consulta la [página del producto Escrow](/es/products/escrow).
+</Note>
+
+---
+
+## Paso 1: Iniciar un pago
+
+<Steps>
+  <Step title="Ve al sitio web de Kleros Escrow">
+    Visita [escrow.kleros.io](https://escrow.kleros.io) y conecta tu billetera (Rabby, MetaMask o WalletConnect). Asegúrate de tener ETH para las comisiones de transacción y el monto del pago. Desde la página de inicio puedes crear, buscar o revisar transacciones.
+  </Step>
+  <Frame >
+  <img src="/images/walletconnect-escrow.png"  />
+</Frame>
+  <Step title="Crea un nuevo pago">
+    Haz clic en el botón **Create Transaction** en la esquina superior derecha. Depositas fondos en escrow, donde permanecen seguros hasta que ocurra una de las siguientes situaciones:
+
+    - Los liberas manualmente
+    - El receptor los reembolsa
+    - Kleros Court resuelve una disputa
+    - Se cumple la fecha de vencimiento
+  </Step>
+  <Frame >
+  <img src="/images/homepage-escrow.png"  />
+</Frame>
+  <Step title="Selecciona un tipo de escrow">
+    Hay dos tipos de transacción disponibles:
+
+    - **Cryptocurrency Transaction**: para comerciar o intercambiar criptoactivos, útil para intercambios entre blockchains (por ejemplo, ETH en Ethereum por SOL en Solana). Las disputas van a la Blockchain Non-Technical Court.
+    - **General Service Transaction**: para pagar servicios con condiciones personalizadas y carga de documentos. Las disputas van a la General Court.
+  </Step>
+</Steps>
+
+<Frame >
+  <img src="/images/escrowtype.png" />
+</Frame>
+
+---
+
+## Paso 2: Enviar el pago
+
+<Steps>
+  <Step title="Completa los detalles de la transacción">
+    - **Título**: describe la transacción (por ejemplo, "Misión de marketing con John D.")
+    - **Dirección de Ethereum del receptor**: la billetera que recibe los fondos
+    - **Monto y unidad**: ETH o un token ERC-20
+
+    Las opciones de token predeterminadas son ETH y PNK. Para usar otro token, introduce su dirección de contrato en el campo "Add custom token".
+
+    <Warning>
+    Los tokens ERC-20 no estándar como USDT, BNB y OMG no son compatibles con Escrow V1.
+    </Warning>
+     <Frame >
+  <img src="/images/transactiondetail.jpeg"  />
+</Frame>
+  </Step>
+ 
+  <Step title="Establece la fecha límite de entrega">
+    Proporciona una descripción detallada del servicio o producto. Esta descripción es crucial para la resolución de disputas.
+
+    El cronograma funciona de la siguiente manera:
+
+    1. **Período de servicio**: desde la creación hasta la fecha límite de entrega. Cualquiera de las partes puede liberar, reembolsar o disputar en cualquier momento.
+    2. **Período de margen**: 7 días fijos después de la fecha límite, que sirven como ventana de revisión y disputa.
+    3. **Vencimiento del escrow**: 7 días después de la fecha límite, cualquiera de las partes puede ejecutar la transacción.
+
+    Por ejemplo: una transacción creada el 17 de diciembre con una fecha límite de entrega del 16 de enero vence el 23 de enero.
+  
+   <Frame >
+  <img src="/images/deliverydetails.jpeg"  />
+</Frame>
+  </Step>
+  <Step title="Adjunta un documento de acuerdo">
+    Opcionalmente, sube un acuerdo en PDF o incluye las condiciones en la descripción. Los jurados se basan en este documento si surge una disputa, así que especifica claramente:
+
+    - Las partes involucradas
+    - La naturaleza del servicio o bien
+    - Los entregables específicos
+    - Los criterios de aceptación
+    - Las condiciones de la colaboración
+  </Step>
+  <Step title="Envía la transacción">
+    Revisa todo en el paso de vista previa (Preview): dirección del receptor, monto y fecha límite. Haz clic en **Create Escrow**, confirma la transacción en la blockchain (depósito más comisiones de gas) y serás redirigido a la página del pago.
+  </Step>
+</Steps>
+
+<Frame >
+  <img src="/images/submitescrow.png"  />
+</Frame>
+
+---
+
+## Paso 3: Ejecutar el pago
+
+Después de la creación, ambas partes ven un resumen de la transacción con las acciones disponibles.
+
+ <Frame >
+  <img src="/images/summaryescrow.png"  />
+</Frame>
+
+### Como emisor del pago
+
+- **Make payment**: libera fondos al receptor, total o parcialmente. Paga el monto total cuando el servicio o producto se haya entregado según lo acordado. Paga un monto parcial para resolver un desacuerdo sin disputa; el resto permanece en escrow y aún puede disputarse.
+- **Raise dispute**: haz clic si no estás satisfecho con la entrega. Se te muestra el costo del arbitraje (por ejemplo, 0.03 ETH) y depositas la tarifa para iniciarla. La tarifa se reembolsa si ganas.
+ <Frame >
+  <img src="/images/senderpayment-escrow.png"  />
+</Frame>
+
+### Como receptor del pago
+
+- **Reimburse**: devuelve fondos al emisor, total o parcialmente. Reembolsa el monto total si no puedes completar la entrega. Reembolsa parcialmente para conservar el pago por el trabajo realizado; el resto se te entrega a ti y la transacción se cierra.
+- **Raise dispute**: haz clic si el emisor se niega a pagar a pesar de que cumpliste las condiciones. El costo del arbitraje y el proceso son los mismos para ambas partes.
+ <Frame >
+  <img src="/images/receiver-escrow.png"  />
+</Frame>
+
+
+### Acuerdos mediante pagos parciales
+
+No existe un modo de acuerdo separado. Cuando ambas partes acuerdan un compromiso, una de ellas realiza un pago o reembolso parcial:
+
+- **Inicia el emisor**: el emisor paga un monto parcial (por ejemplo, 0.7 de 1 ETH). Va inmediatamente al receptor; 0.3 ETH permanecen en escrow. El receptor puede aceptar, disputar el resto o reembolsar parte o la totalidad.
+- **Inicia el receptor**: el receptor reembolsa un monto parcial (por ejemplo, 0.4 de 1 ETH). Vuelve al emisor; quedan 0.6 ETH.
+
+<Warning>
+Un pago o reembolso parcial se transfiere de forma inmediata y permanente. Ese monto no puede recuperarse, aunque más adelante surja una disputa sobre el resto.
+</Warning>
+
+Buenas prácticas para los acuerdos:
+
+- Documenta el acuerdo por escrito
+- Obtén la confirmación de la otra parte sobre las condiciones del acuerdo
+- Guarda toda la comunicación como posible evidencia en una disputa
+
+---
+
+## Paso 4: Elevar una disputa
+
+<Steps>
+  <Step title="Eleva la disputa">
+    Cualquiera de las partes hace clic en **Raise Dispute** y paga la tarifa de arbitraje (se reembolsa si gana). La otra parte dispone entonces de un tiempo limitado para pagar su parte de las tarifas; la interfaz muestra el tiempo restante.
+
+    Si la otra parte no paga su parte de las tarifas, la primera parte que pagó gana automáticamente.
+   <Frame >
+  <img src="/images/raisedispute-escrow.png"  />
+</Frame>
+
+ <Frame >
+  <img src="/images/timeleft-escrow.png"  />
+</Frame>
+
+  <Frame >
+  <img src="/images/partydetails-escrow.png"  />
+</Frame>
+  
+  </Step>
+  <Step title="Comparte evidencia">
+    Envía la evidencia a través del [Kleros Dispute Resolver](https://resolve.kleros.io/), no a través de la interfaz de Escrow:
+
+    1. Ve a resolve.kleros.io y conecta tu billetera
+    2. Busca y abre tu disputa
+    3. Añade tu evidencia y tus argumentos
+
+    Consejos sobre la evidencia:
+
+    - Haz referencia al documento de acuerdo original y a sus condiciones específicas
+    - Añade registros de comunicación, comprobantes de entrega, fotos y capturas de pantalla
+    - Usa archivos PDF sin datos EXIF si quieres mantener el anonimato
+    - Sé claro y conciso
+  </Step>
+  <Step title="Supervisa la disputa">
+    Sigue el progreso en la página del pago en Escrow (estado actual) y en resolve.kleros.io (información detallada del caso y estado de la votación).
+
+    - **Primer fallo**: las partes insatisfechas pueden apelar. Las apelaciones incorporan más jurados y rondas adicionales de evidencia, y las tarifas de apelación deben pagarse dentro del período de apelación.
+    - **Fallo final**: cuando ya no quedan apelaciones, la parte ganadora retira los fondos y recupera sus tarifas de arbitraje.
+  </Step>
+</Steps>
+
+<Frame >
+  <img src="/images/monitordispute.png" />
+</Frame>
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={2}>
+  <Card title="Página del producto Escrow" icon="handshake" href="/es/products/escrow">
+    Descubre cómo funciona Kleros Escrow, V1 y V2
+  </Card>
+  <Card title="Desarrolla con Escrow" icon="code" href="/es/developers/products/escrow">
+    Contratos inteligentes y documentación técnica de Escrow
+  </Card>
+</CardGroup>

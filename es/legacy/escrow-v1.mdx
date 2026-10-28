@@ -1,0 +1,44 @@
+---
+title: "Escrow V1"
+description: "Documentación de Kleros Escrow V1: contrato inteligente de escrow descentralizado en Ethereum Mainnet con resolución de disputas de Kleros Court y soporte para tokens ERC-20."
+---
+
+# Escrow V1
+
+<Note>
+Escrow V1 está probado en producción en Ethereum L1 y sigue activo para integraciones web3. Hay una versión V2 disponible: [Escrow V2](/es/products/escrow) en Arbitrum.
+</Note>
+
+Kleros Escrow V1 es la plataforma original de escrow descentralizado en Ethereum Mainnet. Permitía a dos partes bloquear fondos en un contrato inteligente, con Kleros Court disponible como mecanismo de resolución de disputas si las partes no llegaban a un acuerdo.
+
+---
+
+## Soporte de tokens
+
+<Danger>
+**Los tokens ERC-20 no estándar no son compatibles.** Tokens como USDT, BNB y OMG **no son compatibles** con Kleros Escrow V1. Estos tokens usan implementaciones de transferencia no estándar que pueden hacer que las transacciones fallen o que los fondos queden bloqueados.
+</Danger>
+
+Escrow V1 solo admite ETH y tokens ERC-20 estándar. Los tokens no estándar suelen tener una o más de las siguientes características:
+
+- **Ningún valor de retorno en `transfer`/`transferFrom`** (p. ej., USDT, BNB, OMG)
+- Mecanismos de **comisión por transferencia** que reducen el monto recibido
+- Ajustes de suministro por **rebasing**
+- Transferencias **pausables** que un administrador puede congelar
+
+Los tokens no estándar son compatibles con [Escrow V2](/es/products/escrow), que incluye manejo con `SafeERC20` y comprobaciones de seguridad automáticas para una compatibilidad de tokens más amplia.
+
+---
+
+## Diferencias clave con V2
+
+| Característica | V1 | V2 |
+|---------|----|----|
+| Red | Ethereum Mainnet | Arbitrum One |
+| Soporte de tokens | Solo ETH | ETH + cualquier token ERC-20 |
+| ERC-20 no estándar | No compatible | Compatible mediante SafeERC20 |
+| Acuerdo | Básico | Propuesta/contrapropuesta estructurada |
+| Comisiones de la plataforma | Ninguna | Ninguna |
+| Evidencia/Apelaciones | Gestionadas por el contrato de escrow | Gestionadas por la Corte |
+
+V2 introdujo la negociación estructurada de acuerdos, el soporte multitoken y trasladó la gestión de evidencias y apelaciones a la Corte, simplificando el contrato de escrow. Consulta [Escrow V2](/es/products/escrow) para ver la documentación actual.

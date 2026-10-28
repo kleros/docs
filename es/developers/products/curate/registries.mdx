@@ -1,0 +1,335 @@
+---
+title: "Registros de Kleros"
+description: "Address Tags, Tokens, CDN y ATQ: los cuatro registros de curación activos de Kleros, sus modelos de datos, el acceso por subgraph y las integraciones de los consumidores."
+---
+
+Kleros opera cuatro registros de curación en producción construidos sobre Curate V2. Cada registro cura un tipo específico de datos; las entradas disputadas se resuelven en Kleros Court. En conjunto, forman la capa de datos central que usan billeteras, exploradores de bloques y listas de tokens para mostrar metadatos confiables de contratos y tokens.
+
+| Registro | Nombre corto | Qué cura | Cadena |
+|----------|-----------|-----------------|-------|
+| Address Tags | ATR | Etiquetas legibles por humanos para direcciones de contratos | Gnosis Chain |
+| Tokens | - | Metadatos de tokens ERC-20 (nombre, símbolo, logo, decimales) | Gnosis Chain |
+| Contract Domain Names | CDN | Correspondencia entre dirección de contrato → dominio web | Gnosis Chain |
+| Address Tag Query | ATQ | Meta-registro por lotes de paquetes NPM que generan datos de etiquetas de direcciones | Gnosis Chain |
+
+---
+
+## Address Tags Registry
+
+El Address Tags Registry asocia un par `(address, chain)` con una cadena de etiqueta descriptiva corta. Es la fuente principal de las etiquetas de "¿qué es este contrato?" que se muestran en billeteras y exploradores.
+
+### Esquema de ítems
+
+Cada ítem registrado codifica las siguientes columnas:
+
+| Columna | Tipo | Descripción |
+|--------|------|-------------|
+| `Contract Address` | `address` | La dirección del contrato con checksum |
+| `Contract Name` | `text` | Nombre legible por humanos (p. ej., "Uniswap V3: Router 2") |
+| `Public Name Tag` | `text` | Etiqueta corta que se muestra a los usuarios finales |
+| `UI/Website` | `link` | Sitio web del proyecto |
+| `Chain ID` | `number` | Cadena a la que pertenece la dirección |
+
+### Acceso por subgraph
+
+El registro está indexado por un subgraph alojado en Envio (despliegue privado). Patrón de consulta:
+
+```graphql
+{
+  litems(
+    where: {
+      registryAddress: "0xATR_REGISTRY_ADDRESS"
+      status_in: [Registered, ClearingRequested]
+    }
+    first: 1000
+  ) {
+    props { label value }
+  }
+}
+```
+
+- Las direcciones deben ir en **minúsculas** en los filtros `where`
+- Filtra por `chain_id` en `props` para limitar los resultados a una red específica
+- Los ítems con `ClearingRequested` siguen activos: inclúyelos en las consultas de "etiquetas activas"
+
+### Reglas de resolución
+
+- **Una etiqueta por dirección y por cadena.** Un segundo registro para el mismo par `(address, chainId)` provoca un conflicto; se prefiere el ítem curado con más stake de respaldo.
+- **Conflicto entre ATQ y ATR:** si una dirección tiene una etiqueta tanto del meta-registro ATQ como del Address Tags Registry, **la entrada del ATR tiene prioridad** (se cura e impugna de forma individual).
+
+---
+
+## Tokens Registry
+
+El Tokens Registry cura metadatos de tokens ERC-20. Es la fuente de las listas de tokens mantenidas por Kleros que usan Uniswap, MetaMask, Ledger y otros.
+
+### Esquema de ítems
+
+| Columna | Tipo | Descripción |
+|--------|------|-------------|
+| `Name` | `text` | Nombre completo del token (p. ej., "Wrapped Ether") |
+| `Ticker` | `text` | Símbolo (p. ej., "WETH") |
+| `Address` | `address` | Dirección del contrato del token |
+| `Chain ID` | `number` | Cadena en la que está desplegado el token |
+| `Decimals` | `number` | Cantidad de decimales del token |
+| `Logo` | `image` | URI de IPFS del logo del token |
+
+### Acceso por subgraph
+
+Mismo patrón de subgraph alojado en Envio que el ATR. Consulta por `registryAddress` para el contrato del registro de Tokens.
+
+### Salida como lista de tokens
+
+El registro de Tokens genera un JSON estándar de [Token List](https://tokenlists.org/) en tiempo de compilación. Los consumidores obtienen el archivo estático en lugar de consultar el subgraph directamente:
+
+```typescript
+// Fetch the Kleros token list
+const res = await fetch("https://t2crtokens.eth.limo");
+const tokenList = await res.json();
+// tokenList.tokens is an array of TokenInfo objects
+```
+
+---
+
+## Registro CDN (Contract Domain Names)
+
+El registro CDN asocia direcciones de contratos con dominios web. Ofrece una búsqueda inversa: dada una dirección de contrato, encuentra el dominio oficial del proyecto.
+
+### Esquema de ítems
+
+| Columna | Tipo | Descripción |
+|--------|------|-------------|
+| `Contract Address` | `address` | La dirección del contrato |
+| `Domain Name` | `text` | Dominio oficial (p. ej., `uniswap.org`) |
+| `Chain ID` | `number` | Cadena en la que está desplegado el contrato |
+
+### Acceso por subgraph
+
+Mismo patrón de subgraph alojado en Envio. CDN es más pequeño que el ATR; normalmente el conjunto completo se puede obtener en una sola consulta.
+
+### Casos de uso
+
+- Detección de phishing en billeteras: comprobar si el dominio que declara una dApp coincide con la entrada CDN del contrato al que se llama
+- Insignias de "proyecto verificado" en exploradores de bloques
+- Resolución DNS inversa para direcciones de contratos
+
+---
+
+## Registro ATQ (Address Tag Query)
+
+El registro ATQ es un **meta-registro**: en lugar de curar etiquetas de direcciones individuales, cura **paquetes** NPM que, al ejecutarse, generan cada uno lotes de etiquetas de direcciones. Esto permite generar etiquetas a gran escala (miles de direcciones) sin requerir envíos de curación individuales por dirección.
+
+<Warning>
+ATQ **no se puede consultar al vuelo** mediante subgraph. Para generar etiquetas de direcciones a partir de ATQ, debes descargar y ejecutar localmente cada paquete NPM registrado. No existe ninguna API que devuelva en tiempo real etiquetas derivadas de ATQ para una dirección específica.
+</Warning>
+
+### Esquema de ítems
+
+| Columna | Tipo | Descripción |
+|--------|------|-------------|
+| `Package Name` | `text` | Nombre del paquete NPM (p. ej., `@kleros/address-tags-aave`) |
+| `Version` | `text` | Versión semver del paquete |
+| `Description` | `text` | Descripción legible de qué direcciones etiqueta este paquete |
+| `Publisher` | `address` | Dirección de quien envió el paquete |
+
+### Flujo de trabajo
+
+1. Un proveedor de datos publica un paquete NPM que exporta una función que devuelve `Array<{address, chainId, tag, ...}>`
+2. Envía el paquete al registro ATQ a través de Curate
+3. Los consumidores clonan todos los paquetes registrados, los ejecutan y combinan los resultados en un conjunto de datos unificado de etiquetas de direcciones
+4. El conjunto de datos combinado se almacena en caché y se sirve de forma estática
+
+```typescript
+// Conceptual: running ATQ packages to generate tags
+import { getAddressTags } from "@kleros/address-tags-aave";
+
+const tags = await getAddressTags();
+// tags: [{ address: "0x...", chainId: 1, tag: "Aave V3: Pool" }, ...]
+```
+
+### Modelo de datos
+
+```typescript
+// curate_atq_package
+interface ATQPackage {
+  packageName: string;     // NPM package name
+  version: string;
+  description: string;
+  publisher: string;       // submitter address
+  status: "Registered" | "RegistrationRequested" | "ClearingRequested";
+  registrationTime: number;
+}
+```
+
+---
+
+## Modelos de datos
+
+Modelos de datos normalizados completos de cada registro:
+
+### `curate_address_tag`
+
+```typescript
+interface CurateAddressTag {
+  id: string;              // itemID@registryAddress
+  contractAddress: string; // lowercase
+  contractName: string;
+  publicNameTag: string;
+  website: string;
+  chainId: number;
+  status: CurateStatus;
+  registrationTime: number;
+  source: "ATR" | "ATQ";  // direct registration or via ATQ package
+}
+```
+
+### `curate_token`
+
+```typescript
+interface CurateToken {
+  id: string;
+  name: string;
+  ticker: string;
+  address: string;         // lowercase
+  chainId: number;
+  decimals: number;
+  logoURI: string;         // IPFS URI
+  status: CurateStatus;
+}
+```
+
+### `curate_cdn`
+
+```typescript
+interface CurateCDN {
+  id: string;
+  contractAddress: string; // lowercase
+  domainName: string;
+  chainId: number;
+  status: CurateStatus;
+}
+```
+
+### `curate_atq_package`
+
+```typescript
+interface CurateATQPackage {
+  id: string;
+  packageName: string;
+  version: string;
+  description: string;
+  publisher: string;
+  status: CurateStatus;
+}
+
+type CurateStatus =
+  | "Absent"
+  | "Registered"
+  | "RegistrationRequested"
+  | "ClearingRequested";
+```
+
+---
+
+## Consumidores
+
+Los siguientes productos y servicios consumen datos de los registros de Kleros:
+
+| Consumidor | Registro usado | Cómo |
+|----------|--------------|-----|
+| Etherscan | ATR, CDN | Etiquetas de nombre de contratos, etiquetas de dominio |
+| Blockscout | ATR | Etiquetas de nombre de direcciones |
+| MetaMask Core | ATR, Tokens | Metadatos de tokens, etiquetas de direcciones |
+| MetaMask Snap | ATR | Advertencias sobre direcciones |
+| Ledger Live | Tokens | Metadatos de visualización de tokens |
+| Uniswap Token List | Tokens | Lista de tokens predeterminada |
+| Kleros Scout | ATR, Tokens, CDN | Explorador cross-chain de direcciones y tokens |
+
+Los consumidores suelen obtener una exportación estática pregenerada (archivo JSON) en lugar de consultar el subgraph en tiempo de ejecución, para no exponer claves de API en el código del lado del cliente.
+
+---
+
+## Arquitectura
+
+### Nivel 1 - Contexto del sistema
+
+```
+                    ┌─────────────────────┐
+                    │   Data Providers    │
+                    │  (submit items via  │
+                    │   Curate UI)        │
+                    └────────┬────────────┘
+                             │  Curate V2 submission
+                             ▼
+                    ┌─────────────────────┐
+                    │   Curate V2         │
+                    │   Smart Contracts   │◄──── Kleros Court (disputes)
+                    │   (Gnosis Chain)    │
+                    └────────┬────────────┘
+                             │  Events indexed
+                             ▼
+                    ┌─────────────────────┐
+                    │   Envio Subgraph    │
+                    │   (private)         │
+                    └────────┬────────────┘
+                             │  GraphQL queries + static exports
+                             ▼
+                    ┌─────────────────────┐
+                    │   Consumers         │
+                    │   (wallets,         │
+                    │    explorers,       │
+                    │    token lists)     │
+                    └─────────────────────┘
+```
+
+### Nivel 2 - Vista de contenedores
+
+```
+Gnosis Chain
+├── ATR Registry Contract     0x[address]
+├── Tokens Registry Contract  0x[address]
+├── CDN Registry Contract     0x[address]
+└── ATQ Registry Contract     0x[address]
+
+Envio Indexer
+├── ATR subgraph   → /api/v1/atr/graphql
+├── Tokens subgraph → /api/v1/tokens/graphql
+└── CDN subgraph   → /api/v1/cdn/graphql
+
+Static Export Pipeline (CI)
+├── Reads from Envio subgraphs
+├── Runs ATQ NPM packages
+├── Merges and deduplicates
+└── Publishes → CDN (cdn.kleros.link)
+```
+
+---
+
+## Limitaciones conocidas
+
+| Limitación | Impacto | Solución alternativa |
+|-----------|--------|-----------|
+| Los paquetes ATQ no se pueden consultar en tiempo real | No se puede buscar una dirección en ATQ sin ejecutar todos los paquetes | Usa la exportación estática pregenerada; ejecuta los paquetes en CI |
+| Claves de API de Graph en el código del frontend | Riesgo de exposición de la clave de API si la URL del subgraph está codificada en el lado del cliente | Usa un proxy del lado del servidor o la exportación estática; no incluyas claves de API en los bundles del navegador |
+| Sin registro de solicitudes de direcciones | No se puede auditar quién consultó una dirección específica | Usa un proxy del lado del servidor y registra en la capa del proxy |
+| Máximo 1 etiqueta ATR por par `(address, chainId)` | Los conflictos requieren impugnación y resolución | Envía la etiqueta más precisa/general; las impugnaciones las resuelven los jurados |
+
+---
+
+## Añadir datos a un registro
+
+Para contribuir etiquetas de direcciones, tokens o nombres de dominio:
+
+1. Ve a [curate.kleros.io](https://curate.kleros.io) y selecciona el registro
+2. Revisa la política del registro (enlazada desde la página del registro)
+3. Envía tu ítem y paga el depósito
+4. Espera a que venza el periodo de impugnación (normalmente de 3 a 7 días)
+
+Para envíos masivos mediante ATQ:
+1. Crea un paquete NPM que exporte una función asíncrona que devuelva un arreglo de objetos `{address, chainId, tag}`
+2. Publícalo en NPM
+3. Regístralo en el registro ATQ en Curate
+
+<Note>
+Contacta con el equipo de Kleros a través de [Discord](https://discord.gg/MhXQGCyHd9) o `integrations@kleros.io` si necesitas las direcciones de los contratos de los registros, los endpoints del subgraph de Envio o ayuda con envíos masivos a ATQ.
+</Note>

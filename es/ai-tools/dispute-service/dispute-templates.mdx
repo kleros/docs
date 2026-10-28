@@ -1,0 +1,84 @@
+---
+title: "Plantillas de disputa"
+description: "Qué contiene cada plantilla del Dispute Service, qué no contiene nunca y cómo viaja integrada en la transacción de creación de la disputa."
+---
+
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
+
+Una plantilla de disputa es el documento que abre un jurado: el título, lo que está en juego, las partes, la
+pregunta y las respuestas entre las que elegir. Cada socio tiene una, fijada por su Preset, y su
+contenido —qué se pide a los jurados que busquen, qué significa cada respuesta— está en la página propia
+de ese socio. Esta página cubre lo que todas las plantillas de aquí tienen en común: qué contienen, qué nunca
+contienen y cómo llegan a la cadena. El formato en sí se especifica en la
+[referencia de plantillas de disputa de Kleros](https://docs.kleros.io/reference/data-formats/dispute-templates).
+
+## Qué contiene una plantilla
+
+La plantilla almacenada es un archivo JSON que incluye `title`, `description`, `question`, `answers`, `policyURI`, `category`, `specification`, `lang` y `version`.
+
+```json Stored template
+{
+  "title": "…",
+  "description": "…",
+  "question": "…",
+  "answers": [
+    {"id": "0x01", "title": "…", "description": "…"},
+    {"id": "0x02", "title": "…", "description": "…"}
+  ],
+  "policyURI": "…",
+  "category": "…",
+  "specification": "…",
+  "lang": "…",
+  "version": "…"
+}
+```
+
+Todos los Presets de las claves de un socio crean disputas a partir del mismo archivo; no hay ninguna variante por despliegue. El `policyURI` apunta a una política fijada (pinned) que rige en todo aquello sobre lo que el resumen de la plantilla guarda silencio, y es la misma en todos los despliegues.
+
+Tu plantilla, como el resto de tu Preset, se selecciona mediante la clave de API que envías: la clave en sí,
+no ningún nombre asociado a ella. Una clave nueva es un Preset nuevo.
+
+## Qué nunca contiene
+
+Tres grupos de campos están ausentes deliberadamente, y una plantilla que incluya alguno de ellos se rechaza cuando
+se configura, de modo que nunca se crea una disputa a partir de ella:
+
+| Campo | Por qué nunca está en la plantilla |
+| --- | --- |
+| **`aliases`** | Se inyectan por disputa a partir del único argumento de quien llama. Los nombres de los slots son propios del Preset y se enumeran en la página de cada socio; un slot que quien llama omite está ausente en la disputa creada en lugar de rellenarse con ceros. |
+| **`arbitratorChainID`** y **`arbitratorAddress`** | Se resuelven para el despliegue del Preset a partir del paquete fijado `@kleros/kleros-v2-contracts` en el momento de la creación, de modo que no se escribe ninguna dirección en la plantilla y no se puede almacenar un par desactualizado. La Testnet (`arbitrum-sepolia-testnet`) y la Devnet (`arbitrum-sepolia-devnet`) comparten el chain id `421614` y solo la dirección las distingue, por lo que un par intercambiado sería invisible en una plantilla renderizada. |
+| **`$schema`** y **`type`** | La Disputant CLI valida contra un esquema de autoría estricto que no tiene ninguno de los dos y rechaza directamente los campos desconocidos. |
+
+## No hay paso de registro; la plantilla viaja en la transacción
+
+Nadie registra una plantilla por adelantado ni guarda un id.
+
+<Steps>
+  <Step title="Se pasa integrada en la llamada de creación">
+    El JSON renderizado se pasa **integrado en la llamada de creación**: `DisputeResolver.createDisputeForTemplate`, cuyo parámetro `_disputeTemplate` es una cadena de texto.
+  </Step>
+  <Step title="La registra el resolver">
+    El resolver la registra e informa el id que generó, por lo que existe un id por disputa: la creación que produjo la disputa del core `131` en Testnet (`arbitrum-sepolia-testnet`) generó la plantilla `116`.
+  </Step>
+  <Step title="Nunca se te devuelve">
+    El id de la plantilla no se te devuelve, y nada de lo que llamas recibe uno.
+  </Step>
+</Steps>
+
+Una nueva versión de una plantilla es un cambio del lado de este servicio; no hace falta mantener nada sincronizado en la cadena, y no llamas a nada de forma diferente.
+
+## Referencias
+
+<CardGroup cols={3}>
+  <Card title="Formato de plantilla de disputa" icon="file-code">
+    La [referencia de plantillas de disputa de Kleros](https://docs.kleros.io/reference/data-formats/dispute-templates) y su esquema, [`NewDisputeTemplate.schema.json`](https://raw.githubusercontent.com/kleros/kleros-v2/dev/kleros-sdk/config/v2-disputetemplate/NewDisputeTemplate.schema.json) en `kleros/kleros-v2`. Una plantilla almacenada aquí es un subconjunto de autoría: omite campos que ese esquema exige, como el par del árbitro, por lo que no se validará contra él tal cual.
+  </Card>
+
+  <Card title="Direcciones de despliegue" icon="npm" href="https://www.npmjs.com/package/@kleros/kleros-v2-contracts">
+    `@kleros/kleros-v2-contracts` en npm. Resuelve las direcciones a partir de él o de las herramientas en lugar de copiarlas.
+  </Card>
+
+  <Card title="Herramienta de vista previa de plantillas" icon="eye" href="https://devtools.v2-testnet.kleros.builders/dispute-template">
+    Testnet, `arbitrum-sepolia-testnet`. Pega la plantilla de un socio para verla como la verá un jurado.
+  </Card>
+</CardGroup>

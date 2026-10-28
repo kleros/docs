@@ -1,0 +1,52 @@
+---
+title: "Court V1"
+description: "Documentación de Kleros Court V1: el protocolo de arbitraje original KlerosLiquid en Ethereum Mainnet y Gnosis Chain, activo para integraciones web3."
+---
+
+# Court V1
+
+<Note>
+Court V1 es el protocolo probado en producción en Ethereum L1 y sigue activo para integraciones web3. Hay una versión V2 disponible: [Court V2](/es/court/overview) en Arbitrum.
+</Note>
+
+Kleros Court V1 es el protocolo original de resolución descentralizada de disputas desplegado en Ethereum Mainnet en 2018. El contrato inteligente principal era **KlerosLiquid**, que combinaba el staking de jurados, la selección aleatoria, la votación y la gestión de disputas en un único contrato.
+
+---
+
+## Características clave
+
+- **Red**: Ethereum Mainnet (también desplegado en Gnosis Chain / xDAI)
+- **Contrato**: KlerosLiquid (monolítico: toda la lógica en un solo contrato)
+- **Staking de PNK**: El PNK permanecía en la billetera del jurado durante el staking
+- **RNG**: Generación de números aleatorios basada en blockhash
+- **Votación**: Commit-reveal con agregación por mayoría relativa
+- **Estándares**: ERC-792 (Arbitraje) y ERC-1497 (Evidencia)
+- **Cortes**: Árbol jerárquico de subcortes con la General Court como raíz
+
+---
+
+## Comparación entre V1 y V2
+
+| Característica | V1 | V2 |
+|---------|----|----|
+| Red | Ethereum Mainnet | Arbitrum One |
+| Arquitectura | Monolítica (KlerosLiquid) | Modular (KlerosCore + SortitionModule + DisputeKits) |
+| Evidencia | Gestionada por los contratos arbitrables | Gestionada por la Corte |
+| Apelaciones | Gestionadas por los contratos arbitrables | Gestionadas por la Corte |
+| RNG | Blockhash | Chainlink VRF con respaldo |
+| Cross-chain | Una sola cadena | Multicadena mediante el puente VEA |
+| Costos de gas | Altos | Bajos |
+
+---
+
+## Estructura de cortes en V1
+
+V1 tenía un árbol jerárquico de cortes similar al de V2, con la General Court como raíz y subcortes especializadas como Blockchain Non-Technical, English Language, Onboarding, entre otras. Hacer staking en una corte hija incluía automáticamente al jurado en todas las cortes padre.
+
+---
+
+## Recursos de V1
+
+- **Aplicación de Court V1**: Anteriormente en court.kleros.io (ahora redirige a V2)
+- **Contrato**: KlerosLiquid en Ethereum Mainnet
+- **Estándar ERC-792**: Consulta la [documentación de ERC-792](/es/developers/arbitrable-apps/erc-792)

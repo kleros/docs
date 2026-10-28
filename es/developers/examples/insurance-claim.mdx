@@ -1,0 +1,183 @@
+---
+title: "Reclamación de seguro"
+description: "Ejemplo de contrato de seguro paramétrico que usa el arbitraje de Kleros V1 con ERC-792 y ERC-1497 para resolver reclamaciones de pago disputadas mediante fallos de los jurados."
+---
+
+## Descripción general
+
+Este ejemplo muestra un contrato de seguro paramétrico que usa Kleros Court V1 para arbitrar reclamaciones disputadas, siguiendo el estándar de arbitraje ERC-792 y el estándar de evidencia ERC-1497. El contrato cubre un evento asegurado específico (por ejemplo, el retraso de un vuelo o la pérdida de una cosecha) y realiza el pago cuando los jurados confirman que el evento ocurrió.
+
+Sigue el patrón arbitrable de V1 documentado en [docs.kleros.io](https://docs.kleros.io/).
+
+---
+
+## Contrato
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
+
+import "@kleros/erc-792/contracts/IArbitrable.sol";
+import "@kleros/erc-792/contracts/IArbitrator.sol";
+import "@kleros/erc-792/contracts/erc-1497/IEvidence.sol";
+
+contract InsuranceClaim is IArbitrable, IEvidence {
+    enum ClaimStatus { None, Disputed, Resolved }
+
+    struct Policy {
+        address payable insured;
+        uint256 premium;
+        uint256 coverage;
+        uint256 expiresAt;
+        string termsURI; // IPFS URI to the policy document (MetaEvidence)
+    }
+
+    struct Claim {
+        uint256 policyID;
+        ClaimStatus status;
+        uint256 disputeID;
+        uint256 ruling;
+    }
+
+    IArbitrator public arbitrator;
+    bytes public arbitratorExtraData;
+
+    mapping(uint256 => Policy) public policies;
+    mapping(uint256 => Claim) public claims;
+    mapping(uint256 => uint256) public disputeIDtoClaimID;
+    uint256 public policyCount;
+    uint256 public claimCount;
+
+    uint256 constant numberOfRulingOptions = 2;
+    // Ruling: 0 = Refuse, 1 = Approve claim, 2 = Deny claim
+    uint256 constant APPROVE = 1;
+    uint256 constant DENY = 2;
+
+    constructor(IArbitrator _arbitrator, bytes memory _arbitratorExtraData) {
+        arbitrator = _arbitrator;
+        arbitratorExtraData = _arbitratorExtraData;
+    }
+
+    /// @dev Purchase an insurance policy. The terms document is the MetaEvidence.
+    function purchasePolicy(
+        uint256 _coverage,
+        uint256 _duration,
+        string calldata _termsURI
+    ) external payable returns (uint256 policyID) {
+        require(msg.value > 0, "Premium required");
+        require(_coverage <= address(this).balance, "Insufficient pool");
+
+        policyID = policyCount++;
+        policies[policyID] = Policy({
+            insured: payable(msg.sender),
+            premium: msg.value,
+            coverage: _coverage,
+            expiresAt: block.timestamp + _duration,
+            termsURI: _termsURI
+        });
+
+        // ERC-1497: register the policy terms as MetaEvidence, keyed by policyID.
+        emit MetaEvidence(policyID, _termsURI);
+    }
+
+    /// @dev File a claim, creating a dispute in Kleros Court.
+    function fileClaim(
+        uint256 _policyID,
+        string calldata _evidence
+    ) external payable returns (uint256 claimID) {
+        Policy storage policy = policies[_policyID];
+        require(msg.sender == policy.insured, "Only insured");
+        require(block.timestamp <= policy.expiresAt, "Policy expired");
+
+        uint256 cost = arbitrator.arbitrationCost(arbitratorExtraData);
+        require(msg.value >= cost, "Insufficient arbitration fee");
+
+        claimID = claimCount++;
+        uint256 disputeID = arbitrator.createDispute{value: msg.value}(
+            numberOfRulingOptions,
+            arbitratorExtraData
+        );
+
+        claims[claimID] = Claim({
+            policyID: _policyID,
+            status: ClaimStatus.Disputed,
+            disputeID: disputeID,
+            ruling: 0
+        });
+        disputeIDtoClaimID[disputeID] = claimID;
+
+        // ERC-1497: link the dispute to the policy MetaEvidence and an evidence group.
+        emit Dispute(arbitrator, disputeID, _policyID, claimID);
+        emit Evidence(arbitrator, claimID, msg.sender, _evidence);
+    }
+
+    /// @dev Called by the arbitrator when the ruling is final.
+    function rule(uint256 _disputeID, uint256 _ruling) external override {
+        require(msg.sender == address(arbitrator), "Only arbitrator");
+        require(_ruling <= numberOfRulingOptions, "Ruling out of bounds");
+
+        uint256 claimID = disputeIDtoClaimID[_disputeID];
+        Claim storage claim = claims[claimID];
+        require(claim.status == ClaimStatus.Disputed, "Not disputed");
+
+        claim.status = ClaimStatus.Resolved;
+        claim.ruling = _ruling;
+
+        if (_ruling == APPROVE) {
+            Policy storage policy = policies[claim.policyID];
+            policy.insured.transfer(policy.coverage);
+        }
+        // If DENY or refuse to rule, no payout.
+
+        emit Ruling(arbitrator, _disputeID, _ruling);
+    }
+
+    /// @dev Fund the insurance pool.
+    receive() external payable {}
+}
+```
+
+---
+
+## Cómo funciona
+
+1. **Compra de la póliza**: un usuario paga una prima y recibe una póliza con un monto de cobertura, una duración y un documento de términos definidos (almacenado en IPFS y anunciado como MetaEvidence ERC-1497)
+2. **Presentación de la reclamación**: el asegurado presenta evidencia y paga la tarifa de arbitraje, lo que crea de inmediato una disputa en Kleros Court V1
+3. **Evaluación de los jurados**: los jurados de Kleros revisan la evidencia frente a los términos de la póliza y votan para aprobar o denegar
+4. **Pago o denegación**: si se aprueba, el monto de cobertura se transfiere al asegurado. Si se deniega, no se realiza ningún pago
+
+---
+
+## Términos de la póliza (MetaEvidence)
+
+Los términos de la póliza son un documento JSON de MetaEvidence ERC-1497 subido a IPFS:
+
+```json
+{
+  "title": "Insurance Claim",
+  "description": "Evaluate whether the insured event occurred according to the policy terms.",
+  "question": "Should this insurance claim be approved?",
+  "rulingOptions": {
+    "titles": ["Refuse to Rule", "Approve Claim", "Deny Claim"],
+    "descriptions": [
+      "The arbitrator refuses to rule.",
+      "The insured event occurred; approve the payout.",
+      "The insured event did not occur; deny the claim."
+    ]
+  },
+  "category": "Insurance",
+  "fileURI": "/ipfs/QmPolicyTerms..."
+}
+```
+
+---
+
+## Consideraciones para producción
+
+Este ejemplo omite varias funcionalidades necesarias para un uso en producción:
+
+- **Soporte de apelaciones**: permitir que cualquiera de las partes financie rondas adicionales
+- **Periodo de reclamación**: añadir un periodo de revisión antes de que se planteen disputas, que permita a la aseguradora aprobar reclamaciones sin arbitraje
+- **Pólizas con múltiples reclamaciones**: admitir varias reclamaciones sobre una misma póliza
+- **Solvencia del fondo**: añadir mecanismos que garanticen que el fondo de seguros pueda cubrir todas las pólizas vigentes
+- **Fijación de primas**: calcular las primas a partir de modelos de riesgo en lugar de montos fijos

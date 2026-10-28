@@ -1,0 +1,44 @@
+---
+title: "KlerosGovernor"
+description: "Referencia de KlerosGovernor: contrato de gobernanza on-chain que ejecuta listas de transacciones aprobadas en Snapshot, con arbitraje de Kleros Court para las disputas."
+---
+
+
+
+KlerosGovernor ejecuta las decisiones de gobernanza tomadas mediante votación off-chain (Snapshot). Utiliza el arbitraje de Kleros para resolver disputas cuando se envían varias listas de transacciones en competencia.
+
+## Cómo funciona
+
+1. **Periodo de envío**: cualquiera puede enviar una lista de transacciones a ejecutar, junto con un depósito
+2. **Periodo de aprobación**: si solo se envía una lista, se aprueba automáticamente. Si compiten varias listas, se crea una disputa en Kleros Court
+3. **Ejecución**: las transacciones de la lista aprobada se ejecutan on-chain
+
+## Métodos clave
+
+### `submitList(address[] _targets, uint256[] _values, bytes _data, uint256[] _dataLengths, string _description)`
+Envía una lista de transacciones para su ejecución por gobernanza.
+
+### `executeTransactionList(uint256 _listID, uint256 _cursor, uint256 _count)`
+Ejecuta transacciones de una lista aprobada. Puede llamarse por partes para gestionar el gas.
+
+### `executeSubmissions()`
+Inicia el proceso de aprobación. Si hay una lista: la aprueba. Si hay varias: crea una disputa.
+
+## Parámetros
+
+| Parámetro | Descripción |
+|---|---|
+| `submissionBaseDeposit` | Depósito base requerido por cada envío de lista |
+| `submissionTimeout` | Duración del periodo de envío |
+| `executionTimeout` | Ventana de tiempo para ejecutar las transacciones aprobadas |
+| `withdrawTimeout` | Periodo de gracia para retirar los depósitos de ejecución |
+
+## Eventos
+
+| Evento | Descripción |
+|---|---|
+| `SessionCreated` | Nueva sesión de gobernanza iniciada |
+| `ListSubmitted` | Lista de transacciones enviada |
+| `Ruling` | Disputa resuelta, lista ganadora determinada |
+
+[Ver código fuente](https://github.com/kleros/governor-v2)

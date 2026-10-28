@@ -1,0 +1,37 @@
+---
+title: "Sortition Module"
+description: "Referencia del Sortition Module: selección de jurados ponderada por PNK, stakes en árbol de sumas, fases de staking, generación y selección, e integración de RNG en Kleros V2."
+---
+
+
+
+Gestiona la selección de jurados mediante un sorteo aleatorio ponderado por stake. Utiliza una estructura de datos de árbol de sumas para una selección proporcional eficiente.
+
+**Versión**: 0.9.0 | **Proxy**: UUPS actualizable
+
+## Sistema de fases
+
+El módulo de sorteo opera por fases:
+
+1. **Staking**: los jurados pueden actualizar sus stakes. No se realizan sorteos.
+2. **Generating**: se solicita el RNG a la fuente de números aleatorios.
+3. **Drawing**: se sortean jurados para las disputas usando el número aleatorio generado.
+
+Los stakes enviados durante las fases Generating o Drawing se ponen en cola y se aplican cuando se reanuda la fase Staking.
+
+## Métodos clave
+
+### `createDisputeHook(uint256 _disputeID, uint256 _roundID)`
+KlerosCore lo llama cuando se crea una disputa. Prepara los parámetros del sorteo.
+
+### `draw(uint256 _disputeID, uint256 _roundID, uint256 _nonce) → address`
+Sortea un jurado para la disputa según los pesos de PNK en stake y el número aleatorio.
+
+### `setStake(address _account, uint96 _courtID, uint256 _newStake, bool _alreadyTransferred) → (uint256, uint256, uint256, bool)`
+Actualiza el stake de un jurado en el árbol de sumas.
+
+## Árbol de stakes
+
+Utiliza un árbol de sumas de sorteo en el que cada hoja representa el stake de un jurado en una corte. La probabilidad de ser seleccionado es proporcional al stake: un jurado con el 10 % del total de PNK en stake en una corte tiene un 10 % de probabilidad de ser seleccionado para cada plaza de jurado.
+
+[Ver código fuente](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/SortitionModule.sol)

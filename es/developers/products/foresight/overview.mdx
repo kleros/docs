@@ -1,0 +1,52 @@
+---
+title: "Foresight"
+description: "Descripción general para desarrolladores de Kleros Foresight V2, un motor de decisiones basado en mercados de predicción, que cubre tokens condicionales, resolución de mercados y hooks de arbitraje."
+---
+
+Kleros Foresight es un producto V2 sin equivalente en V1. Esta página documenta solo los detalles técnicos.
+
+---
+
+## Qué es Kleros Foresight
+
+- Recibió oficialmente el nombre de Kleros Foresight en febrero de 2026 (antes se denominaba Futarchy UI)
+- Una plataforma de mercados de predicción para la toma de decisiones, donde los resultados de los mercados se resuelven mediante el arbitraje de Kleros
+- Usa un framework de tokens condicionales en Gnosis Chain con pools AMM basados en Swapr
+- Admite tanto DAI como Foresight Credits para participar
+
+---
+
+## Arquitectura
+
+- Construido sobre un framework de tokens condicionales
+- Sistema de billetera de trading para depositar/retirar DAI, acuñar/fusionar tokens de predicción y canjearlos tras la resolución del mercado
+- Predicciones por lotes mediante carga de CSV, con un ejecutor de operaciones para operaciones por lotes
+- La fragmentación de transacciones divide grandes lotes de predicciones en varias transacciones para mantenerse dentro de los límites de gas
+- Obtención de precios on-chain para mercados sin entradas en el subgraph
+- La lógica de resolución de mercados usa el arbitraje de Kleros
+
+---
+
+## Experimentos
+
+- La ronda 1 del Movie Experiment se lanzó en marzo de 2026: los participantes predicen las puntuaciones percentiles del CTO para 16 películas
+- La ronda 2 del Movie Experiment se lanzó en junio de 2026
+
+---
+
+## Capacidades técnicas
+
+- Canje por lotes
+- Visualización de P&L conectada a través de la API
+- Exportación CSV de predicciones con marcas de tiempo UTC
+- Sistema de Foresight Credits
+- Respuestas resueltas mostradas en el control deslizante y en las tarjetas de mercado
+- Cálculo del valor de canje con una verificación previa
+- Notificaciones por correo electrónico activadas cuando un mercado se resuelve, procesadas a través del pipeline de Atlas por producto con una baja de suscripción específica de Foresight
+
+---
+
+## Enlaces
+
+- App: [foresight.kleros.io](https://foresight.kleros.io/)
+- Repositorio: [github.com/kleros/futarchy-ui](https://github.com/kleros/futarchy-ui)

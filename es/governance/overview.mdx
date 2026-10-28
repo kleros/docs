@@ -1,0 +1,76 @@
+---
+title: "Descripción general de la gobernanza"
+description: "Los titulares del token PNK gobiernan el protocolo Kleros y votan sobre cambios de parámetros, despliegues de contratos, políticas e incentivos mediante un ciclo de cuatro pasos."
+---
+
+# Gobernanza
+
+El proceso de Gobernanza del Protocolo Kleros es el mecanismo de toma de decisiones y de ejecución para los cambios en parámetros, despliegues de contratos, especificaciones de políticas, incentivos y mejoras que conforman el protocolo Kleros. Los titulares del token PNK actúan colectivamente como gobernadores del protocolo.
+
+---
+
+## Cómo funciona la gobernanza
+
+El ciclo de gobernanza consta de cuatro pasos:
+
+<Steps>
+  <Step title="Crear una KIP">
+    Redacta una publicación de Propuesta de Mejora de Kleros (KIP) en la sección **Votes** del [Foro de Kleros](https://forum.kleros.io). Incluye la justificación, los detalles técnicos y el plan de implementación.
+  </Step>
+  <Step title="Comentarios de la comunidad">
+    Recibe comentarios de la comunidad e itera sobre la propuesta. Actualiza la KIP hasta que pueda considerarse no controvertida y bien especificada.
+  </Step>
+  <Step title="Votación en Snapshot">
+    Publica una propuesta en el [espacio de Snapshot de Kleros](https://snapshot.box/#/s:kleros.eth) para que los titulares del token PNK voten. Snapshot utiliza votación off-chain protegida mediante firmas, sin comisiones de gas para los votantes.
+  </Step>
+  <Step title="Ejecución en Governor">
+    Si la propuesta se aprueba, envía a Kleros Governor una lista de transacciones que implemente los cambios aprobados. Si nadie impugna con éxito esta lista, Governor aplica los cambios enviando las transacciones on-chain.
+  </Step>
+</Steps>
+
+---
+
+## Componentes clave
+
+**Token PNK**: El token de gobernanza. Los titulares votan las propuestas en proporción a su saldo de PNK en la altura de bloque de Snapshot correspondiente. PNK también sirve como token de staking para los jurados.
+
+**Foro de Kleros**: Donde se redactan, debaten y perfeccionan las propuestas KIP antes de someterse a votación. Todos los debates de gobernanza son públicos.
+
+**Snapshot**: La plataforma de votación off-chain. La votación no requiere gas (se basa en firmas), lo que la hace accesible para todos los titulares de PNK, independientemente del tamaño de sus tenencias.
+
+**Kleros Governor**: El contrato de ejecución on-chain. Las propuestas aceptadas se envían como listas de transacciones. Si solo se envía una lista válida durante el período de envío, se ejecuta automáticamente. Si se envían varias listas en conflicto, una disputa en Kleros Court determina qué lista implementa correctamente lo votado.
+
+---
+
+## ¿Qué se puede gobernar?
+
+Las propuestas de gobernanza pueden abarcar una amplia variedad de cambios en el protocolo:
+
+- Parámetros de las cortes (stakes mínimos, honorarios de los jurados, períodos de tiempo, valores alfa)
+- Creación de nuevas cortes o reestructuración del árbol de cortes  
+- Despliegues y actualizaciones de contratos
+- Especificaciones de políticas para las cortes
+- Programas de incentivos y estructuras de recompensas
+- Modificaciones del suministro de PNK (emisión o quema)
+- Integraciones y alianzas del protocolo
+- Asignación de fondos de la tesorería y de la DAO
+
+<Note>
+Entre las innovaciones recientes de gobernanza se incluyen la **KIP-76**, que introdujo reglas de gobernanza basadas en futarquía para las propuestas de emisión de PNK, y la **KIP-74**, que propuso un panel completo de análisis de gobernanza.
+</Note>
+
+---
+
+## Participa
+
+<CardGroup cols={3}>
+  <Card title="Foro" icon="comments" href="https://forum.kleros.io">
+    Lee y participa en los debates de gobernanza
+  </Card>
+  <Card title="Snapshot" icon="check-to-slot" href="https://snapshot.box/#/s:kleros.eth">
+    Vota en las propuestas activas
+  </Card>
+  <Card title="Governor" icon="landmark" href="https://governor.kleros.io">
+    Consulta y envía listas de ejecución
+  </Card>
+</CardGroup>

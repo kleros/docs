@@ -1,0 +1,134 @@
+---
+title: "Guía de integración"
+description: "Verifica humanos únicos con Proof of Humanity V2 a través de CrossChainProofOfHumanity en Ethereum Mainnet y Gnosis Chain."
+---
+
+# Guía de integración de Proof of Humanity 2.0
+
+Esta guía está dirigida a desarrolladores que quieren verificar si una dirección pertenece a un humano registrado.
+
+<Note>
+Los integradores consumen la identidad a través de **CrossChainProofOfHumanity**. Los operadores de PoH gestionan el registro a través de **ProofOfHumanity**. Si estás integrando PoH en una aplicación, solo necesitas CrossChainProofOfHumanity.
+</Note>
+
+---
+
+## Inicio rápido: verificar a un humano
+
+Usa `CrossChainProofOfHumanity` como contrato de integración en cada cadena compatible. Expone tanto las humanidades registradas localmente como las sincronizadas entre cadenas.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+interface ICrossChainProofOfHumanity {
+    function isHuman(address account) external view returns (bool);
+    function humanityOf(address account) external view returns (bytes20);
+}
+
+contract HumanOnly {
+    ICrossChainProofOfHumanity public immutable proofOfHumanity;
+
+    error NotHuman();
+
+    constructor(address crossChainProofOfHumanity) {
+        proofOfHumanity = ICrossChainProofOfHumanity(crossChainProofOfHumanity);
+    }
+
+    modifier onlyHuman() {
+        if (!proofOfHumanity.isHuman(msg.sender)) revert NotHuman();
+        _;
+    }
+
+    function humanOnlyAction() external onlyHuman {
+        // Application logic
+    }
+}
+```
+
+### Direcciones de CrossChainProofOfHumanity
+
+| Red | CrossChainProofOfHumanity |
+| --- | --- |
+| Ethereum Mainnet | `0xa478095886659168E8812154fB0DE39F103E74b2` |
+| Gnosis Chain | `0x16044E1063C08670f8653055A786b7CC2034d2b0` |
+
+- Usa `isHuman(address)` cuando solo necesites verificar que se trata de un humano.
+- Usa `humanityOf(address)` y almacena los datos de la aplicación por ID de humanidad cuando la identidad deba sobrevivir a los cambios de billetera.
+
+<Warning>
+El estado cross-chain se entrega mediante sincronización por puentes, por lo que un registro, revocación o transferencia reciente puede no aparecer de inmediato en otra cadena.
+</Warning>
+
+---
+
+## Consulta de identidad
+
+Una vez que tengas un `humanityId` obtenido con `humanityOf(address)`, estas funciones de solo lectura proporcionan detalles adicionales:
+
+```solidity
+function isClaimed(bytes20 _humanityId) external view returns (bool);
+function boundTo(bytes20 _humanityId) external view returns (address);
+```
+
+| Función | Propósito |
+| --- | --- |
+| `isClaimed(humanityId)` | Devuelve true si el ID de humanidad está reclamado activamente |
+| `boundTo(humanityId)` | Devuelve la dirección de billetera vinculada actualmente a un ID de humanidad |
+
+Para conocer el estado completo de una humanidad (estado de avales, solicitudes pendientes, expiración, propietario) mediante `getHumanityInfo(humanityId)`, y para las funciones de gestión del registro que usan los operadores, consulta la referencia de [Contratos inteligentes](/es/developers/products/poh/smart-contracts).
+
+---
+
+## Diseño de identidad soulbound
+
+PoH V2 sigue el principio: **1 humano → 1 ID de humanidad ↔ 1 dirección de billetera**.
+
+El `humanityId` es un identificador soulbound que persiste a través de los cambios de billetera. Si un usuario pierde el acceso a su billetera, puede volver a registrarse con una nueva dirección conservando el mismo `humanityId`. Las aplicaciones que asocian la reputación, los activos o el historial al `humanityId` en lugar de a la dirección los conservan a través de los cambios de billetera del usuario.
+
+```
+humanity.owner == lostAddress      // Lost access
+humanity.owner == address(0)       // Removal requested
+humanity.owner == newAddress       // Re-registered with new wallet
+```
+
+<Note>
+Los usuarios de V1 tienen un `humanityId` igual a su dirección de registro original (`bytes20(address)`). Los usuarios de V2 reciben un nuevo `humanityId` único al registrarse. La llamada `isHuman()` cubre automáticamente los registros de V1 a través del Fork Module.
+</Note>
+
+---
+
+## Direcciones de los contratos de registro
+
+Los operadores que gestionan el registro interactúan directamente con `ProofOfHumanity` (y, en Ethereum Mainnet, con `ProofOfHumanityExtended`).
+
+<Tabs>
+  <Tab title="Gnosis Chain">
+    | Contrato | Dirección |
+    | --- | --- |
+    | ProofOfHumanity | `0xa4AC94C4fa65Bb352eFa30e3408e64F72aC857bc` |
+    | CrossChainProofOfHumanity | `0x16044E1063C08670f8653055A786b7CC2034d2b0` |
+    | AMB Bridge Gateway | `0x6Ef5073d79c42531352d1bF5F584a7CBd270c6B1` |
+  </Tab>
+  <Tab title="Ethereum Mainnet">
+    | Contrato | Dirección |
+    | --- | --- |
+    | ProofOfHumanityExtended | `0xbE9834097A4E97689d9B667441acafb456D0480A` |
+    | CrossChainProofOfHumanity | `0xa478095886659168E8812154fB0DE39F103E74b2` |
+    | AMB Bridge Gateway | `0xddafACf8B4a5087Fc89950FF7155c76145376c1e` |
+    | Fork Module | `0x068a27Db9c3B8595D03be263d52c813cb2C99cCB` |
+  </Tab>
+</Tabs>
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={2}>
+  <Card title="Descripción general de PoH" icon="fingerprint" href="/es/developers/products/poh/overview">
+    Arquitectura y detalles técnicos
+  </Card>
+  <Card title="Contratos inteligentes" icon="file-contract" href="/es/developers/products/poh/smart-contracts">
+    Interfaces principales y estructuras de datos
+  </Card>
+</CardGroup>

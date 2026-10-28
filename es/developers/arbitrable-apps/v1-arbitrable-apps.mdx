@@ -1,0 +1,159 @@
+---
+title: "Aplicaciones arbitrables V1"
+description: "Construye un contrato arbitrable de Kleros V1 con ERC-792 y ERC-1497: crea disputas en KlerosLiquid, presenta evidencia y haz cumplir los fallos del jurado."
+---
+
+<Note>
+  Esta guía cubre la integración de V1 con KlerosLiquid en Ethereum Mainnet. Para nuevas integraciones, usa [Kleros V2 en Arbitrum](/es/developers/arbitrable-apps/arbitrable-overview).
+</Note>
+
+## Construir un contrato arbitrable de V1
+
+Un contrato arbitrable de V1 debe:
+
+1. Implementar `IArbitrable` para recibir los fallos del árbitro
+2. Implementar `IEvidence` (ERC-1497) para emitir los eventos MetaEvidence, Evidence y Dispute
+3. Llamar a `createDispute()` en KlerosLiquid y pagar la tarifa de arbitraje
+4. Hacer cumplir el fallo en el callback `rule()`
+
+---
+
+## Ejemplo mínimo
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import {IArbitrable, IArbitrator} from "@kleros/erc-792/contracts/IArbitrator.sol";
+import {IEvidence} from "@kleros/erc-792/contracts/erc-1497/IEvidence.sol";
+
+contract SimpleArbitrableV1 is IArbitrable, IEvidence {
+    IArbitrator public immutable arbitrator;
+    uint256 public constant META_EVIDENCE_ID = 0;
+    uint256 public constant CHOICES = 2;
+
+    struct Dispute {
+        address payable partyA;
+        address payable partyB;
+        uint256 amount;
+        bool ruled;
+    }
+
+    mapping(uint256 => Dispute) public disputes;
+
+    constructor(IArbitrator _arbitrator, string memory _metaEvidence) {
+        arbitrator = _arbitrator;
+        emit MetaEvidence(META_EVIDENCE_ID, _metaEvidence);
+    }
+
+    function createDispute(
+        address payable _partyB
+    ) external payable returns (uint256) {
+        // Calculate arbitration cost
+        bytes memory extraData = abi.encodePacked(
+            uint256(0), // General Court (subcourt 0)
+            uint256(3)  // 3 jurors
+        );
+
+        uint256 arbitrationCost = arbitrator.arbitrationCost(extraData);
+        require(msg.value >= arbitrationCost, "Insufficient fee");
+
+        uint256 disputeID = arbitrator.createDispute{value: arbitrationCost}(
+            CHOICES,
+            extraData
+        );
+
+        disputes[disputeID] = Dispute({
+            partyA: payable(msg.sender),
+            partyB: _partyB,
+            amount: msg.value - arbitrationCost,
+            ruled: false
+        });
+
+        // Link dispute to meta-evidence and evidence group
+        emit Dispute(arbitrator, disputeID, META_EVIDENCE_ID, disputeID);
+
+        return disputeID;
+    }
+
+    function submitEvidence(
+        uint256 _disputeID,
+        string calldata _evidenceURI
+    ) external {
+        require(!disputes[_disputeID].ruled, "Already ruled");
+        emit Evidence(arbitrator, _disputeID, msg.sender, _evidenceURI);
+    }
+
+    function rule(uint256 _disputeID, uint256 _ruling) external override {
+        require(msg.sender == address(arbitrator), "Only arbitrator");
+        Dispute storage dispute = disputes[_disputeID];
+        require(!dispute.ruled, "Already ruled");
+
+        dispute.ruled = true;
+
+        if (_ruling == 1) {
+            dispute.partyA.transfer(dispute.amount);
+        } else if (_ruling == 2) {
+            dispute.partyB.transfer(dispute.amount);
+        } else {
+            uint256 half = dispute.amount / 2;
+            dispute.partyA.transfer(half);
+            dispute.partyB.transfer(dispute.amount - half);
+        }
+
+        emit Ruling(arbitrator, _disputeID, _ruling);
+    }
+}
+```
+
+---
+
+## Formato de extraData en V1
+
+En V1, `extraData` se empaqueta con ABI con dos valores `uint256`:
+
+```solidity
+bytes memory extraData = abi.encodePacked(
+    uint256(subcourtID),    // 0 = General Court
+    uint256(numberOfJurors) // Minimum jurors for first round
+);
+```
+
+---
+
+## Proceso de apelación en V1
+
+En V1, las apelaciones forman parte de la interfaz `IArbitrator`. Para admitir apelaciones en tu contrato arbitrable:
+
+```solidity
+function fundAppeal(uint256 _disputeID, uint256 _ruling) external payable {
+    uint256 cost = arbitrator.appealCost(_disputeID, "");
+    // Collect contributions from both sides
+    // Call arbitrator.appeal() when fully funded
+}
+```
+
+El costo de apelación aumenta con cada ronda, lo que incentiva votar correctamente desde el principio. La financiación colectiva de las tarifas de apelación permite que cualquier parte interesada mantenga viva una disputa.
+
+---
+
+## Herramientas de integración
+
+V1 ofrece varias herramientas auxiliares:
+
+| Herramienta | Propósito |
+| --- | --- |
+| [Archon](https://github.com/kleros/archon) | Biblioteca de JavaScript para obtener y validar evidencia y MetaEvidence |
+| [Arbitrable Proxy](https://github.com/kleros/arbitrable-proxy-contracts) | Proxy preconstruido que gestiona la financiación colectiva de apelaciones y la gestión de evidencia |
+| [Centralized Arbitrator](https://github.com/kleros/centralized-arbitrator-dashboard) | Árbitro de prueba para desarrollo local |
+
+---
+
+## Uso del Arbitrable Proxy
+
+Para una integración más sencilla, usa el contrato Arbitrable Proxy. Gestiona las apelaciones y la presentación de evidencia, lo que permite que tu contrato se centre en la lógica de negocio:
+
+1. Tu contrato crea una disputa a través del proxy
+2. El proxy gestiona la financiación colectiva de apelaciones y los eventos de evidencia
+3. Tu contrato consulta al proxy para obtener el fallo final
+

@@ -1,0 +1,72 @@
+---
+title: "Token PNK"
+description: "PNK impulsa el staking de jurados, la votación de gobernanza y la resistencia a ataques del 51 % en Kleros, con la escasez de mercado, el impacto en el precio y el fork como defensas principales."
+---
+
+# Token PNK
+
+**PNK** es el token nativo del protocolo Kleros. Cumple dos funciones principales: **staking para ser elegible como jurado** y **derechos de voto en la gobernanza**. Los poseedores de tokens hacen stake de PNK para participar en la resolución de disputas, de modo que un stake mayor aumenta la probabilidad de ser seleccionado, y lo usan para votar propuestas de gobernanza, parámetros de las cortes y cambios en la plataforma.
+
+El nombre hace referencia a los **pinakia**, las placas de bronce que se usaban en la antigua Atenas para la selección aleatoria de jurados.
+
+---
+
+## Suministro del token
+
+El suministro máximo del token PNK es de **915,528,222.07931277**. Los cambios en el suministro se controlan exclusivamente mediante votaciones de gobernanza de la Kleros DAO.
+
+- Contrato en mainnet: [`0x93ED3FBe21207Ec2E8f2d3c3de6e058Cb73Bc04d`](https://etherscan.io/token/0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d)
+
+---
+
+## Para qué se usa PNK
+
+| Función | Cómo funciona |
+| --- | --- |
+| **Staking de jurados** | Haz stake de PNK en una corte para ser elegible en la selección de jurados. La probabilidad de selección es proporcional al stake. |
+| **Alineación de incentivos** | Los jurados coherentes ganan tarifas de arbitraje y PNK redistribuido de los jurados incoherentes; los jurados incoherentes pierden parte de su stake. |
+| **Gobernanza** | Los poseedores de PNK votan las Kleros Improvement Proposals (KIP), los parámetros de las cortes y las actualizaciones del protocolo. |
+
+<Frame >
+  <img src="/images/PNK_hero.png"  />
+</Frame>
+
+---
+
+## [Por qué Kleros necesita un token nativo](https://medium.com/kleros/why-kleros-needs-a-native-token-5c6c6e39cdfe)
+
+El diseño de PNK proporciona tres capas de protección frente a un [ataque (Sybil)](https://en.wikipedia.org/wiki/Sybil_attack) del 51 %:
+
+1. **Defensa por escasez de mercado.** Adquirir el 51 % de PNK resulta económicamente prohibitivo: las compras grandes agotan la liquidez disponible y hacen subir el precio, a diferencia de un ataque denominado en ETH u otro activo con mercados mucho más profundos.
+2. **Riesgo de impacto en el precio.** Un ataque exitoso devaluaría considerablemente el propio PNK, lo que impondría un costo enorme al atacante, algo que no ocurre al atacar con un activo externo.
+3. **Capacidad de fork.** Como último recurso, la comunidad puede realizar un fork de emergencia que elimine las tenencias del atacante, una vía de recuperación que no está disponible con tokens externos.
+
+
+---
+
+## Cómo obtener PNK
+
+La forma más rápida es la [página Buy PNK de Court](https://court.kleros.io/tokens), que redirige a los exchanges que allí se indican.
+
+| Tipo de plataforma | Opciones |
+| --- | --- |
+| **Agregadores de DEX** (operaciones grandes) | Paraswap, 1inch |
+| **DEX** (operaciones medianas) | Uniswap, Sushiswap, Balancer |
+| **Exchanges centralizados** | Bitfinex, Gate.io, OKX |
+| **Rampa de entrada fiat** | Guardarian |
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={3}>
+  <Card title="Tokenomía" icon="chart-pie" href="/es/concepts/tokenomics">
+    El modelo económico completo detrás de Kleros
+  </Card>
+  <Card title="Conviértete en jurado" icon="user-plus" href="/es/tutorials/juror-tutorial-v1">
+    Haz stake de PNK y empieza a juzgar casos
+  </Card>
+  <Card title="Gobernanza" icon="landmark" href="/es/governance/overview">
+    Vota con PNK en las decisiones del protocolo
+  </Card>
+</CardGroup>

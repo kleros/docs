@@ -1,0 +1,46 @@
+---
+title: "Descripción general del protocolo V1"
+description: "Índice de la documentación de Kleros V1: Court, Curate, Escrow, Governor y Dispute Resolver en Ethereum L1, además de aplicaciones retiradas como Linguo, Moderate y Tokens."
+---
+
+# Documentación del protocolo V1
+
+Esta sección documenta el protocolo Kleros V1 y sus productos, junto con las aplicaciones retiradas. V1 es el protocolo probado en producción en Ethereum L1 y sigue activo para integraciones web3.
+
+<Note>
+Cada uno de los productos V1 que se indican a continuación tiene una versión V2 disponible en Arbitrum.
+</Note>
+
+---
+
+## Productos V1
+
+| Producto | Estado | Versión V2 |
+|---------|--------|------------|
+| [Court V1](/es/legacy/court-v1) | Producción | [Court V2](/es/court/overview) en Arbitrum |
+| [Curate V1](/es/legacy/curate-v1) | Producción | [Curate V2](/es/products/curate) en Arbitrum |
+| [Escrow V1](/es/legacy/escrow-v1) | Producción | [Escrow V2](/es/products/escrow) en Arbitrum |
+| [Governor V1](/es/legacy/governor-v1) | Producción | [Governor V2](/es/products/governor) en Arbitrum |
+| [Resolver V1](/es/legacy/resolver-v1) | Integrado en Court V2 | Integrado en la interfaz de Court V2 |
+
+---
+
+## Productos retirados
+
+Estos productos ya no reciben mantenimiento activo:
+
+| Producto | Descripción | Estado |
+|---------|-------------|--------|
+| [Moderate](/es/legacy/retired/moderate) | Bot de moderación de Telegram que usa Kleros Court | Retirado |
+| [Linguo](/es/legacy/retired/linguo) | Mercado descentralizado de traducciones | Retirado |
+| [Tokens](/es/legacy/retired/tokens) | Interfaz de envío y listado de tokens | Reemplazado por el registro de tokens de Curate |
+
+---
+
+## Qué cambia en V2
+
+- Desplegado en Arbitrum en lugar de Ethereum L1
+- Arquitectura modular de dispute kits
+- Soporte cross-chain mediante el puente VEA
+- Evidencias y apelaciones gestionadas por la Corte en lugar del contrato arbitrable
+- Privacidad del voto mediante la integración con Shutter (en desarrollo)

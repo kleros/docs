@@ -1,0 +1,94 @@
+---
+title: "Integración de Curate Classic"
+description: "Guía para desarrolladores sobre la integración de Kleros Curate Classic (V1) con almacenamiento on-chain, que cubre contratos, ciclo de vida de los ítems y gestión de disputas."
+---
+
+# Curate Classic: integración para desarrolladores
+
+<Note>
+Esto cubre Curate Classic (V1) con almacenamiento on-chain. Para el más reciente Light Curate con almacenamiento basado en subgraph, consulta [Integración de Light Curate](/es/developers/products/curate/light-curate). Para Curate V2, consulta la [sección de Curate para desarrolladores](/es/developers/products/curate/overview).
+</Note>
+
+<Warning>
+**Classic Curate está en proceso de descontinuación.** Los contratos de Classic Curate siguen desplegados y sin cambios, por lo que las listas Classic existentes siguen funcionando: todavía se pueden enviar, impugnar y consultar ítems. Kleros no lanzará nuevos registros en Classic Curate, y se está deshabilitando la creación de listas Classic desde los frontends de Kleros. **Light Curate y Stake Curate no se ven afectados** y siguen teniendo soporte completo; las nuevas listas, incluidos los registros Kleros Verified que se muestran en la página de inicio de la [aplicación Curate](https://curate.kleros.io), se crean en Light Curate.
+</Warning>
+
+---
+
+## Descripción general
+
+Curate Classic es la versión original de Kleros Curate. Todos los datos de los ítems (excepto archivos/imágenes) se almacenan on-chain en el almacenamiento del contrato. Esto significa que otros contratos pueden consultar directamente al TCR los valores de los campos, pero los costos de despliegue y operación son más altos.
+
+Características clave:
+- Datos de los ítems almacenados on-chain como bytes codificados
+- Requiere `@kleros/gtcr-encoder` para codificar/decodificar los ítems
+- El cliente debe sincronizarse descargando cada ítem y decodificándolo
+- Costos de gas más altos (almacenamiento O(n))
+- Otros contratos pueden leer directamente los campos de los ítems
+
+---
+
+## Lectura de datos
+
+### Uso del subgraph
+
+Usa la entidad `items` (no `litems`, que es para Light Curate):
+
+```graphql
+{
+  items(
+    first: 10
+    where: {
+      status: Registered
+      registryAddress: "0xYOUR_REGISTRY_LOWERCASE"
+    }
+  ) {
+    itemID
+    data
+    status
+  }
+}
+```
+
+El campo `data` contiene bytes codificados. Decodifícalos usando `@kleros/gtcr-encoder`.
+
+### Uso del codificador
+
+```bash
+npm install @kleros/gtcr-encoder
+```
+
+```javascript
+const { gtcrDecode } = require("@kleros/gtcr-encoder");
+const columns = [/* column definitions from the TCR meta evidence */];
+const decodedItem = gtcrDecode({ columns, values: item.data });
+```
+
+---
+
+## Escritura de datos
+
+### Envío de un ítem
+
+Codifica los campos del ítem y llama a `addItem()` en el contrato GeneralizedTCR con el depósito requerido.
+
+### Impugnación de un ítem
+
+Llama a `challengeRequest()` en el contrato con un depósito. La impugnación crea una disputa en Kleros Court.
+
+### Ejecución de solicitudes
+
+Llama a `executeRequest()` una vez que haya transcurrido el periodo de impugnación sin ninguna impugnación.
+
+---
+
+## Recursos
+
+<CardGroup cols={2}>
+  <Card title="Contratos de Curate Classic" icon="github" href="https://github.com/kleros/tcr">
+    Código fuente
+  </Card>
+  <Card title="Subgraph" icon="database" href="https://thegraph.com/explorer/subgraphs/A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ">
+    Subgraph legacy-curate-mainnet en Graph Explorer
+  </Card>
+</CardGroup>

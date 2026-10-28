@@ -1,0 +1,155 @@
+---
+title: "Vea Bridge"
+description: "Especificación de la arquitectura de Vea Bridge: protocolo optimista de mensajería entre cadenas, objetivos de diseño, recurso a los puentes nativos e integración con Kleros V2."
+---
+
+# Especificación de Vea Bridge
+
+Vea es un puente optimista entre cadenas que transmite mensajes rápidamente en el caso normal y recurre a puentes nativos seguros y lentos cuando surgen disputas. Esta página cubre la arquitectura y el diseño del protocolo.
+
+Para guías de integración, consulta la [página de Vea Bridge para desarrolladores](/es/developers/crosschain/vea-bridge). Para la especificación completa del protocolo, consulta [docs.vea.ninja](https://docs.vea.ninja/).
+
+---
+
+## Objetivos de diseño
+
+| Requisito | Descripción |
+| --- | --- |
+| **Sin puentes nativos en el funcionamiento normal** | Recurrir a los puentes nativos solo cuando se sospeche de un comportamiento malicioso. |
+| **Corrección** | Se incentiva a los actores a transmitir mensajes correctos y se les penaliza por interferir. |
+| **Modularidad** | Una interfaz clara abstrae el mecanismo de puente de la aplicación. Ciclo de vida independiente de la aplicación que lo integra. |
+| **De propósito general** | Transmite mensajes arbitrarios, no específicos de Kleros. |
+| **Multicadena** | Puede conectar cualquier L1, L2 o L3 que se liquide en Ethereum, incluidos los ZK rollups. |
+| **Sin necesidad de confianza** | Modelo de 1 participante honesto entre N. Participación sin permisos. |
+
+Fuente: [Especificación general del Fast Bridge](/es/reference/architecture/v2-architecture)
+
+---
+
+## Arquitectura de contratos
+
+Para cada par de cadenas emisora y receptora, Vea despliega exactamente un contrato por cadena:
+
+| Contrato | Cadena | Función |
+| --- | --- | --- |
+| **VeaInbox** | Cadena emisora (p. ej., Arbitrum) | Gestiona el estado de todos los mensajes enviados a través de Vea. Los mensajes se insertan en un merkle mountain range (MMR) de solo anexado. |
+| **Router** | Cadena(s) intermedia(s) | Enruta los mensajes de los puentes nativos. Solo está presente cuando las cadenas no comparten un puente nativo directo. |
+| **VeaOutbox** | Cadena receptora (p. ej., Ethereum) | Gestiona el juego optimista sobre el estado del inbox. Recibe reclamaciones, gestiona impugnaciones y retransmite los mensajes verificados. |
+
+---
+
+## Merkle Mountain Range
+
+Todos los mensajes enviados a través de Vea se insertan en un árbol de Merkle de solo anexado mantenido en VeaInbox. A diferencia de los árboles binarios equilibrados estándar de altura fija, el inbox de Vea utiliza un merkle mountain range (MMR) que crece en altura a medida que se insertan hojas. El MMR se representa mediante un conjunto de subárboles de Merkle.
+
+Los mensajes se retransmiten en la cadena receptora demostrando su inclusión en el árbol de Merkle representado por la raíz de la instantánea (pruebas de Merkle). El tamaño de la prueba es logarítmico respecto al número de mensajes.
+
+Para detalles de implementación sobre el hash de las hojas, la estructura de datos del inbox y el cálculo de la raíz, consulta [docs.vea.ninja/introduction/technical-deep-dive/implementation-details](https://docs.vea.ninja/introduction/technical-deep-dive/implementation-details).
+
+---
+
+## Mecánica de épocas e instantáneas
+
+- El tiempo se divide en épocas definidas por `epochPeriod`.
+- Las épocas marcan el período entre posibles eventos de puente (la máxima frecuencia de operación del puente).
+- Las instantáneas pueden tomarse al principio o al final de una época.
+- Se introduce un retraso de reclamación de aproximadamente un `epochPeriod` para que los impugnadores conozcan el estado de L2 antes de que se puedan hacer reclamaciones sobre una época pasada.
+
+---
+
+## Protocolo de reclamación e impugnación
+
+### Reclamación
+
+En la cadena receptora, se pueden hacer reclamaciones sobre la instantánea de la raíz de Merkle tomada en VeaInbox. Las reclamaciones requieren un depósito en ETH.
+
+- Solo se acepta una reclamación por hash de mensaje. Las reclamaciones posteriores se rechazan.
+- Si la reclamación es honesta, el reclamante recupera su depósito.
+- Si se impugna con éxito, la mitad del depósito se quema y la otra mitad recompensa al impugnador.
+
+La quema obligatoria evita un ataque Sybil de retraso malicioso a costo cero en el que el reclamante y el impugnador son la misma entidad.
+
+### Impugnación
+
+Durante el período de impugnación, cualquiera puede impugnar una reclamación dejando un depósito. A continuación, se utiliza el puente nativo para resolver la reclamación disputada, y la parte honesta recibe la mitad del depósito de la parte deshonesta.
+
+---
+
+## Resistencia a la censura
+
+El modo de fallo de Vea implica la censura de los impugnadores honestos. El período de impugnación se calibra a partir de un análisis estadístico del comportamiento de los productores de bloques en la cadena de destino. Se consideran dos tipos de censura:
+
+- **Censura débil**: Los productores de bloques se niegan a incluir transacciones. Si el X % de los productores censura, las transacciones tardan aproximadamente 1/(1-X) veces más. Con el tiempo se selecciona a un productor que no censura.
+- **Censura fuerte**: Los propios productores de bloques son censurados y eliminados mediante reorganizaciones.
+
+Las cadenas con consenso de prueba de participación de ETH (Ethereum mainnet, Gnosis Chain) contienen información en los encabezados de bloque que permite sacar conclusiones estadísticas sobre los niveles de censura, lo que sirve para fijar parámetros seguros del período de impugnación.
+
+---
+
+## Tipos de puentes
+
+| Tipo | Caso de uso | Mecanismo |
+| --- | --- | --- |
+| **Native Bridge** | Puente canónico del rollup | Propiedad y operación del proveedor del rollup o de la cadena lateral. Ejemplos: Ethereum/Arbitrum, Ethereum/GnosisChain. |
+| **Safe Bridge** | Capa de respaldo | Envoltorio ligero sobre el puente nativo. Requiere un relayer. |
+| **Fast Bridge** | Retransmisión de fallos (de Home a Foreign) | Confianza minimizada con un juego de pruebas de fraude. El camino feliz evita el puente nativo. El camino infeliz usa Safe Bridge(s). Puede implementarse como una extensión de SafeBridge. |
+| **Simple Bridge** | Creación de disputas (de Foreign a Home) | Fast Bridge sin juego de pruebas de fraude. Se usa para la creación de disputas porque un atacante que retransmita disputas arbitrarias solo se perjudica a sí mismo. Implementado directamente mediante Gateway a Relayer a Gateway. |
+
+### Multisalto (de Arbitrum a Gnosis Chain)
+
+No existe un puente nativo directo entre Arbitrum y Gnosis Chain. En el camino infeliz, las impugnaciones se resuelven usando dos Safe Bridges: de Arbitrum a Ethereum Mainnet y luego de Ethereum Mainnet a Gnosis Chain.
+
+---
+
+## Consideraciones sobre ataques de griefing
+
+Vea es un sistema inclusivo y sin permisos. Esto lo expone a ataques de griefing que introducen retrasos. Mitigaciones:
+
+- Solo se permite un intento de reclamación por hash de mensaje. Esto impide que un atacante haga muchas reclamaciones simultáneas para agotar el ETH disponible de los impugnadores ("ataque a la liquidez de los impugnadores").
+- El mecanismo de depósito y quema hace que el griefing sea costoso.
+
+---
+
+## Interfaces clave
+
+### IFastBridge
+
+```solidity
+// Called by HomeGateway.rule() to initiate bridging
+function sendFast(bytes calldata _calldata) external;
+
+// Bridger makes a deposit-backed claim
+function claim(bytes32 messageHash) external payable;
+
+// View the challenge period for a message
+function challengePeriod(bytes32 messageHash) external view returns (uint start, uint end);
+
+// View the required claim deposit
+function claimDeposit() external view returns (uint depositInWei);
+
+// Withdraw claim deposit after challenge period passes
+function withdrawClaimDeposit(bytes32 _messageHash) external;
+```
+
+<Warning>
+`messageHash` no es lo mismo que `disputeHash`. El hash del mensaje es independiente de la aplicación y lo gestiona el Fast Bridge. El hash de la disputa es específico de Kleros y lo gestiona el Gateway.
+</Warning>
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Documentación completa de Vea" icon="book" href="https://docs.vea.ninja">
+    Especificación completa del protocolo, análisis técnico en profundidad y guías de integración
+  </Card>
+  <Card title="Preguntas frecuentes de Vea" icon="circle-question" href="https://docs.vea.ninja/introduction/faq">
+    Preguntas comunes sobre la seguridad y el diseño de Vea, y su comparación con otros puentes
+  </Card>
+  <Card title="Desarrolladores: Vea Bridge" icon="code" href="/es/developers/crosschain/vea-bridge">
+    Guía práctica de integración para desarrolladores
+  </Card>
+  <Card title="GitHub de Vea" icon="github" href="https://github.com/kleros/vea">
+    Código fuente
+  </Card>
+</CardGroup>

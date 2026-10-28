@@ -1,0 +1,95 @@
+---
+title: "14 de abril de 2026"
+description: "Exportación de recompensas de staking de PNK, créditos e incorporación en Foresight, verificación de propuestas de Zodiac, rediseño de Scout y correcciones de errores en Court, Curate y Escrow."
+---
+
+## Nuevas funciones
+
+### Exportar recompensas de staking de PNK
+
+Ahora puedes exportar tus recompensas mensuales de staking de PNK desde [Kleros Court](/es/court/overview) como un archivo descargable. Un nuevo botón en la página de inicio te da acceso rápido a tu historial de recompensas con soporte de paginación, lo que facilita el seguimiento de tus ganancias a lo largo del tiempo.
+
+### Créditos en Foresight
+
+[Foresight](/es/products/foresight) ahora admite los créditos de Seer como método de pago, incluso a través de billeteras de trading. Puedes usar tus créditos mensuales de Seer para participar en sesiones de predicción sin necesidad de depositar colateral adicional. También hay un nuevo enlace para adquirir xDAI directamente en la interfaz.
+
+### Exportar predicciones a CSV
+
+Ahora puedes exportar tu historial de predicciones de Foresight como un archivo CSV con marcas de tiempo en UTC, lo que facilita el seguimiento y el análisis de tu participación en las distintas sesiones.
+
+### Guías de incorporación de Foresight
+
+Nuevas guías paso a paso acompañan a los usuarios primerizos por la interfaz de [Foresight](/es/products/foresight): explican cómo funcionan las predicciones, la mecánica de ganancias y pérdidas y la cronología de las sesiones. En cada predicción también se muestra una guía avanzada con contenido estratégico más profundo para ayudarte a mejorar.
+
+### Verificación automática de propuestas de Zodiac
+
+Los bots del [Zodiac Reality Module](/es/products/reality) ahora verifican automáticamente que las nuevas propuestas de gobernanza tengan preguntas válidas de Reality.eth. Si la pregunta on-chain de una propuesta no coincide con lo esperado, recibirás una notificación con detalles sobre el problema, de modo que los errores se detecten antes de que termine el período de impugnación.
+
+### Identidad de Ethereum en los perfiles de jurados
+
+Las páginas de perfil de jurado en [Kleros Court](/es/court/overview) ahora muestran las identidades de Ethereum vinculadas en varias cadenas, incluidas Arbitrum, Base y Optimism. Puedes ver la presencia multicadena de un jurado y seguirlo mediante el Ethereum Follow Protocol (EFP) directamente desde su perfil.
+
+### Soporte para el dispute kit University
+
+Court ahora admite el dispute kit Classic University, lo que amplía la gama de mecanismos especializados de resolución de disputas disponibles. Los administradores de las cortes pueden seleccionar este kit al configurar los parámetros de la corte, y los jurados pueden hacer commit, votar, revelar y apelar con el flujo del kit University.
+
+### Dispute kit de Protección al Consumidor de Argentina
+
+Ya está disponible un nuevo dispute kit con acceso restringido para casos de Protección al Consumidor de Argentina. Permite una resolución de disputas adaptada a la ley de consumo argentina, con controles de acceso basados en roles para participantes calificados.
+
+## Actualizaciones
+
+### Cálculo de APY corregido en Court
+
+El APY de staking que se muestra en [Kleros Court](/es/court/overview) ahora utiliza el suministro ajustado de PNK para un cálculo más preciso, de modo que las tasas que ves reflejan mejor los rendimientos reales del staking.
+
+### Mejoras en las predicciones por lotes en Foresight
+
+Las sesiones de predicción grandes en [Foresight](/es/products/foresight) ahora procesan las transacciones en bloques configurables, por lo que es menos probable que alcances los límites de gas al predecir sobre muchos elementos a la vez. Los mercados que no devuelven una cotización se omiten sin problemas en lugar de bloquear todo el lote.
+
+### Pulido de gráficos e interfaz de Foresight
+
+Los gráficos de predicción ahora incluyen puntos de datos resaltados para facilitar la lectura, un mejor espaciado en el margen derecho y una escala de tiempo corregida. Tus predicciones también se conservan si recargas la página a mitad de la sesión.
+
+### Soporte para subdominios ENS y plugins en Zodiac
+
+Los bots de Zodiac ahora admiten subdominios ENS y varios esquemas JSON de plugins de SafeSnap, lo que amplía la compatibilidad con distintas configuraciones de DAO.
+
+### Rediseño de la página de inicio de Scout
+
+La página de inicio de [Scout](/es/products/scout) se ha renovado con una sección principal rediseñada, una tipografía mejorada y logotipos de socios actualizados, incluidos Openscan y Routescan. La disposición entre las secciones de casos más recientes y actividad reciente ahora está más equilibrada, y un nuevo botón "mostrar más" facilita la navegación por los casos.
+
+### Mejor manejo de datos de IPFS en Scout
+
+Cuando los datos de un registro almacenados en IPFS no están disponibles temporalmente, [Scout](/es/products/scout) ahora muestra un mensaje claro de "Datos de IPFS no disponibles" en lugar de fallar en silencio.
+
+### Enlaces a exploradores de bloques en la cronología de Escrow
+
+La cronología de transacciones de [Escrow](/es/products/escrow) ahora incluye enlaces directos al explorador de bloques correspondiente para cada evento. Puedes hacer clic para verificar la actividad on-chain de pagos, disputas y liquidaciones sin salir de la interfaz.
+
+### Visor de políticas de Escrow
+
+Escrow ahora incluye un menú desplegable de políticas que te permite explorar y ver las políticas de resolución de disputas directamente en la app. El visor de archivos también se ha mejorado para una mejor legibilidad.
+
+### Scout siempre visible en la navegación
+
+[Scout](/es/products/scout) ahora se muestra siempre en la barra de navegación de Court, lo que facilita el acceso a información de seguridad curada por la comunidad mientras navegas por los casos.
+
+### Redespliegue del token SBT en Arbitrum
+
+Los contratos SBT (Soulbound Token) para la experiencia de Protección al Consumidor de Argentina y las credenciales de abogados se han redesplegado en Arbitrum con mejoras.
+
+## Corrección de errores
+
+- **Modal de cambio de red en Court**: el modal que te pide cambiar a la red correcta ahora funciona correctamente incluso sin una billetera conectada y se puede cerrar como se espera.
+- **Ventanas emergentes de conexión de billetera en Court**: ya no aparecen ventanas emergentes innecesarias de conexión de billetera al navegar por los casos.
+- **Redirecciones de Dispute Resolver a Court**: los enlaces desde [Dispute Resolver](/es/legacy/resolver-v1) a Court ahora especifican correctamente la cadena, lo que evita que llegues a la red equivocada.
+- **Reinicio de predicciones en Foresight**: las predicciones ya no se reinician inesperadamente después de un envío exitoso.
+- **Legibilidad del modo oscuro en Foresight**: la guía avanzada ahora tiene el estilo adecuado en modo oscuro.
+- **Estimación de gas en Foresight**: los márgenes de gas ahora tienen un límite para evitar comisiones de transacción inesperadamente altas.
+- **Fiabilidad de la visualización de registros en Curate**: en [Curate](/es/products/curate), un único elemento de registro mal formado ya no impide que se carguen los demás elementos válidos. La lista de elementos ahora gestiona los errores sin problemas para que siempre veas los elementos disponibles.
+- **Precisión de las fechas de impugnación en Scout**: las fechas de impugnación en las cronologías de los elementos de [Scout](/es/products/scout) ahora se muestran correctamente.
+- **Formato de valores en Escrow**: las cantidades pequeñas de tokens ahora se muestran correctamente en lugar de redondearse a cero.
+- **Comprobaciones del rol de vendedor en Escrow**: la interfaz ahora refleja correctamente las acciones y condiciones específicas del vendedor.
+- **Correcciones de auditoría de los contratos inteligentes de Court**: se han aplicado varias mejoras derivadas de una auditoría de seguridad a los contratos principales de resolución de disputas, incluida una lógica simplificada de distribución de recompensas y un manejo de eventos más eficiente.
+- **Mejoras de seguridad de tipos en Court**: se resolvieron casos límite en los que valores opcionales en las cronologías de disputas, las tarjetas de evidencia y los detalles de votación podían causar errores.

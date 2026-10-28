@@ -1,0 +1,108 @@
+---
+title: "Teoría de juegos"
+description: "Cómo la coordinación mediante puntos de Schelling, la redistribución del stake de PNK y la escalada de apelaciones hacen de la votación honesta la estrategia dominante para los jurados de Kleros Court."
+---
+
+# Teoría de juegos e incentivos
+
+Kleros está diseñado para que votar con honestidad sea la **estrategia dominante** de los jurados. Esta página explica los fundamentos de teoría de juegos que hacen funcionar la resolución descentralizada de disputas.
+
+---
+
+## El mecanismo del punto de Schelling
+
+Kleros se basa en la idea de Thomas Schelling de que las personas que no pueden comunicarse tienden a coordinarse en "puntos focales", la respuesta más obvia o natural a una pregunta.
+
+En Kleros, los jurados se seleccionan aleatoriamente, no pueden comunicarse y deben votar de forma independiente. Saben que:
+- Los demás jurados también intentan responder con honestidad
+- Votar con la mayoría otorga recompensas
+- Votar en contra de la mayoría hace perder PNK
+
+Dadas estas condiciones, la estrategia racional de cada jurado es votar por lo que considera la **respuesta objetivamente correcta**, porque esa es la respuesta que espera que elijan también los demás jurados honestos. La respuesta honesta se convierte en el punto de Schelling.
+
+---
+
+## La estructura de incentivos
+
+Kleros usa dos tipos de incentivos económicos:
+
+### Tarifas de arbitraje (ETH)
+
+Los creadores de disputas pagan tarifas que se distribuyen entre los jurados coherentes. Si votas con la respuesta ganadora final, obtienes una parte del total de tarifas de esa ronda:
+
+```
+jurorFeeReward = totalFees / numberOfCoherentVotes
+```
+
+### Redistribución de PNK
+
+Los jurados incoherentes pierden una parte de su PNK en stake (determinada por el parámetro `alpha`). Este PNK se redistribuye entre los jurados coherentes:
+
+```
+jurorPNKReward = totalPenalties / numberOfCoherentVotes
+```
+
+La combinación crea un sistema en el que la votación honesta se recompensa desde **dos fuentes independientes**, mientras que la votación deshonesta se penaliza.
+
+---
+
+## Resistencia a ataques
+
+### El problema del ataque del 51 %
+
+Para que un atacante controle el resultado de una disputa, necesitaría controlar la mayoría de los jurados sorteados. Como los jurados se sortean en proporción al PNK en stake, esto requiere controlar la mayoría del PNK en stake en la corte correspondiente.
+
+Esto resulta costoso por tres razones:
+
+**Defensa por liquidez de mercado** PNK es un token creado con un propósito específico. A medida que un atacante compra PNK, la oferta escasea y el precio sube bruscamente. A diferencia de un ataque con ETH (que tiene una profunda liquidez global), comprar suficiente PNK para dominar una corte se vuelve cada vez más caro.
+
+**Escalada de apelaciones** Incluso si un atacante gana una ronda, la parte honesta puede apelar. Cada apelación duplica aproximadamente el jurado, lo que obliga al atacante a controlar una mayoría cada vez más grande. El costo de sostener un ataque crece exponencialmente con cada ronda.
+
+**El efecto de la "voz solitaria de la razón"** Si todos los demás jurados de una ronda votaran de forma deshonesta, un único jurado honesto que votara correctamente recibiría *todas* las penalizaciones y tarifas de esa ronda. Esto crea un fuerte incentivo para que al menos algunos participantes voten con honestidad incluso en condiciones de ataque.
+
+### Compra de votos y colusión
+
+Kleros V2 aborda la manipulación de votos mediante varios mecanismos:
+
+**Votos ocultos** La votación commit-reveal impide que los jurados demuestren cómo votaron, lo que hace inejecutable la compra de votos (el jurado sobornado puede simplemente mentir sobre su voto comprometido).
+
+**Protección contra el fraude de jurados** Cualquiera que detecte que un jurado reveló su voto antes de la fase de revelación puede impugnarlo y reclamar una parte de su stake.
+
+**Selección aleatoria** Como los jurados se sortean aleatoriamente, un atacante no puede predecir ni controlar qué jurados son seleccionados, lo que dificulta el soborno dirigido.
+
+---
+
+## Por qué los jurados honestos ganan a largo plazo
+
+Un jurado honesto que vota sistemáticamente por la respuesta veraz ganará, a lo largo de muchas disputas, más de lo que pierde. El sistema está diseñado para que:
+
+- En promedio, los jurados honestos sean coherentes (coincidan con la mayoría)
+- Las tarifas y el PNK redistribuidos de los jurados incoherentes fluyan hacia los coherentes
+- El rendimiento esperado de la votación honesta supere al de la votación aleatoria o estratégica
+
+Esto no significa que los jurados honestos nunca pierdan: pueden quedar en minoría en una ronda concreta. Pero el sistema de apelaciones garantiza que las minorías persistentes puedan escalar hasta que prevalezca la respuesta veraz.
+
+---
+
+## Limitaciones y reconocimientos honestos
+
+**Kleros no garantiza resultados perfectos.** Garantiza que la votación honesta sea económicamente óptima bajo los supuestos de teoría de juegos del protocolo. En la práctica:
+
+- Las disputas pequeñas con pocos jurados tienen mayor varianza
+- Los jurados pueden carecer de experiencia en disputas muy técnicas (por eso existen cortes especializadas)
+- Las disputas con evidencias genuinamente ambiguas pueden no tener un punto de Schelling claro
+
+El sistema mitiga estos aspectos mediante la especialización de las cortes, las apelaciones y el tamaño del jurado, que crece exponencialmente a lo largo de las rondas.
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Yellow Paper de Kleros" icon="file" href="https://kleros.io/yellowpaper.pdf">
+    Análisis formal de los mecanismos de incentivos, los sistemas de votación y la resistencia a ataques (secciones 4.7-4.11)
+  </Card>
+  <Card title="Resolución de disputas" icon="scale-balanced" href="/es/concepts/dispute-resolution">
+    El proceso general de resolución de disputas
+  </Card>
+</CardGroup>

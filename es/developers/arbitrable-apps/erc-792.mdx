@@ -1,0 +1,155 @@
+---
+title: "ERC-792: estándar de arbitraje"
+description: "El estándar de arbitraje de V1 que define las interfaces IArbitrable e IArbitrator para crear disputas, recibir fallos y hacer cumplir los resultados."
+---
+
+<Note>
+  ERC-792 es el estándar de arbitraje de V1. Kleros V2 utiliza `IArbitratorV2` e `IArbitrableV2`, que eliminan las apelaciones de la interfaz para simplificar la integración. Consulta la [guía de arquitectura](/es/developers/architecture) para conocer los detalles de V2.
+</Note>
+
+## Descripción general
+
+ERC-792 define una interfaz estándar para los contratos Arbitrable y Arbitrator. Cualquier contrato Arbitrable puede ser juzgado por cualquier contrato Arbitrator. Los contratos Arbitrator emiten fallos; los contratos Arbitrable los hacen cumplir.
+
+Esta separación permite:
+- Que los desarrolladores de Arbitrable no necesiten conocer el proceso interno del Arbitrator
+- Que los desarrolladores de Arbitrator no necesiten conocer la lógica de ejecución del Arbitrable
+- Que las DApps cambien de proveedor de arbitraje o permitan a los usuarios elegir el suyo
+
+---
+
+## IArbitrable
+
+El contrato Arbitrable hace cumplir las decisiones del Arbitrator. Debe llamar a `createDispute` y pagar la tarifa requerida, y debe implementar `rule` para hacer cumplir los fallos.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "./IArbitrator.sol";
+
+interface IArbitrable {
+    /// @dev To be raised when a ruling is made.
+    /// @param _arbitrator The arbitrator giving the ruling.
+    /// @param _disputeID ID of the dispute in the Arbitrator contract.
+    /// @param _ruling The ruling which was given.
+    event Ruling(
+        IArbitrator indexed _arbitrator,
+        uint256 indexed _disputeID,
+        uint256 _ruling
+    );
+
+    /// @dev Give a ruling for a dispute.
+    ///      Must be called by the arbitrator.
+    ///      The purpose of this function is to ensure that the address
+    ///      calling it has the right to rule on the contract.
+    /// @param _disputeID ID of the dispute in the Arbitrator contract.
+    /// @param _ruling Ruling given by the arbitrator.
+    ///        Note that 0 is reserved for "refuse to arbitrate".
+    function rule(uint256 _disputeID, uint256 _ruling) external;
+}
+```
+
+---
+
+## IArbitrator
+
+El Arbitrator crea disputas, gestiona las apelaciones y emite los fallos.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "./IArbitrable.sol";
+
+interface IArbitrator {
+    enum DisputeStatus { Waiting, Appealable, Solved }
+
+    /// @dev Emitted when a dispute is created.
+    event DisputeCreation(
+        uint256 indexed _disputeID,
+        IArbitrable indexed _arbitrable
+    );
+
+    /// @dev Emitted when a dispute can be appealed.
+    event AppealPossible(
+        uint256 indexed _disputeID,
+        IArbitrable indexed _arbitrable
+    );
+
+    /// @dev Emitted when the current ruling is appealed.
+    event AppealDecision(
+        uint256 indexed _disputeID,
+        IArbitrable indexed _arbitrable
+    );
+
+    /// @dev Create a dispute. Must be called by the arbitrable contract.
+    /// @param _choices Amount of choices the arbitrator can make (ruling options).
+    /// @param _extraData Can be used to define the number of jurors, court, etc.
+    /// @return disputeID ID of the created dispute.
+    function createDispute(
+        uint256 _choices,
+        bytes calldata _extraData
+    ) external payable returns (uint256 disputeID);
+
+    /// @dev Compute the cost of arbitration.
+    /// @param _extraData Can be used to define the number of jurors, court, etc.
+    /// @return cost Required ETH to create a dispute.
+    function arbitrationCost(
+        bytes calldata _extraData
+    ) external view returns (uint256 cost);
+
+    /// @dev Appeal a ruling.
+    /// @param _disputeID ID of the dispute to appeal.
+    /// @param _extraData Can be used to define parameters for the appeal.
+    function appeal(
+        uint256 _disputeID,
+        bytes calldata _extraData
+    ) external payable;
+
+    /// @dev Compute the cost of appeal.
+    /// @param _disputeID ID of the dispute to appeal.
+    /// @param _extraData Can be used to define parameters for the appeal.
+    /// @return cost Required ETH to appeal.
+    function appealCost(
+        uint256 _disputeID,
+        bytes calldata _extraData
+    ) external view returns (uint256 cost);
+
+    /// @dev Compute the start and end of the dispute's appeal period.
+    function appealPeriod(
+        uint256 _disputeID
+    ) external view returns (uint256 start, uint256 end);
+
+    /// @dev Return the status of a dispute.
+    function disputeStatus(
+        uint256 _disputeID
+    ) external view returns (DisputeStatus status);
+
+    /// @dev Return the current ruling of a dispute.
+    function currentRuling(
+        uint256 _disputeID
+    ) external view returns (uint256 ruling);
+}
+```
+
+---
+
+## Formato de extraData
+
+El parámetro `_extraData` se utiliza para especificar los parámetros del arbitraje. En KlerosLiquid (V1), codifica el ID del subtribunal y el número mínimo de jurados:
+
+```solidity
+// V1 extraData format
+bytes memory extraData = abi.encodePacked(
+    uint256(subcourtID),    // Subcourt ID
+    uint256(numberOfJurors) // Minimum number of jurors
+);
+```
+
+---
+
+## Referencia del EIP
+
+- [ERC-792 en GitHub](https://github.com/ethereum/EIPs/issues/792)
+- [Implementación de referencia](https://github.com/kleros/erc-792)

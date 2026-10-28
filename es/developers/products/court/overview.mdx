@@ -1,0 +1,91 @@
+---
+title: "Court"
+description: "Referencia para desarrolladores de Kleros Court V1 (Mainnet, Gnosis) y V2 (Arbitrum), que cubre los contratos de árbitro, el ciclo de vida de las disputas y la integración."
+---
+
+Kleros Court es el protocolo central de resolución de disputas. Esta página cubre tanto V1 (Ethereum Mainnet y Gnosis Chain) como V2 (Arbitrum).
+
+---
+
+## V1 (Ethereum Mainnet / Gnosis Chain)
+
+Court V1 es la interfaz de producción para la resolución de disputas de Kleros en Ethereum Mainnet y Gnosis Chain. Está en producción desde 2018 y sigue recibiendo desarrollo activo.
+
+Detalles técnicos:
+
+- Opera en Ethereum Mainnet y Gnosis Chain
+- Usa el estándar de arbitraje ERC-792 y el estándar de evidencia ERC-1497
+- Selección de jurados mediante un árbol de sorteo (sortition tree) con staking de PNK
+- Recompensas de staking distribuidas mensualmente (KIP-66, implementado en septiembre de 2025)
+
+V1 usa un único contrato `KlerosLiquid` que combina la lógica de arbitraje, staking, sorteo de jurados, votación y apelaciones:
+
+| Contrato | Función |
+| --- | --- |
+| **KlerosLiquid** | Contrato central del tribunal que gestiona las disputas, la selección de jurados y la ejecución de los fallos |
+| **PNK** | Token ERC-20 usado para staking e incentivos de los jurados |
+| **PolicyRegistry** | Almacena las políticas de los tribunales que describen las pautas para los jurados |
+| **Contratos arbitrables** | Implementan ERC-792 para interactuar con KlerosLiquid |
+
+**La integración con V1 tiene soporte completo.** Los desarrolladores pueden usar los estándares [ERC-792](/es/developers/arbitrable-apps/erc-792) y [ERC-1497](/es/developers/arbitrable-apps/erc-1497) (documentados en Aplicaciones arbitrables) para construir contratos arbitrables que usen Court V1.
+
+### Interfaz de V1
+
+La interfaz de Court V1 en [court.kleros.io](https://court.kleros.io/) admite:
+
+- **Navegación sin billetera obligatoria**: la interfaz funciona sin una billetera conectada, con un modo de solo lectura por defecto y un aviso para conectar, incluido el modal para cambiar a mainnet
+- **Modo oscuro**
+- **Notificaciones mediante Atlas**: recordatorios de votación (con una hora de recordatorio fija y configurable), resultados de disputas (ganadas/perdidas), apelaciones y disputas apelables, con opción de cancelar la suscripción en la página de configuración
+- **Recompensas de staking**: desde agosto de 2026, las recompensas mensuales de staking de KIP-66 se muestran en un sitio dedicado, [rewards.kleros.io](https://rewards.kleros.io), que reemplazó a la página de recompensas de la aplicación y cuenta con un botón **Export CSV**. Las recompensas mensuales se siguen reclamando en el modal de reclamación de Court
+- **Visibilidad de votos por tribunal**: los detalles de votos públicos u ocultos de cada tribunal se muestran al hacer staking
+- **Visualización de casos de Reality**: se muestra "Invalid" en lugar de "Refuse to Arbitrate" en los casos de Reality
+- **Listas blancas de registros**: Seer Curate en Gnosis, el Kleros Tokens Registry y el registro Seer Market
+
+Para el historial de cambios, consulta el [Registro de cambios](/es/changelog) y las [actualizaciones para desarrolladores del blog de Kleros](https://blog.kleros.io/tag/developer/). Para las direcciones de los contratos de V1, consulta [Direcciones de despliegue V1](/es/reference/contracts/deployment-addresses-v1).
+
+---
+
+## V2 (Arbitrum)
+
+Court V2 es el protocolo de resolución de disputas de nueva generación en Arbitrum. Esta sección documenta solo los detalles técnicos.
+
+Detalles técnicos:
+
+- Resolución de disputas modular mediante dispute kits intercambiables (DisputeKitClassic, DisputeKitSybilResistant y otros)
+- Entrega de fallos cross-chain a través del [puente Vea](/es/developers/crosschain/vea-bridge)
+- Selección de jurados mediante el SortitionModule usando Chainlink VRF v2.5 para aleatoriedad verificable
+- Soporte para múltiples dispute kits especializados por tribunal
+
+Estado de auditoría de los contratos:
+
+- Cuatro rondas de revisión interna (rondas 1–4, septiembre–noviembre de 2025) con todos los hallazgos clasificados
+- Auditoría externa de Certora (diciembre de 2025–enero de 2026); respuestas a la auditoría enviadas
+- Revisión interna completada en abril de 2026
+- Trabajo de simplificación de contratos en los dispute kits (mayo–junio de 2026)
+
+<Note>
+La auditoría de Certora se realizó sobre los contratos tal como se presentaron (diciembre de 2025–enero de 2026). El trabajo de simplificación de contratos continuó después, por lo que la auditoría no cubre la versión final.
+</Note>
+
+Dispute kits especializados:
+
+- DK de Protección al Consumidor de Argentina (con acceso restringido, basado en SBT)
+- DK Universitario
+- Shutter DK (commit/reveal con cifrado de umbral mediante Shutter Network)
+- Dispute kit de coherencia parcial (integrado)
+- Dispute kit de bifurcación (forking) (en borrador)
+
+Frontend:
+
+- Más de 100 casos resueltos en Court V2 Beta
+- Página de perfil en funcionamiento; lógica de commit extraída de la interfaz para facilitar las pruebas
+- Infraestructura de pruebas de extremo a extremo en desarrollo
+
+Para las direcciones de los contratos de V2, consulta la referencia de [Direcciones de despliegue V2](/es/reference/contracts/deployment-addresses).
+
+---
+
+## Enlaces
+
+- Court V1: [court.kleros.io](https://court.kleros.io/)
+- Court V2: [v2.kleros.builders](https://v2.kleros.builders/)

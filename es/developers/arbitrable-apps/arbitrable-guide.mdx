@@ -1,0 +1,543 @@
+---
+title: "Aplicaciones arbitrables V2"
+description: "Guía paso a paso para crear un smart contract arbitrable de Kleros V2, desde la integración con IArbitratorV2 hasta la creación de disputas, la evidencia y el fallo."
+---
+
+<Note>
+Esta guía es específica de Kleros V2: usa las interfaces `IArbitrableV2` e `IArbitratorV2` y KlerosCore en Arbitrum. Para desarrollar sobre Kleros V1 (ERC-792 y ERC-1497), consulta [Aplicaciones arbitrables V1](/es/developers/arbitrable-apps/v1-arbitrable-apps).
+</Note>
+
+## Referencia de interfaces
+
+Antes de empezar a desarrollar, comprende las dos interfaces con las que interactúa tu contrato.
+
+### IArbitratorV2 (KlerosCore)
+
+```solidity
+interface IArbitratorV2 {
+    // ---- Dispute Creation ----
+
+    /// @dev Create dispute, pay fee in native currency (ETH on Arbitrum).
+    function createDispute(
+        uint256 _numberOfChoices,
+        bytes calldata _extraData
+    ) external payable returns (uint256 disputeID);
+
+    /// @dev Create dispute, pay fee in an ERC-20 token.
+    function createDispute(
+        uint256 _numberOfChoices,
+        bytes calldata _extraData,
+        IERC20 _feeToken,
+        uint256 _feeAmount
+    ) external returns (uint256 disputeID);
+
+    // ---- Cost Queries ----
+
+    /// @dev Returns arbitration cost in ETH for the given extraData.
+    function arbitrationCost(bytes calldata _extraData)
+        external view returns (uint256 cost);
+
+    /// @dev Returns arbitration cost in the specified ERC-20 token.
+    function arbitrationCost(bytes calldata _extraData, IERC20 _feeToken)
+        external view returns (uint256 cost);
+
+    // ---- Ruling ----
+
+    /// @dev Returns the current ruling and its status.
+    /// @param _disputeID The dispute to query.
+    /// @return ruling    Current winning option (0 = Refuse to Arbitrate / no majority yet).
+    /// @return tied      True if two or more options are tied for the most votes.
+    ///                   A tied dispute will default to ruling 0 unless resolved by appeal.
+    /// @return overridden True if the ruling was changed by the parent court on appeal.
+    function currentRuling(uint256 _disputeID)
+        external view returns (uint256 ruling, bool tied, bool overridden);
+
+    // ---- Events ----
+    event DisputeCreation(uint256 indexed _disputeID, IArbitrableV2 indexed _arbitrable);
+    event Ruling(IArbitrableV2 indexed _arbitrable, uint256 indexed _disputeID, uint256 _ruling);
+    event AcceptedFeeToken(IERC20 indexed _token, bool indexed _accepted);
+    event NewCurrencyRate(IERC20 indexed _feeToken, uint64 _rateInEth, uint8 _rateDecimals);
+}
+```
+
+### IArbitrableV2 (tu contrato)
+
+```solidity
+interface IArbitrableV2 {
+    /// @dev Emitted when your contract creates a dispute. Required by the Kleros Court UI
+    ///      to link the dispute to a display template.
+    /// @param _arbitrator          Address of KlerosCore.
+    /// @param _arbitratorDisputeID The dispute ID assigned by KlerosCore.
+    /// @param _externalDisputeID   Your contract's internal dispute/transaction ID.
+    ///                             Used in data mappings as {{externalDisputeID}}.
+    /// @param _templateId          ID from DisputeTemplateRegistry.setDisputeTemplate().
+    ///                             Pass 0 if using templateUri instead.
+    /// @param _templateUri         IPFS URI of the dispute template JSON.
+    ///                             Pass "" if using templateId instead.
+    event DisputeRequest(
+        IArbitratorV2 indexed _arbitrator,
+        uint256 indexed _arbitratorDisputeID,
+        uint256 _externalDisputeID,
+        uint256 _templateId,
+        string _templateUri
+    );
+
+    /// @dev Called by the arbitrator when a ruling is final.
+    /// @param _disputeID The arbitrator-assigned dispute ID.
+    /// @param _ruling    The winning option. 0 = "Refuse to Arbitrate" - always handle this.
+    function rule(uint256 _disputeID, uint256 _ruling) external;
+
+    event Ruling(IArbitratorV2 indexed _arbitrator, uint256 indexed _disputeID, uint256 _ruling);
+}
+```
+
+### Codificación de `extraData`
+
+`extraData` configura la corte y el número de jurados:
+
+```solidity
+// V2 uses uint96 for courtID (not uint256 as in V1 - this is a breaking change)
+bytes memory extraData = abi.encodePacked(
+    uint96(1),   // courtID  - 1 = General Court
+    uint256(3)   // minJurors - always use odd numbers to avoid ties
+);
+```
+
+| Bytes | Tipo | Campo | Notas |
+| --- | --- | --- | --- |
+| 0–11 | `uint96` | `courtID` | **Debe ser `uint96`**, no `uint256`. Usar `uint256` codifica un valor incorrecto. |
+| 12–43 | `uint256` | `minJurors` | Usa 3, 5 o 7. Los números pares conllevan riesgo de empate (ver más abajo). |
+
+**Votos empatados:** Cuando los votos se reparten por igual, `currentRuling()` devuelve `tied = true` y `ruling = 0`. La disputa permanece en apelación hasta que se resuelva. Si nunca se apela tras finalizar el periodo, se ejecuta el fallo 0 (Negarse a arbitrar). Gestiona siempre el fallo 0 de forma explícita en tu contrato.
+
+### Pago de honorarios en ERC-20
+
+En Arbitrum One, KlerosCore acepta ETH y tokens ERC-20 aceptados (p. ej., WETH):
+
+```solidity
+IERC20 weth = IERC20(0x82aF49447D8a07e3bd95BD0d56f35241523fBab1); // WETH on Arbitrum
+uint256 cost = arbitrator.arbitrationCost(extraData, weth);
+weth.approve(address(arbitrator), cost);
+uint256 disputeID = arbitrator.createDispute(2, extraData, weth, cost);
+```
+
+<Warning>
+  Los honorarios en ERC-20 solo funcionan al llamar directamente a KlerosCore en Arbitrum. El `ForeignGateway` (para disputas multicadena desde Ethereum o Gnosis) solo acepta ETH nativo.
+</Warning>
+
+Para comprobar los tokens aceptados, escucha el evento `AcceptedFeeToken(token, accepted)` en KlerosCore.
+
+---
+
+## Crear un contrato de escrow
+
+Crearemos un escrow completo que usa el arbitraje de Kleros. Esto cubre todos los patrones que necesitarás.
+
+### Estructura del contrato
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.18;
+
+import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitrableV2.sol";
+import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitratorV2.sol";
+import "@kleros/kleros-v2-contracts/evidence/interfaces/IEvidence.sol";
+
+contract Escrow is IArbitrableV2, IEvidence {
+    
+    IArbitratorV2 public immutable arbitrator;
+    bytes public arbitratorExtraData;
+    string public templateUri;
+    
+    enum Status { Created, Disputed, Resolved }
+    enum Ruling { RefusedToRule, PaySeller, RefundBuyer }
+    
+    struct Transaction {
+        address buyer;
+        address seller;
+        uint256 amount;
+        Status status;
+        uint256 disputeID;
+    }
+    
+    mapping(uint256 => Transaction) public transactions;
+    mapping(uint256 => uint256) public disputeToTx; // arbitrator disputeID → txID
+    uint256 public txCount;
+    
+    constructor(
+        IArbitratorV2 _arbitrator,
+        bytes memory _extraData,
+        string memory _templateUri
+    ) {
+        arbitrator = _arbitrator;
+        arbitratorExtraData = _extraData;
+        templateUri = _templateUri;
+    }
+}
+```
+
+### Crear transacciones
+
+```solidity
+function createTransaction(address _seller) external payable returns (uint256 txID) {
+    require(msg.value > 0, "No funds sent");
+    
+    txID = txCount++;
+    transactions[txID] = Transaction({
+        buyer: msg.sender,
+        seller: _seller,
+        amount: msg.value,
+        status: Status.Created,
+        disputeID: 0
+    });
+}
+```
+
+### Abrir disputas
+
+```solidity
+function raiseDispute(uint256 _txID) external payable {
+    Transaction storage tx = transactions[_txID];
+    require(tx.status == Status.Created, "Invalid status");
+    require(msg.sender == tx.buyer || msg.sender == tx.seller, "Not a party");
+    
+    // Get current arbitration cost
+    uint256 cost = arbitrator.arbitrationCost(arbitratorExtraData);
+    require(msg.value >= cost, "Insufficient fee");
+    
+    // Create dispute with 2 ruling options (PaySeller, RefundBuyer)
+    uint256 disputeID = arbitrator.createDispute{value: cost}(
+        2, // numberOfChoices
+        arbitratorExtraData
+    );
+    
+    tx.status = Status.Disputed;
+    tx.disputeID = disputeID;
+    disputeToTx[disputeID] = _txID;
+    
+    // Emit required event using template URI
+    emit DisputeRequest(
+        arbitrator,
+        disputeID,
+        _txID,           // externalDisputeID (your local ID)
+        0,               // templateId (0 when using URI)
+        templateUri
+    );
+    
+    // Refund excess - use .call() not .transfer()
+    if (msg.value > cost) {
+        (bool ok,) = payable(msg.sender).call{value: msg.value - cost}("");
+        require(ok, "Refund failed");
+    }
+}
+```
+
+### Recibir fallos
+
+```solidity
+function rule(uint256 _disputeID, uint256 _ruling) external override {
+    require(msg.sender == address(arbitrator), "Only arbitrator");
+    
+    uint256 txID = disputeToTx[_disputeID];
+    Transaction storage tx = transactions[txID];
+    
+    require(tx.status == Status.Disputed, "Not disputed");
+    require(_ruling <= 2, "Invalid ruling");
+    
+    tx.status = Status.Resolved;
+
+    // Execute ruling - use .call() not .transfer() to avoid gas limit issues
+    if (_ruling == uint256(Ruling.PaySeller)) {
+        (bool ok,) = tx.seller.call{value: tx.amount}("");
+        require(ok, "Transfer failed");
+    } else {
+        // Ruling 0 (Refuse to Arbitrate) or RefundBuyer → refund buyer
+        (bool ok,) = tx.buyer.call{value: tx.amount}("");
+        require(ok, "Transfer failed");
+    }
+
+    emit Ruling(arbitrator, _disputeID, _ruling);
+}
+```
+
+## Plantillas de disputa
+
+Las plantillas indican a los jurados qué están decidiendo. Hay dos enfoques:
+
+### Opción A: URI de plantilla (recomendada)
+
+Almacena la plantilla en IPFS y haz referencia a ella mediante su URI:
+
+```json
+{
+  "$schema": "https://kleros.io/schemas/dispute-template.json",
+  "title": "Escrow Dispute",
+  "description": "Buyer claims goods were not delivered as described.",
+  "question": "Should the escrowed funds be released to the seller?",
+  "answers": [
+    {
+      "id": "0x1",
+      "title": "Yes, Pay Seller",
+      "description": "The seller fulfilled their obligations. Release funds."
+    },
+    {
+      "id": "0x2", 
+      "title": "No, Refund Buyer",
+      "description": "The seller failed to deliver. Refund the buyer."
+    }
+  ],
+  "policyURI": "/ipfs/Qm.../escrow-policy.pdf",
+  "arbitratorChainID": "42161",
+  "arbitratorAddress": "0x..."
+}
+```
+
+Súbela a IPFS y usa la URI en `DisputeRequest`.
+
+### Opción B: registro de plantillas on-chain
+
+Registra plantillas on-chain para disputas dinámicas:
+
+```solidity
+import "@kleros/kleros-v2-contracts/arbitration/DisputeTemplateRegistry.sol";
+
+// During dispute creation
+uint256 templateId = templateRegistry.setDisputeTemplate(
+    "",  // _templateTag
+    templateJson,
+    dataMappings
+);
+
+emit DisputeRequest(arbitrator, disputeID, txID, templateId, "");
+```
+
+### Mapeos de datos
+
+Para plantillas dinámicas, usa mapeos para inyectar datos de la transacción:
+
+```json
+{
+  "title": "Dispute for Order #{{externalDisputeID}}",
+  "description": "Amount: {{amount}} wei. Buyer: {{buyer}}"
+}
+```
+
+## Presentación de evidencia
+
+### Emitir eventos de evidencia
+
+```solidity
+function submitEvidence(uint256 _txID, string calldata _evidence) external {
+    Transaction storage tx = transactions[_txID];
+    require(tx.status == Status.Disputed, "Not disputed");
+    require(msg.sender == tx.buyer || msg.sender == tx.seller, "Not a party");
+    
+    emit Evidence(arbitrator, _txID, msg.sender, _evidence);
+}
+```
+
+### Formato JSON de la evidencia
+
+```json
+{
+  "name": "Delivery Receipt",
+  "description": "Screenshot showing package was delivered on Jan 15",
+  "fileURI": "/ipfs/QmWQV5ZFFhEJiW8Lm7ay2zLxC2XS4wx1b2W7FfdrLMyQQc"
+}
+```
+
+<Warning>
+  La evidencia es inmutable una vez presentada. El `fileURI` debe apuntar a IPFS/Arweave para garantizar su permanencia.
+</Warning>
+
+## Gestión de apelaciones
+
+Las apelaciones las gestiona el Dispute Kit, no tu contrato. Sin embargo, puedes seguir el estado de la apelación:
+
+```solidity
+function getDisputeStatus(uint256 _txID) external view returns (
+    uint256 ruling,
+    bool tied,
+    bool overridden
+) {
+    Transaction storage tx = transactions[_txID];
+    require(tx.disputeID != 0, "No dispute");
+    
+    return arbitrator.currentRuling(tx.disputeID);
+}
+```
+
+## Patrones de gestión de honorarios
+
+### Patrón: paga el perdedor
+
+Recoge depósitos de ambas partes y reembolsa al ganador:
+
+```solidity
+struct Transaction {
+    // ... existing fields
+    uint256 buyerDeposit;
+    uint256 sellerDeposit;
+}
+
+function depositForDispute(uint256 _txID) external payable {
+    Transaction storage tx = transactions[_txID];
+    uint256 cost = arbitrator.arbitrationCost(arbitratorExtraData);
+    require(msg.value >= cost, "Insufficient deposit");
+    
+    if (msg.sender == tx.buyer) {
+        tx.buyerDeposit = msg.value;
+    } else if (msg.sender == tx.seller) {
+        tx.sellerDeposit = msg.value;
+    }
+}
+
+function rule(uint256 _disputeID, uint256 _ruling) external override {
+    // ... validation
+    
+    // Refund winner's deposit
+    if (_ruling == uint256(Ruling.PaySeller)) {
+        payable(tx.seller).transfer(tx.sellerDeposit);
+        // Loser's deposit covers arbitration cost
+    } else {
+        payable(tx.buyer).transfer(tx.buyerDeposit);
+    }
+}
+```
+
+### Patrón: comprobación dinámica de honorarios
+
+Obtén siempre el coste actual antes de crear una disputa:
+
+```solidity
+function getArbitrationCost() public view returns (uint256) {
+    return arbitrator.arbitrationCost(arbitratorExtraData);
+}
+
+function raiseDispute(uint256 _txID) external payable {
+    uint256 cost = getArbitrationCost();
+    require(msg.value >= cost, "Insufficient fee");
+    // ...
+}
+```
+
+## Codificación de extra data
+
+Configura la corte y el número de jurados:
+
+```solidity
+function setArbitrationParams(uint96 _courtID, uint256 _minJurors) external onlyOwner {
+    arbitratorExtraData = abi.encodePacked(_courtID, _minJurors);
+}
+```
+
+| Bytes | Campo | Descripción |
+| --- | --- | --- |
+| 0-11 | courtID | uint96, corte de destino |
+| 12-43 | minJurors | uint256, número mínimo de jurados |
+
+## Ejemplo completo
+
+<Accordion title="Contrato de escrow completo">
+  ```solidity
+  // SPDX-License-Identifier: MIT
+  pragma solidity ^0.8.18;
+  
+  import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitrableV2.sol";
+  import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitratorV2.sol";
+  import "@kleros/kleros-v2-contracts/evidence/interfaces/IEvidence.sol";
+  
+  contract Escrow is IArbitrableV2, IEvidence {
+      IArbitratorV2 public immutable arbitrator;
+      bytes public arbitratorExtraData;
+      string public templateUri;
+      
+      enum Status { Created, Disputed, Resolved }
+      
+      struct Transaction {
+          address buyer;
+          address seller;
+          uint256 amount;
+          Status status;
+          uint256 disputeID;
+      }
+      
+      mapping(uint256 => Transaction) public transactions;
+      mapping(uint256 => uint256) public disputeToTx;
+      uint256 public txCount;
+      
+      constructor(
+          IArbitratorV2 _arbitrator,
+          bytes memory _extraData,
+          string memory _templateUri
+      ) {
+          arbitrator = _arbitrator;
+          arbitratorExtraData = _extraData;
+          templateUri = _templateUri;
+      }
+      
+      function createTransaction(address _seller) external payable returns (uint256) {
+          require(msg.value > 0, "No funds");
+          uint256 txID = txCount++;
+          transactions[txID] = Transaction(msg.sender, _seller, msg.value, Status.Created, 0);
+          return txID;
+      }
+      
+      function raiseDispute(uint256 _txID) external payable {
+          Transaction storage t = transactions[_txID];
+          require(t.status == Status.Created, "Invalid status");
+          
+          uint256 cost = arbitrator.arbitrationCost(arbitratorExtraData);
+          require(msg.value >= cost, "Insufficient fee");
+          
+          uint256 disputeID = arbitrator.createDispute{value: cost}(2, arbitratorExtraData);
+          t.status = Status.Disputed;
+          t.disputeID = disputeID;
+          disputeToTx[disputeID] = _txID;
+          
+          emit DisputeRequest(arbitrator, disputeID, _txID, 0, templateUri);
+          
+          if (msg.value > cost) {
+              (bool ok,) = payable(msg.sender).call{value: msg.value - cost}("");
+              require(ok, "Refund failed");
+          }
+      }
+      
+      function submitEvidence(uint256 _txID, string calldata _evidence) external {
+          Transaction storage t = transactions[_txID];
+          require(t.status == Status.Disputed, "Not disputed");
+          emit Evidence(arbitrator, _txID, msg.sender, _evidence);
+      }
+      
+      function rule(uint256 _disputeID, uint256 _ruling) external override {
+          require(msg.sender == address(arbitrator), "Only arbitrator");
+          uint256 txID = disputeToTx[_disputeID];
+          Transaction storage t = transactions[txID];
+          require(t.status == Status.Disputed, "Not disputed");
+          
+          t.status = Status.Resolved;
+  
+          if (_ruling == 1) {
+              (bool ok,) = t.seller.call{value: t.amount}("");
+              require(ok, "Transfer failed");
+          } else {
+              // Ruling 0 (Refuse to Arbitrate) or ruling 2 → refund buyer
+              (bool ok,) = t.buyer.call{value: t.amount}("");
+              require(ok, "Transfer failed");
+          }
+          
+          emit Ruling(arbitrator, _disputeID, _ruling);
+      }
+      
+      function getArbitrationCost() external view returns (uint256) {
+          return arbitrator.arbitrationCost(arbitratorExtraData);
+      }
+  }
+  ```
+</Accordion>
+
+## Próximos pasos
+
+<Card title="Probar tu integración" icon="flask" href="/es/developers/arbitrable-apps/arbitrable-testing">
+  Escenarios de prueba y estrategias de depuración
+</Card>

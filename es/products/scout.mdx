@@ -1,0 +1,98 @@
+---
+title: "Scout"
+description: "Kleros Scout es un frontend público para los registros de Curate que muestra etiquetas de direcciones verificadas, metadatos de tokens y etiquetas de contratos en las principales cadenas EVM y Solana."
+---
+
+# Scout
+
+<img src="/images/scout-hero.png" alt="Interfaz de Kleros Scout" />
+<Note>Scout forma parte de la familia de productos [Curate](/es/products/curate): un frontend que lee de los registros de Curate. Sus registros funcionan en **Kleros Court V1 (Gnosis Chain)** y, desde **julio de 2026**, son arbitrados por la **Curation Court con votación oculta** dedicada (KIP-87). El rediseño del frontend de Scout V2 está completo.</Note>
+
+**Kleros Scout** es una aplicación frontend que muestra información de seguridad y metadatos curada por la comunidad sobre contratos inteligentes, tokens y dApps. Agrega datos de varios registros de [Curate](/es/products/curate) para ofrecer a los usuarios una vista unificada de etiquetas de direcciones, etiquetas de contratos e información de tokens.
+
+Scout es la capa de cara al público sobre los registros descentralizados de Curate: piensa en él como un explorador de solo lectura que hace que los datos de los registros sean accesibles para billeteras, exploradores de bloques y usuarios finales.
+
+---
+
+## Capacidades clave
+
+<CardGroup cols={3}>
+  <Card title="Etiquetado de direcciones" icon="tag">
+    Etiquetas curadas por la comunidad para direcciones de contratos inteligentes en varias cadenas
+  </Card>
+  <Card title="Verificación de tokens" icon="shield-check">
+    Metadatos de tokens verificados, incluidos nombres, logotipos y detalles del contrato
+  </Card>
+  <Card title="Cobertura multicadena" icon="link">
+    Cubre Ethereum, Arbitrum One, OP Mainnet, Base, Polygon, Gnosis, Linea, zkSync, Avalanche, Celo y Solana, entre otras
+  </Card>
+</CardGroup>
+
+---
+
+## Cómo funciona Scout
+
+Scout por sí mismo no gestiona envíos ni disputas: eso ocurre en [Curate](/es/products/curate). Scout lee de cuatro registros principales de Curate:
+
+**Address Tags Registry (ATR)**: Asocia direcciones de contratos con etiquetas legibles por humanos (p. ej., "Uniswap V3 Router"). Estas etiquetas aparecen en exploradores de bloques como Blockscout y en interfaces de billeteras como MetaMask.
+
+**Address Tag Query (ATQ)**: Un metarregistro de paquetes NPM, cada uno de los cuales genera lotes de etiquetas de direcciones, lo que permite etiquetar a gran escala muchos contratos similares sin un envío individual por dirección (el ATR gestiona una etiqueta a la vez). Consulta [Registros de curación](/es/developers/products/curate/registries) para ver cómo se ejecutan los paquetes ATQ.
+
+**Token Registry**: Lista curada de tokens ERC-20 verificados con metadatos (nombre, símbolo, logotipo, decimales).
+
+**Contract-Domain Name (CDN)**: Emparejamientos verificados de contrato y dominio, además de metadatos de proyectos como logotipos y descripciones que se sirven a las dApps.
+
+### Integraciones
+
+Los datos de Scout impulsan etiquetas e información de seguridad en varios productos importantes:
+
+- **Blockscout**: Etiquetas de direcciones de los registros de Scout
+- **MetaMask Snaps**: Datos de verificación de contratos
+- **Otterscan**: Etiquetas de contratos
+- **Uniswap, Zerion**: Metadatos de tokens
+
+---
+
+## Obtener recompensas mediante la curación
+
+Kleros lleva a cabo programas de incentivos activos para los colaboradores de los registros de Scout. Los curadores ganan recompensas en PNK por enviar etiquetas de direcciones precisas e impugnar con éxito las incorrectas.
+
+Detalles actuales de los incentivos (actualizados mensualmente mediante publicaciones del blog):
+
+- Los fondos de recompensas por envíos y eliminaciones se distribuyen proporcionalmente entre los participantes exitosos
+- Cada mes, cadenas específicas son elegibles para recompensas
+- Los envíos de contratos ERC-20, ERC-721 y EIP-1167 pueden tener reglas de elegibilidad de recompensas diferentes
+
+<Tip>
+Consulta el [blog de Kleros](https://blog.kleros.io) para conocer los últimos parámetros mensuales de incentivos de Scout y las cadenas elegibles.
+</Tip>
+
+---
+
+## Estado actual
+
+Scout está en su versión definitiva y es la mayor fuente descentralizada de metadatos de contratos en cadena, distribuida en sus cuatro registros (ATR, Token, CDN, ATQ). Novedades recientes (mediados de 2026):
+
+- **Votación oculta en una Curation Court dedicada**: tras la KIP-87, los registros migraron el **13 de julio de 2026** a una nueva Curation Court en Gnosis Chain que utiliza *votación oculta* mediante compromiso y revelación (commit-and-reveal), de modo que los jurados no pueden ver otros votos antes de decidir.
+- **Envíos preparados para agentes de IA**: los colaboradores pueden delegar todo el flujo de envío (buscar candidatos, comprobar el estado de etiquetado, validar la política y los metadatos, enviar en cadena) a un agente de IA en lugar de preparar cada entrada manualmente. Consulta [Gana con Scout](/es/products/scout-earn).
+- **Mayor cobertura de cadenas**: las cadenas elegibles para recompensas ahora incluyen Ethereum, Arbitrum One, OP Mainnet, Base, Polygon, Gnosis, Linea, zkSync, Avalanche C-Chain, Celo, MegaETH, Solana, Robinhood Chain e Hyperliquid / HyperEVM (elegible a partir de septiembre de 2026). Scroll ya no es elegible.
+- **Enlaces del explorador migrados a Blockscout**, antes de la retirada de Gnosisscan.
+- A principios de 2026, Scout completó su **migración a Atlas IPFS** (los envíos y las pruebas ahora pasan por el flujo SIWE de Atlas) y añadió la detección de duplicados en ATQ.
+
+Sigue el desarrollo en el [blog de Kleros: actualizaciones para desarrolladores](https://blog.kleros.io/tag/developer/) y en las [publicaciones mensuales de incentivos de Scout](https://blog.kleros.io/tag/kleros-scout/).
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={3}>
+  <Card title="Explorar Scout" icon="magnifying-glass" href="https://scout.kleros.io/">
+    Explora etiquetas de direcciones y datos de tokens curados por la comunidad
+  </Card>
+  <Card title="Curate" icon="list-check" href="/es/products/curate">
+    Conoce el sistema de registros que impulsa Scout
+  </Card>
+  <Card title="Construye sobre Scout" icon="code" href="/es/developers/products/curate">
+    Consulta los datos de los registros de Scout para tu aplicación
+  </Card>
+</CardGroup>

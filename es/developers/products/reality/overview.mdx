@@ -1,0 +1,202 @@
+---
+title: "Reality"
+description: "Descripción general para desarrolladores del oráculo Reality.eth de Kleros y SafeSnap, que abarca la escalada de fianzas, los proxies de árbitro y la integración con la gobernanza de DAO."
+---
+
+## Introducción
+
+Kleros Oracle combina [Reality.eth](https://reality.eth.limo/), un mecanismo de escalada de fianzas para respuestas colaborativas, con Kleros Court como árbitro externo. Esto ofrece un oráculo descentralizado capaz de responder cualquier pregunta que tenga una respuesta verificable públicamente.
+
+Tu aplicación solo interactúa con Reality.eth. Kleros se invoca automáticamente cuando una disputa sobre una respuesta se escala a arbitraje.
+
+<CardGroup cols={2}>
+  <Card title="Contratos inteligentes" icon="file-contract" href="/es/developers/products/reality/smart-contracts">
+    Interfaces de contratos, direcciones de los proxies de árbitro y referencia de funciones
+  </Card>
+
+  <Card title="Guía de integración" icon="code" href="/es/developers/products/reality/integration">
+    Guía paso a paso para formular preguntas y obtener respuestas desde tu contrato
+  </Card>
+</CardGroup>
+
+***
+
+## V1 - Integración con SafeSnap (Ethereum / Gnosis Chain)
+
+El oráculo de Reality.eth + Kleros impulsa SafeSnap para la gobernanza de DAO, y **la integración V1 cuenta con soporte activo**.
+
+Notas técnicas para integradores:
+
+- **Zodiac / SafeSnap**: el Kleros Reality Module funciona con Snapshot mediante la configuración de Gnosis Zodiac Safe. Los bots de Zodiac validan automáticamente los hashes keccak de las preguntas de Reality (emitiendo una advertencia en lugar de fallar cuando no se puede verificar un hash), normalizan los enlaces de Reality a un uso uniforme de mayúsculas y minúsculas, y gestionan preguntas de Reality que no tienen una propuesta de Snapshot asociada.
+- **Monitoreo**: las integraciones pueden monitorearse mediante ENS, Snapshot y direcciones de contratos (como se hace para Panther Protocol).
+- **Visualización en Court**: Court V1 muestra "Invalid" en lugar de "Refuse to Arbitrate" en los casos de Reality.
+- **Opciones de respuesta verificadas**: Court V1 (desde octubre de 2026) y Dispute Resolver construyen las opciones de respuesta de los casos de Reality.eth a partir de la pregunta on-chain y su plantilla, no del script de visualización del arbitrable, de modo que unos parámetros de pregunta manipulados no pueden cambiar las opciones que ven los jurados. Ambos muestran un aviso en la página del caso cuando otras interfaces muestran opciones diferentes, o cuando los parámetros están mal formados o las opciones no se pueden verificar.
+- **Redes**: la integración de Realitio se extiende a la testnet Base Sepolia, y el proxy cross-chain de Realitio recibe mantenimiento activo.
+
+Para el recorrido completo de la integración con SafeSnap, consulta la [Guía de integración](/es/developers/products/reality/integration).
+
+***
+
+## Cómo funciona
+
+<Steps>
+  <Step title="Formular una pregunta">
+    Tu contrato (o un usuario) envía una pregunta a Reality.eth, opcionalmente adjuntando ETH como recompensa, y designa un proxy de árbitro de Kleros como resolutor de disputas.
+  </Step>
+
+  <Step title="Responder con fianzas">
+    Cualquiera puede enviar una respuesta depositando una fianza. Para reemplazar una respuesta existente, quien responde debe depositar una fianza de al menos el doble de la anterior. La escalada de fianzas hace que las respuestas incorrectas sean económicamente insostenibles.
+  </Step>
+
+  <Step title="Finalización o arbitraje">
+    Si nadie impugna la respuesta actual dentro del plazo de timeout, la respuesta queda finalizada. Si una parte no está de acuerdo, cualquiera puede pagar la tarifa de arbitraje para escalar la pregunta a Kleros Court a través del proxy de árbitro.
+  </Step>
+
+  <Step title="Fallo">
+    Los jurados de Kleros evalúan la pregunta y las pruebas enviadas, y luego votan por la respuesta correcta. El proxy de árbitro comunica el fallo a Reality.eth, que finaliza la respuesta.
+  </Step>
+</Steps>
+
+***
+
+## Arquitectura
+
+La integración usa tres capas de contratos:
+
+| Contrato                    | Cadena                         | Función                                                |
+| --------------------------- | ------------------------------ | ------------------------------------------------------ |
+| **Tu contrato**             | Cualquier cadena compatible    | Formula preguntas y lee respuestas finalizadas         |
+| **Reality.eth**             | La misma cadena que tu contrato | Escalada de fianzas, gestión de respuestas, lógica de timeout |
+| **Kleros Arbitrator Proxy** | La misma cadena que Reality.eth | Crea disputas en Kleros Court y comunica los fallos   |
+
+Tu contrato solo interactúa con Reality.eth. La dirección del proxy de árbitro se especifica al formular la pregunta, y el proxy gestiona toda la comunicación con Kleros Court.
+
+### Misma cadena vs. cross-chain
+
+El sistema admite dos patrones de despliegue:
+
+- **Misma cadena**: la pregunta y el arbitraje se encuentran en la misma red. Es la integración más sencilla.
+- **Cross-chain**: la pregunta se encuentra en una cadena (p. ej., Gnosis Chain o Polygon), mientras que el arbitraje se ejecuta en Ethereum o Arbitrum a través de un proxy cross-chain. Úsalo cuando tu aplicación esté en una cadena sin un despliegue nativo de Kleros Court.
+
+Los despliegues de proxies cross-chain se enumeran en el [repositorio cross-chain-realitio-proxy](https://github.com/kleros/cross-chain-realitio-proxy/tree/master/contracts#deployments).
+
+***
+
+## Cadenas compatibles
+
+Reality.eth está desplegado en varias cadenas. Los proxies de árbitro de Kleros están disponibles en:
+
+| Cadena           | Estado                     |
+| ---------------- | -------------------------- |
+| Ethereum Mainnet | Activo (Court V1)          |
+| Gnosis Chain     | Activo (Court V1)          |
+| Arbitrum One     | Disponible mediante Court V2 |
+| Polygon          | Activo (Court V1)          |
+
+<Note>
+  Consulta el [repositorio de despliegues de Reality.eth](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments) para ver la lista completa de despliegues por cadena y direcciones de contratos. Para las direcciones de los proxies de árbitro de Kleros, consulta la página de [Contratos inteligentes](/es/developers/products/reality/smart-contracts).
+</Note>
+
+***
+
+## Tipos de preguntas
+
+Reality.eth admite varias plantillas de preguntas. Cada plantilla define el formato de la respuesta y cómo se codifica el resultado.
+
+| ID de plantilla | Tipo              | Formato de respuesta     | Ejemplo                                |
+| --------------- | ----------------- | ------------------------ | -------------------------------------- |
+| 0               | `bool`            | Sí/No                    | "¿Ocurrió el evento X?"                |
+| 1               | `uint`            | Valor numérico           | "¿Cuál era el precio de ETH en la fecha Y?" |
+| 2               | `single-select`   | Una de N opciones        | "¿Qué equipo ganó?"                    |
+| 3               | `multiple-select` | Subconjunto de N opciones | "¿Qué propuestas se aprobaron?"       |
+| 4               | `datetime`        | Marca de tiempo Unix     | "¿Cuándo ocurrió el evento X?"         |
+| 5               | `hash`            | Hash bytes32             | "¿Corresponde el hash X al documento Y?" |
+
+Se pueden registrar plantillas personalizadas para casos de uso específicos de una aplicación mediante `createTemplate()` o el [Reality.eth Template Generator](https://reality.eth.link/app/template-generator). Para conocer todos los detalles sobre la codificación de resultados, consulta [Contratos inteligentes → Interpretación de resultados](/es/developers/products/reality/smart-contracts#interpretación-de-resultados).
+
+***
+
+## Flujo de resolución
+
+El sistema sigue un modelo push/pull. Tu DApp envía (push) una pregunta a Reality.eth y más tarde obtiene (pull) la respuesta verificada.
+
+Una pregunta puede resolverse por dos vías:
+
+### Vía favorable: resolución por consenso
+
+1. Alguien envía una respuesta con una fianza
+2. Nadie la impugna dentro del período de timeout
+3. La respuesta queda finalizada automáticamente
+4. Tu DApp lee el resultado mediante `resultFor(questionID)`
+
+### Vía desfavorable: resolución por arbitraje
+
+1. Alguien envía una respuesta con una fianza
+2. Otro usuario publica una contrarrespuesta con una fianza mayor
+3. La escalada de fianzas puede continuar hasta que una parte solicite arbitraje
+4. La pregunta se congela en Reality.eth
+5. Se crea una disputa en Kleros Court a través del proxy de árbitro
+6. Se abre el período de envío de pruebas
+7. Los jurados revisan las pruebas y votan
+8. El fallo se comunica de vuelta a Reality.eth
+9. Tu DApp lee el resultado arbitrado
+
+Todas las interacciones se realizan a través de la interfaz de Reality.eth. Tu DApp no necesita interfaces separadas para las dos vías.
+
+***
+
+## Características clave
+
+<AccordionGroup>
+  <Accordion title="Escalada de fianzas">
+    Cada respuesta sucesiva debe depositar al menos el doble de la fianza anterior. Esto hace que sostener respuestas incorrectas sea exponencialmente costoso, por lo que la mayoría de las preguntas se resuelven correctamente sin llegar nunca al arbitraje.
+  </Accordion>
+
+  <Accordion title="Escalada a arbitraje">
+    En cualquier momento después de la primera respuesta, cualquiera puede solicitar arbitraje pagando la tarifa de arbitraje. El Kleros Arbitrator Proxy crea una disputa en la corte y subcorte configuradas, con el número inicial de jurados configurado.
+  </Accordion>
+
+  <Accordion title="Envío de pruebas">
+    Las pruebas se envían a través del contrato Kleros Arbitrator Proxy, no a través de Reality.eth. El proxy gestiona el grupo de pruebas y reenvía los envíos a Kleros Court. Consulta la [Guía de integración](/es/developers/products/reality/integration#envío-de-pruebas) para conocer el flujo de envío y el formato de pruebas ERC-1497.
+  </Accordion>
+
+  <Accordion title="Parámetros configurables">
+    Cada proxy de árbitro se despliega con una subcorte específica, un número inicial de votos de jurados y una tarifa de arbitraje. El equipo de Kleros puede desplegar proxies personalizados, incluidos proxies con un documento principal personalizado para los jurados cuando las directrices de arbitraje estándar no son suficientes para un caso de uso.
+  </Accordion>
+
+  <Accordion title="Soporte cross-chain">
+    El sistema admite proxies cross-chain, lo que permite que una pregunta en una cadena sea arbitrada por Kleros Court en otra. Esto habilita integraciones en cadenas sin un despliegue nativo de Kleros Court.
+  </Accordion>
+</AccordionGroup>
+
+***
+
+## Kleros Oracle en producción
+
+El oráculo de Reality.eth + Kleros impulsa sistemas en producción en múltiples categorías:
+
+- **Mercados de predicción**: [Seer](https://seer.pm), Polkamarkets/Foreland y [Omen](https://omen.eth.limo) lo usan para verificar resultados de eventos del mundo real
+- **Gobernanza optimista**: el [módulo Zodiac SafeSnap](https://kleros.io/web3) lo implementa para la ejecución segura de propuestas de DAO
+- **Moderación de contenido**: [Moderate / Susie bot](/es/legacy/retired/moderate) lo aprovecha para la aplicación descentralizada de políticas de contenido
+
+***
+
+## Recursos
+
+<CardGroup cols={2}>
+  <Card title="Documentación de Reality.eth" icon="book" href="https://reality.eth.limo/app/docs/html/index.html">
+    Documentación oficial de Reality.eth y referencia de la API
+  </Card>
+
+  <Card title="GitHub de Reality.eth" icon="github" href="https://github.com/RealityETH/reality-eth-monorepo">
+    Código fuente de los contratos y despliegues
+  </Card>
+
+  <Card title="Página de Kleros Oracle" icon="globe" href="https://kleros.io/oracle/">
+    Descripción general del producto
+  </Card>
+
+  <Card title="Discord" icon="discord" href="https://discord.gg/MhXQGCyHd9">
+    Soporte para desarrolladores
+  </Card>
+</CardGroup>

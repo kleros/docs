@@ -1,0 +1,24 @@
+---
+title: "PolicyRegistry"
+description: "Referencia del contrato PolicyRegistry: almacena y actualiza los URI de IPFS de las políticas de las cortes, el método de gobernanza setPolicy y los eventos PolicyUpdate de Kleros V2."
+---
+
+
+
+Almacena los URI de IPFS de las políticas de las cortes. Lo gobierna el governor del protocolo.
+
+## Métodos
+
+### `setPolicy(uint96 _courtID, string _courtName, string _policyURI)`
+Establece la política de una corte. Solo puede llamarlo el governor.
+
+### `policies(uint96 _courtID) → string`
+Devuelve el URI de IPFS de la política de una corte.
+
+## Eventos
+
+| Evento | Descripción |
+|---|---|
+| `PolicyUpdate(courtID, courtName, policyURI)` | Política actualizada para una corte |
+
+[Ver código fuente](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/PolicyRegistry.sol)

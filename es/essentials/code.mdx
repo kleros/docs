@@ -1,0 +1,35 @@
+---
+title: 'Bloques de código'
+description: 'Aprende a mostrar código en línea con comillas invertidas y bloques de código de varias líneas con resaltado de sintaxis en las páginas MDX de tu documentación de Mintlify.'
+icon: 'code'
+---
+
+## Código en línea
+
+Para marcar una `word` o `phrase` como código, enciérrala entre comillas invertidas (`).
+
+```
+To denote a `word` or `phrase` as code, enclose it in backticks (`).
+```
+
+## Bloques de código
+
+Usa [bloques de código delimitados](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) encerrando el código entre tres comillas invertidas y agrega después de las comillas iniciales el lenguaje de programación de tu fragmento para obtener resaltado de sintaxis. Opcionalmente, también puedes escribir el nombre de tu código después del lenguaje de programación.
+
+```java HelloWorld.java
+class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+
+````md
+```java HelloWorld.java
+class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
+```
+````

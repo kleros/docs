@@ -1,0 +1,94 @@
+---
+title: "Direcciones de despliegue de Vea"
+description: "Direcciones de los contratos VeaInbox, VeaOutbox y Router desplegados en las rutas de Arbitrum, Ethereum, Gnosis y Base, además de las rutas de VeaShi hacia Robinhood, Tempo y ARC."
+---
+
+
+
+<Warning>
+Verifica siempre las direcciones con el [repositorio oficial de Vea](https://github.com/kleros/vea) antes de usarlas. La fuente canónica son los [artefactos de despliegue de Vea en GitHub](https://github.com/kleros/vea/tree/master/contracts/deployments).
+</Warning>
+
+<Note>
+Las rutas de Base y Arbitrum se desplegaron en junio de 2026. En septiembre de 2026, VeaShi añadió rutas entre Ethereum y Arbitrum y tres cadenas más: **Robinhood** (chain ID 4217), **Tempo** (chain ID 4663, además de una ruta en la testnet Sepolia) y **ARC** (chain ID 5042). Las direcciones de las rutas de VeaShi se publican en el paquete `@kleros/veashi-sdk` en npm (v0.1.0 en el momento de redactar esto). Usa el SDK como fuente de verdad para ellas.
+</Note>
+
+---
+
+## Despliegues en testnet (Arbitrum Sepolia)
+
+La testnet de Vea funciona en **Arbitrum Sepolia → Chiado (testnet de Gnosis)** y **Arbitrum Sepolia → Ethereum Sepolia**. Estas reemplazan a las devnets obsoletas basadas en Goerli.
+
+<Note>
+Los despliegues basados en Goerli (Arbitrum Goerli → Chiado, Arbitrum Goerli → Goerli) están **obsoletos**, ya que Goerli se retiró en septiembre de 2024. Migra a sus equivalentes en Sepolia.
+</Note>
+
+**Dirección del operador de testnet:** `0x407DDEC61d69b212498B140a26da70AE1C879f5a`
+
+### Arbitrum Sepolia → Chiado (testnet de Gnosis)
+
+| Contrato | Dirección |
+| --- | --- |
+| VeaInbox (ArbToGnosisDevnet) | `0x660daB9A6436A814a6ae3a6f27b309356a4bE78c` |
+| Router (ArbToGnosisDevnet) | `0xD4847f86Ed2E9D03839B15fd0818759861c063a8` |
+| VeaOutbox (ArbToGnosisDevnet) | `0xdFd7aDEb43d46FA3f16FB3e27F7fe85c3f5BD89D` |
+
+Para la ruta Arbitrum Sepolia → Ethereum Sepolia, consulta la [carpeta de despliegues del repositorio de Vea](https://github.com/kleros/vea/tree/master/contracts/deployments).
+
+
+
+
+
+
+---
+
+## Despliegues en mainnet
+
+<Info>
+Los despliegues de Vea en mainnet (Arbitrum One → Ethereum Mainnet, Arbitrum One → Gnosis Chain) se encuentran actualmente en proceso de finalización. El sistema de arbitraje entre cadenas de Kleros V2 utiliza foreign gateways que se comunican mediante Vea.
+</Info>
+
+Para obtener las direcciones de mainnet más recientes una vez estén activas:
+- Consulta los artefactos de despliegue del [repositorio de Vea en GitHub](https://github.com/kleros/vea)
+- Consulta las [direcciones de despliegue de Kleros V2](/es/reference/contracts/deployment-addresses) para conocer las direcciones de los Foreign Gateway que usan Vea
+
+---
+
+## Direcciones de los gateways de Kleros
+
+Los gateways de arbitraje entre cadenas de Kleros son independientes de Vea. Consulta la lista completa de direcciones:
+
+<Card title="Direcciones de despliegue de Kleros V2" icon="file-contract" href="/es/reference/contracts/deployment-addresses">
+  Direcciones de los contratos KlerosCore, SortitionModule, DisputeKit y Gateway en Arbitrum One y en las testnets
+</Card>
+
+---
+
+## Encontrar direcciones de forma programática
+
+Clona el repositorio de Vea para inspeccionar los artefactos de despliegue:
+
+```bash
+git clone https://github.com/kleros/vea.git
+cd vea/contracts
+# Per-chain deployment JSONs are in deployments/<networkName>/
+ls deployments/
+```
+
+Cada JSON de despliegue (p. ej., `VeaInboxArbToEth.json`) contiene el campo `address` con la dirección del contrato desplegado y la ABI.
+
+---
+
+## Relacionado
+
+<CardGroup cols={2}>
+
+
+
+  <Card title="Arquitectura de Vea Bridge" icon="sitemap" href="/es/developers/crosschain/vea-bridge">
+    Cómo funciona Vea, el sistema de épocas y las rutas admitidas
+  </Card>
+  <Card title="Primeros pasos con Vea" icon="rocket" href="/es/developers/crosschain/vea-getting-started">
+    Guía de integración y contratos de ejemplo
+  </Card>
+</CardGroup>

@@ -1,0 +1,250 @@
+---
+title: "Tutorial para jurados (V2)"
+description: "Conviértete en jurado de Kleros Court V2 en Arbitrum: configura tu billetera, transfiere PNK mediante un puente, elige una corte, haz stake, gestiona tu primera disputa y reclama tus recompensas como jurado."
+---
+
+# Tutorial para jurados (V2)
+
+Este tutorial te guía para participar como jurado en **Kleros Court V2** en [v2.kleros.builders](https://v2.kleros.builders/), la corte de nueva generación en Arbitrum. No se requiere registro ni información personal.
+
+<Note>
+¿Eres completamente nuevo en Web3? La [Guía completa para principiantes de Kleros Court V2 en Notion](https://kleros.notion.site/Complete-Beginner-s-Guide-to-Kleros-Court-V2-20e9a9db4f08803da1b2c372ed2f2c6e) cubre todo, desde la configuración de la billetera y la seguridad de la frase semilla hasta tu primer caso, con capturas de pantalla para cada paso.
+</Note>
+
+Para la corte V1 en Ethereum y Gnosis Chain, consulta el [Tutorial para jurados V1](/es/tutorials/juror-tutorial-v1).
+
+---
+
+## Lo que necesitas
+
+- Una billetera Web3: **Rabby** (recomendada, detecta las redes automáticamente) o MetaMask
+- **Tokens PNK en Arbitrum**
+- **ETH en Arbitrum** para las comisiones de transacción (reserva aproximadamente un 20-30 % de tu presupuesto como margen en ETH)
+
+
+### Configura Arbitrum One
+
+Kleros V2 funciona en Arbitrum One (Chain ID 42161), una Layer 2 que mantiene la seguridad de Ethereum con comisiones mucho más bajas. Rabby detecta y cambia de red automáticamente. En MetaMask, añade la red manualmente (RPC `https://arb1.arbitrum.io/rpc`, moneda ETH, explorador [arbiscan.io](https://arbiscan.io/)) o usa [chainlist.org](https://chainlist.org/).
+
+### Obtén PNK en Arbitrum
+
+- **Directamente en la interfaz de la Corte**: usa la opción "Get PNK"
+- **DEX**: intercambia ETH por PNK en [Uniswap](https://app.uniswap.org/) mientras estás conectado a Arbitrum
+- **Exchanges centralizados**: consulta los listados en CoinGecko y luego transfiere a Arbitrum mediante un puente
+- Si tienes PNK en Ethereum, transfiérelo mediante [bridge.arbitrum.io](https://bridge.arbitrum.io/)
+
+Una cantidad inicial de 5,000-10,000 PNK es una base razonable; cada corte establece su propio stake mínimo (el mínimo de la General Court ronda los 2,300 PNK).
+
+---
+
+## Comprender las cortes y sus parámetros
+
+Las cortes forman una jerarquía: la **General Court** (ID 1) es la raíz, con cortes especializadas debajo de ella (Blockchain, Curation, English Language y otras) y la **Forking Court** (ID 0) reservada para disputas del protocolo. Hacer stake en una corte especializada te pone automáticamente en stake en todas sus cortes superiores.
+
+Entre las cortes aptas para principiantes se encuentran la **General Court** y la **English Language Court**. Las cortes especializadas como **Blockchain Technical**, **Curation**, **Insurance** y la **Corte de Disputas de Consumo y Vecinidad** (dentro de la Corte General en Español, que atiende casos empresariales como Lemon y MetLife) requieren conocimientos específicos.
+
+La página de cada corte muestra los parámetros que te importan:
+
+| Parámetro | Qué significa para ti |
+| --- | --- |
+| **Minimum Stake** | La cantidad mínima de PNK que puedes poner en stake en esa corte |
+| **Alpha** | Fracción de tu stake que se bloquea al ser seleccionado: `pnkAtStakePerJuror = (minStake × alpha) / 10000` |
+| **Fee for Juror** | Lo que ganas por cada voto coherente, en ETH o en un ERC-20 incluido en la lista blanca |
+| **Hidden Votes** | Si la corte utiliza votación commit-reveal |
+| **Time per Period** | Duración de las fases de evidencia, commit, votación y apelación (los períodos pueden terminar antes cuando no se necesitan más interacciones) |
+| **Jurors for Court Jump** | Número de jurados a partir del cual una disputa apelada escala a la corte superior |
+
+<Warning>
+Lee siempre la política de la corte antes de hacer stake o votar en ella. Define los tipos de disputa, las reglas de evaluación y las habilidades requeridas, y es vinculante para tus votos.
+</Warning>
+
+<Frame caption="Resumen: jerarquía y parámetros de las cortes (infografía pendiente)">
+  <img src="/images/Court tree.png" alt="Resumen: jerarquía y parámetros de las cortes, infografía pendiente" />
+</Frame>
+
+---
+
+## Hacer stake de tu PNK
+
+<Steps>
+  <Step title="Abre la Corte y conéctate">
+    Visita [v2.kleros.builders](https://v2.kleros.builders/), haz clic en **Connect Wallet** y aprueba la conexión. Asegúrate de estar en Arbitrum One.
+  </Step>
+  <Step title="Elige tu corte">
+    Haz clic en **Courts**, explora el árbol y abre una corte para revisar su política, stake mínimo, tarifa por jurado y casos recientes.
+   <Frame >
+  <img src="/images/selectcourt-v2.avif"  />
+</Frame>
+  </Step>
+  <Step title="Aprueba PNK">
+    Hacer stake requiere una aprobación ERC-20 estándar para que KlerosCore pueda usar tu PNK. Debes aprobar cada vez que aumentes tu stake.
+  </Step>
+  <Step title="Establece tu stake">
+    Haz clic en **Stake**, introduce una cantidad igual o superior al mínimo de la corte y confirma en tu billetera.
+  </Step>
+  <Step title="Verifica">
+    Confirma que tu stake aparece correctamente en tu perfil.
+  <Frame >
+  <img src="/images/checkstake-v2.avif"  />
+</Frame>
+ 
+ </Step>
+</Steps>
+
+<Frame caption="Resumen: flujo de stake en V2 (infografía pendiente)">
+  <img src="/images/Staking PNK.png" alt="Resumen: flujo de stake en V2, infografía pendiente" />
+</Frame>
+
+Lo que debes saber sobre el stake en V2:
+
+- **Tu PNK se transfiere al contrato KlerosCore** mientras está en stake (en V1 permanecía en tu billetera). Puedes retirar el stake en cualquier momento, salvo que esté bloqueado en un caso activo.
+- **Puedes hacer stake en un máximo de 4 cortes** (un límite por eficiencia de gas), así que planifica tu selección de cortes.
+- **El momento importa**: la corte pasa por las fases Staking, Generating y Drawing. Los cambios de stake realizados durante las fases Generating o Drawing se registran, pero solo surten efecto en la siguiente fase Staking. La interfaz muestra si tu stake está "Current" o "Delayed".
+
+---
+
+## Ser seleccionado
+
+La selección es aleatoria pero ponderada por el stake: tu probabilidad en cada sorteo es tu stake dividido entre el stake total de la corte (5,000 PNK en una corte con 100,000 PNK en stake te da un 5 % de probabilidad por sorteo). Puedes ser seleccionado varias veces para el mismo caso; cada selección equivale a un voto, y todos tus votos deben ser por la misma opción.
+
+Cuando eres seleccionado:
+
+- Una parte de tu stake se bloquea como garantía
+- El caso aparece en **My Cases**
+- Recibes una notificación en la interfaz (y por correo electrónico si activaste las notificaciones en Settings, algo muy recomendable para recibir recordatorios de plazos)
+
+---
+
+## Gestionar tu primera disputa
+
+<Frame caption="Resumen: gestionar tu primera disputa (infografía pendiente)">
+  <img src="/images/Handling your first dispute.png" alt="Resumen: gestionar tu primera disputa, infografía pendiente" />
+</Frame>
+
+<Steps>
+  <Step title="Ser seleccionado">
+    Recibes una notificación y tu panel se actualiza.
+  </Step>
+  <Step title="Abre el caso en My Cases">
+    La vista del caso tiene estas secciones: **Title & Description** (de qué trata la disputa), **Question** (la pregunta concreta que hay que responder), **Voting Options**, **Policy** (reglas de evaluación), **Evidence** (presentaciones de las partes) y **Timeline** (fase actual y plazos).
+  </Step>
+  <Step title="Lee primero la política de la corte">
+    La política es tu guía para votar correctamente. Léela antes de revisar la evidencia.
+  </Step>
+  <Step title="Examina toda la evidencia presentada">
+    Lee todo con detenimiento, comprueba las marcas de tiempo de las presentaciones, verifica las afirmaciones técnicas y toma notas de los puntos clave. Reserva tiempo suficiente para ello (2-4 horas para un caso sustancial).
+  </Step>
+  <Step title="Considera todas las opciones de voto">
+    El patrón habitual es: **In favor of Requester** (la evidencia respalda la reclamación del solicitante), **In favor of Respondent** (la evidencia respalda la posición del demandado) y **Refuse to Arbitrate** (el caso es inválido, ilegal o moralmente inaceptable).
+  </Step>
+  <Step title="Emite tu voto (o haz commit si los votos son ocultos)">
+    Consulta los dos flujos de votación más abajo.
+  </Step>
+  <Step title="Escribe tu justificación">
+    Explica tu razonamiento: un breve resumen del caso, la evidencia clave que revisaste, las secciones relevantes de la política y tu conclusión. Las justificaciones admiten formato Markdown, ayudan a los jurados en las rondas de apelación y sientan precedentes.
+  </Step>
+  <Step title="Espera el período de apelación">
+    Cualquiera de las partes puede apelar financiando las tarifas. Si solo una parte paga las tarifas de apelación, esa parte gana automáticamente.
+  </Step>
+  <Step title="Reclama las recompensas tras la ejecución">
+    Una vez que el fallo es definitivo y se ejecuta, las recompensas pueden reclamarse.
+  </Step>
+</Steps>
+
+### Votar en cortes con votos visibles
+
+1. Selecciona tu opción
+2. Haz clic en **Vote**
+3. Confirma la transacción
+4. Tu voto es visible de inmediato
+
+### Votar en cortes con votos ocultos (commit-reveal)
+
+1. Selecciona tu opción
+2. Escribe tu justificación
+3. Haz clic en **Commit** (envía un hash de tu voto)
+4. Espera a la fase de revelación
+5. Vuelve y haz clic en **Reveal**
+6. Tu voto ya es visible
+
+<Warning>
+En las cortes con votos ocultos, mantén tu voto en secreto y recuerda volver para la fase de revelación. No revelar implica perder tu PNK bloqueado. Si un jurado revela su voto antes de tiempo, cualquiera puede denunciarlo y reclamar parte de su stake bloqueado.
+</Warning>
+
+### Errores comunes
+
+| Error | Cómo evitarlo |
+| --- | --- |
+| No leer la política | Léela siempre antes de revisar la evidencia |
+| Votar según la opinión personal | Sigue la política, no tus sentimientos |
+| No cumplir los plazos | Activa las notificaciones y revisa con regularidad |
+| Olvidar revelar | Configura un recordatorio para el período de revelación |
+
+No cumplir un plazo implica una penalización sobre el stake y la retirada del stake de todas las cortes.
+
+---
+
+## Recompensas y penalizaciones
+
+Obtienes recompensas por votar de forma **coherente** con el resultado final:
+
+- **Tarifas de arbitraje** (ETH o ERC-20 incluidos en la lista blanca) pagadas por las partes en disputa y repartidas entre los jurados coherentes: `jurorReward = (totalFees / numberOfCoherentVotes) × degreeOfCoherence`
+- **Redistribución de PNK** de los jurados incoherentes: `pnkReward = (totalPenalties / numberOfCoherentVotes) × degreeOfCoherence`
+
+En el Classic Dispute Kit, la coherencia es binaria: coherencia total si tu voto coincide con el fallo final, cero si difiere o si no revelaste. Los jurados incoherentes pierden una parte de su stake bloqueado y renuncian a las recompensas por tarifas.
+
+**Ejemplo práctico**: 5 jurados a 0.05 ETH cada uno (0.25 ETH en total), 3 coherentes y 2 incoherentes. Cada jurado coherente recibe unos 0.083 ETH más una parte del PNK de los jurados incoherentes.
+
+**Reclamación**: un bot de Kleros reclama las recompensas automáticamente aproximadamente cada hora, o puedes reclamarlas manualmente desde la página del caso o el panel de recompensas. La interfaz permite agrupar reclamaciones para ahorrar gas.
+
+<Frame caption="Resumen: recompensas de los jurados y coherencia (infografía pendiente)">
+  <img src="/images/The juror incentive system.png" alt="Resumen: recompensas de los jurados y coherencia, infografía pendiente" />
+</Frame>
+
+---
+
+## Apelaciones y saltos de corte
+
+- La financiación de la apelación sigue `feeForJuror × ((nbVotes × 2) + 1)`: la parte ganadora debe financiar 1× el costo de la apelación y la parte que impugna 2×. Con 3 jurados a 0.05 ETH, eso supone 0.35 ETH para la parte ganadora y 0.70 ETH para la que impugna.
+- La parte que impugna solo puede financiar durante la **primera mitad** del período de apelación; la parte ganadora dispone del período completo.
+- Cada ronda de apelación aumenta el número de jurados (`n×2 + 1`). Cuando el número alcanza el umbral `jurorsForCourtJump` de la corte (por ejemplo, 511), la disputa escala a la corte superior y el número de jurados se ajusta a los parámetros de la nueva corte. Puedes ser seleccionado para casos que han saltado de corte; espera que sean más complejos.
+
+<Frame caption="Resumen: apelaciones y saltos de corte (infografía pendiente)">
+  <img src="/images/Appeals.png" alt="Resumen: apelaciones y saltos de corte, infografía pendiente" />
+</Frame>
+
+---
+
+## Disputas entre cadenas
+
+V2 admite de forma nativa disputas originadas en otras cadenas EVM (Ethereum, Gnosis Chain, Polygon, Optimism y más). Como jurado, todo ocurre en Arbitrum: las disputas llegan mediante un puente, la evidencia aparece unificada en la interfaz y los fallos se envían de vuelta a la cadena de origen. El proceso es idéntico para ti, sin importar de dónde provenga la disputa.
+
+---
+
+## Solución de problemas
+
+| Problema | Qué hacer |
+| --- | --- |
+| Error de red incorrecta | Cambia a Arbitrum One (Rabby lo solicita automáticamente) |
+| PNK no visible en la billetera | Importa manualmente el contrato del token PNK; verifica la dirección en fuentes oficiales |
+| Falla la transacción de stake | Comprueba el saldo de PNK, el ETH para gas y el mínimo de la corte |
+| El caso no aparece en My Cases | Confirma que fuiste seleccionado, espera la confirmación y actualiza |
+| Pasó el plazo de votación | Los votos tardíos nunca se aceptan; la próxima vez configura varios recordatorios |
+
+Para obtener ayuda: [Discord](https://discord.gg/MhXQGCyHd9), [Telegram](https://t.me/kleros) o support@kleros.io.
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={3}>
+  <Card title="Guía para principiantes (Notion)" icon="book-open" href="https://kleros.notion.site/Complete-Beginner-s-Guide-to-Kleros-Court-V2-20e9a9db4f08803da1b2c372ed2f2c6e">
+    La guía completa para principiantes con capturas de pantalla
+  </Card>
+  <Card title="Cómo funciona Kleros Court" icon="gavel" href="/es/court/how-it-works">
+    El ciclo de vida completo de una disputa en V1 y V2
+  </Card>
+  <Card title="Token PNK" icon="coins" href="/es/concepts/pnk-token">
+    Qué es PNK y dónde conseguirlo
+  </Card>
+</CardGroup>

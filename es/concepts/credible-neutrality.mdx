@@ -1,0 +1,80 @@
+---
+title: "Neutralidad creíble"
+description: "Cómo la selección aleatoria de jurados, la votación independiente, la participación abierta y la ejecución mediante contratos inteligentes hacen que el arbitraje de Kleros sea estructuralmente imparcial."
+---
+
+
+
+Un sistema de resolución de disputas solo es útil si todas las partes confían en sus resultados. Kleros lo consigue mediante la **neutralidad creíble**, la propiedad por la cual el diseño del sistema hace que el sesgo sea estructuralmente difícil, y no solo una promesa.
+
+---
+
+## ¿Qué hace que un sistema sea creíblemente neutral?
+
+Un mecanismo es creíblemente neutral cuando sus reglas no favorecen sistemáticamente a ningún participante. Los participantes no necesitan confiar en el operador: pueden verificar a partir del propio diseño que el sistema trata a todos de forma justa.
+
+Kleros lo consigue mediante cuatro propiedades de diseño:
+
+### 1. Selección aleatoria de jurados
+
+Los jurados se sortean de forma aleatoria, ponderada por el stake de PNK. Ninguna parte de una disputa puede elegir ni influir en quién revisa su caso. La aleatoriedad se genera mediante Chainlink VRF con verificación on-chain, lo que garantiza que ni Kleros ni ningún participante controlen la selección.
+
+### 2. Votación independiente
+
+Los jurados votan sin saber cómo han votado los demás (votación commit-reveal o cifrada). Evalúan las evidencias de forma independiente y están incentivados a llegar a la respuesta verdadera mediante el mecanismo del punto de Schelling, no a coordinarse ni a seguir a un líder.
+
+### 3. Participación abierta
+
+Cualquiera puede convertirse en jurado haciendo stake de PNK: no hay permisos, procesos de solicitud ni requisitos de credenciales. Cualquiera puede enviar evidencias. Cualquiera puede financiar una apelación. El sistema es sin permisos en todos los niveles.
+
+### 4. Ejecución determinista
+
+Los fallos se ejecutan mediante contratos inteligentes, no por administradores humanos. Una vez que concluye el proceso de votación y apelación, el resultado se ejecuta automáticamente. Ningún intermediario puede anular, retrasar ni ejecutar selectivamente un fallo.
+
+---
+
+## Comparación con los sistemas tradicionales
+
+| Propiedad | Arbitraje tradicional | Kleros |
+|----------|----------------------|--------|
+| **Selección del árbitro** | Las partes negocian o la institución asigna | Aleatoria, ponderada por stake, verificable |
+| **Garantía de neutralidad** | Reputación y regulación | Criptográfica y económica |
+| **Transparencia** | A menudo confidencial | Totalmente on-chain y auditable |
+| **Ejecución** | Sistema judicial | Ejecución por contrato inteligente |
+| **Apelación** | Varía según la jurisdicción | Sin permisos, financiada colectivamente |
+| **Costo** | A menudo tarifas fijas elevadas | Escala con la complejidad de la disputa |
+
+---
+
+## El papel de la transparencia
+
+Todos los aspectos de una disputa de Kleros son públicamente auditables:
+
+- La creación de la disputa y sus parámetros están on-chain
+- Los envíos de evidencias son de acceso público
+- Los compromisos y las revelaciones de votos quedan registrados
+- Las distribuciones de tarifas y los movimientos de PNK son rastreables
+- Los parámetros y las políticas de las cortes se publican
+
+Esta transparencia significa que cualquier parte puede verificar de forma independiente que el proceso se llevó a cabo conforme a las reglas del protocolo. A diferencia de los procedimientos de arbitraje opacos, las disputas de Kleros pueden ser auditadas por cualquiera a posteriori.
+
+---
+
+## Limitaciones
+
+La neutralidad creíble es una **propiedad de diseño**, no una garantía de resultados correctos. Kleros es neutral en el sentido de que sus reglas no favorecen a ninguna parte, pero los jurados siguen siendo humanos y pueden equivocarse. El sistema de apelaciones es la respuesta del protocolo a esto: si el primer jurado se equivoca, jurados progresivamente más grandes pueden corregir el error.
+
+El sistema también depende de la calidad de las políticas de las cortes. Una política mal redactada que deje demasiado margen a la interpretación debilita el punto de Schelling y dificulta que los jurados converjan en la respuesta correcta. Las políticas bien diseñadas refuerzan la neutralidad creíble al proporcionar criterios de evaluación claros.
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Teoría de juegos" icon="chess" href="/es/concepts/game-theory">
+    La mecánica de incentivos que impone un comportamiento neutral
+  </Card>
+  <Card title="Resolución de disputas" icon="scale-balanced" href="/es/concepts/dispute-resolution">
+    Cómo funciona el sistema en su conjunto de principio a fin
+  </Card>
+</CardGroup>

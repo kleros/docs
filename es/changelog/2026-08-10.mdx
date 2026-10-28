@@ -1,0 +1,60 @@
+---
+title: "10 de agosto de 2026"
+description: "Veashi Scanner en el puente Vea, recompensas de jurados de julio en Court, evidencias de Governor v1 en Dispute Resolver y RPC de respaldo en Escrow."
+---
+
+## Nuevas funciones
+
+### Veashi Scanner para el puente Vea
+
+El [puente Vea](/es/developers/crosschain/vea-bridge) incorpora **Veashi Scanner**, una nueva app web para rastrear mensajes cross-chain de extremo a extremo. Los usuarios pueden buscar por transacción, filtrar por cadena de origen y de destino, explorar una tabla de mensajes y profundizar en páginas por mensaje que muestran detalles del puente, el adaptador, el umbral y la ruta. Un indexador complementario basado en Envio (`veashi-envio-yaho`) respalda el escáner, y hay un indexador independiente `relayer-envio-inbox` disponible para los operadores que ejecutan relayers de Vea.
+
+### Envío de evidencias de Governor v1 en Dispute Resolver
+
+Kleros Dispute Resolver ahora admite el envío de evidencias en disputas de [Kleros Governor v1](/es/products/governor). Governor v1 está integrado en el mapeo de redes y contratos para que los usuarios puedan adjuntar evidencias directamente desde la interfaz de Dispute Resolver.
+
+### Recompensas de staking de julio en Court
+
+El modal de reclamo de [Kleros Court](/es/court/overview) incorpora la instantánea de recompensas de julio, por lo que los jurados ya pueden reclamar las recompensas de staking de julio desde la app.
+
+### Banner de notificaciones en Foresight
+
+La página de inicio de [Foresight](/es/products/foresight) ahora muestra un banner de notificaciones que refleja si la billetera conectada está suscrita a las alertas. Se han simplificado la página para cancelar la suscripción y el formulario de datos de contacto para notificaciones, y se ha pulido la ventana emergente de éxito de PredictAll.
+
+### Experimento Movies Round 3 en Foresight
+
+Un nuevo experimento "Movies Round 3" está activo en la página de inicio de [Foresight](/es/products/foresight), con un banner actualizado e ilustraciones renovadas en la miniguía de la primera visita.
+
+### Profundidad de confirmación de bloques configurable en los bots de Zodiac
+
+Los bots del [módulo Zodiac de Kleros](/es/products/governor) exponen una nueva variable de entorno para configurar la profundidad de confirmación de bloques. Los operadores ya pueden ajustar la seguridad frente a reorgs en cada despliegue.
+
+## Actualizaciones
+
+### Página de inicio y modal de reclamo más rápidos en Court
+
+[Kleros Court](/es/court/overview) almacena en caché las instantáneas de recompensas y omite obtenciones innecesarias de MetaEvidence en la página de inicio y en el modal de reclamo, por lo que la carga inicial es más rápida y los estados de instantánea vacía se renderizan correctamente.
+
+### RPC de respaldo en Escrow V1 y Escrow V2
+
+Tanto la interfaz de [Escrow](/es/products/escrow) V1 como la app web de Escrow V2 añaden un mecanismo de RPC de respaldo. Las solicitudes de tokens y cadenas siguen funcionando cuando el RPC principal no está disponible, y los metadatos de tokens personalizados ahora se resuelven mediante un respaldo on-chain en Escrow V2, mientras que en el flujo "Add Custom Token" de Escrow V1 los metadatos faltantes se gestionan con elegancia.
+
+### Gestión de gas del bot keeper en Court V2
+
+El bot keeper de Kleros V2 ahora usa `estimateGas` en lugar de un valor de gas fijo para `draw` y `execute`, limita el gas de los envíos reales al límite del proveedor, y reduce a la mitad el tamaño del lote y reintenta cuando el gas superaría el máximo configurado. Esto debería reducir las transacciones del keeper fallidas o bloqueadas.
+
+### Mejoras en la lista de casos de Court V2
+
+Se ha ajustado la alineación de la vista de lista de casos en la [app web de Kleros V2](/es/products/overview) en la lista de información de disputas, la vista de lista y el banner de período.
+
+### Enlaces de ayuda y tutoriales actualizados
+
+Los enlaces del menú de ayuda, las preguntas frecuentes y los tutoriales integrados en la [app web de Kleros V2](/es/products/overview), [Escrow](/es/products/escrow) V1 y V2, y Governor V2 se han redirigido a sus URL de documentación actuales.
+
+## Corrección de errores
+
+**Explorador de bloques predeterminado en Scout** — [Scout](/es/products/scout) ahora usa el explorador de bloques correcto para los enlaces de la página de perfil y las utilidades de URL, de modo que las entradas de la lista enlazan al explorador previsto.
+
+**Las propuestas de Zodiac malformadas ya no bloquean el bot** — Los bots del [módulo Zodiac](/es/products/governor) refuerzan el análisis de preguntas de Snapshot y Reality.eth. Una transacción de SafeSnap malformada ahora genera un error de validación estructurado en lugar de bloquear el bot.
+
+**Importes de fianza correctos según la cadena en los bots de Zodiac** — Los importes de fianza en las notificaciones del [módulo Zodiac](/es/products/governor) ahora se etiquetan con el símbolo de la moneda nativa de la cadena, para que los mensajes reflejen con precisión el activo de la fianza.

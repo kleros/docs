@@ -1,0 +1,109 @@
+---
+title: "Sorteo"
+description: "Cómo Kleros sortea a los jurados mediante un árbol de sumas de sorteo, la ponderación por stake de PNK, un ciclo de staking de tres fases y la generación segura de números aleatorios on-chain."
+---
+
+
+
+El **sorteo** (la selección de quienes toman decisiones por lotería) es una de las instituciones democráticas más antiguas. La antigua Atenas lo usaba para seleccionar jurados y magistrados, evitando la concentración de poder. Kleros aplica este principio a la resolución descentralizada de disputas.
+
+En Kleros, los jurados se sortean aleatoriamente de un grupo de stakers, con una probabilidad de selección proporcional al PNK en stake de cada persona. Esta página explica por qué se usa el sorteo y cómo funciona a nivel de protocolo.
+
+---
+
+## ¿Por qué la selección aleatoria?
+
+El sorteo resuelve varios problemas que afectan a los métodos de selección alternativos:
+
+**Resistencia a la manipulación** Como la selección es aleatoria, nadie puede predecir ni controlar qué jurados son sorteados. Esto dificulta el soborno dirigido y la colusión.
+
+**Resistencia Sybil** La probabilidad de ser sorteado es proporcional al PNK en stake, no al número de cuentas. Un atacante que reparta sus tokens entre varias billeteras no obtiene ninguna ventaja frente a mantenerlos en una sola.
+
+**Escalabilidad** Solo se necesita un pequeño subconjunto de stakers para cada disputa. El sistema puede gestionar muchas disputas simultáneamente sin que todos los participantes tengan que revisar todos los casos.
+
+**Autoselección por especialización** Los jurados eligen en qué cortes hacer stake, lo que los empareja de forma natural con las disputas que están capacitados para evaluar.
+
+---
+
+## Cómo funciona la selección de jurados
+
+### El árbol de sumas de sorteo
+
+Kleros usa una estructura de datos llamada **árbol de sumas de sorteo** (sortition sum tree) para sortear jurados de forma eficiente en proporción a su stake. Cada staker ocupa un rango en el árbol proporcional a su PNK. Luego, un número aleatorio selecciona una posición en el árbol, y se sortea al staker cuyo rango contiene esa posición.
+
+<Accordion title="Ejemplo visual del Yellow Paper de Kleros">
+Imagina que 6 stakers han hecho stake de un total de 10,000 PNK:
+
+| Staker | En stake | Rango |
+|--------|--------|-------|
+| A | 1,000 | 0 – 999 |
+| B | 1,500 | 1,000 – 2,499 |
+| C | 500 | 2,500 – 2,999 |
+| D | 3,000 | 3,000 – 5,999 |
+| E | 1,500 | 6,000 – 7,499 |
+| F | 2,500 | 7,500 – 9,999 |
+
+Si se sortean 5 números aleatorios (p. ej., 2519, 4953, 2264, 3342, 9531), se seleccionan los stakers B, D, C, D y F. El staker D obtiene un **peso de 2** (sorteado dos veces), lo que significa que obtiene 2 votos y el doble de riesgo/recompensa. Todos los demás sorteados una vez obtienen un peso de 1.
+</Accordion>
+
+Un mismo jurado **puede ser sorteado varias veces** para la misma disputa. Esto es intencionado: garantiza que repartir los tokens entre varias billeteras no aporte ninguna ventaja frente a mantenerlos en una sola dirección, lo que preserva la resistencia Sybil.
+
+### El ciclo de tres fases
+
+El Sortition Module opera en tres fases para evitar la manipulación:
+
+```mermaid
+graph LR
+    S["Fase de staking"] --> G["Fase de generación"]
+    G --> D["Fase de sorteo"]
+    D --> S
+    
+    style S fill:#27ae60,color:#fff
+    style G fill:#f39c12,color:#fff
+    style D fill:#9b59b6,color:#fff
+```
+
+**Fase de staking**: los jurados pueden ajustar libremente su stake. El árbol de sorteo se actualiza en tiempo real. Esta fase dura hasta que ha transcurrido un tiempo mínimo de staking y al menos una disputa necesita jurados.
+
+**Fase de generación**: se solicita un número aleatorio a la fuente de RNG. Los cambios de stake enviados durante esta fase se registran pero se aplazan; no afectarán a la ronda de sorteo actual. Esto evita la manipulación del stake de último momento una vez conocida la semilla aleatoria.
+
+**Fase de sorteo**: los jurados se sortean usando el número aleatorio y la distribución del stake al final de la fase de staking. Los stakes aplazados permanecen en cola. El sorteo continúa hasta que todas las disputas pendientes tienen sus jurados o transcurre un tiempo máximo de sorteo.
+
+<Warning>
+Si haces stake durante las fases de generación o de sorteo, tus cambios no afectarán a tus probabilidades en la ronda actual. Surtirán efecto en la siguiente fase de staking. La interfaz de Court muestra si tus stakes son "Current" (actuales) o "Delayed" (aplazados).
+</Warning>
+
+---
+
+## Generación de números aleatorios
+
+La aleatoriedad segura es fundamental: si alguien puede predecir o influir en el número aleatorio, puede manipular la selección de jurados.
+
+Kleros V2 usa **Randomizer.io** como fuente principal de números aleatorios en el despliegue de producción (Arbitrum One), con Chainlink VRF y BlockHash RNG también desplegados como alternativas. Los tres contratos implementan una interfaz común `IRNG` para que el SortitionModule pueda cambiar de fuente de RNG mediante la gobernanza. El parámetro `rngLookahead` establece la distancia mínima en bloques entre la solicitud y la recepción del número aleatorio, lo que garantiza que el resultado no se pueda predecir en el momento de la solicitud.
+
+La solicitud de RNG se realiza con un parámetro de **lookahead** configurable: el número aleatorio depende de un bloque futuro, no del actual. Esto impide que el solicitante conozca el resultado en el momento de la solicitud.
+
+<Note>
+En Kleros V1, la selección de jurados está integrada en el contrato KlerosLiquid en lugar de en un SortitionModule independiente, y la aleatoriedad proviene de una fuente basada en blockhash. V2 traslada la selección al SortitionModule independiente y añade fuentes de RNG intercambiables.
+</Note>
+
+---
+
+## Contexto histórico
+
+El sorteo tiene una larga historia en la gobernanza democrática. El *kleroterion* ateniense, un dispositivo de aleatorización de piedra, seleccionaba jurados para los juicios y ciudadanos para los cargos públicos. La propia palabra "Kleros" (κλῆρος) significa "suerte" o "asignación" en griego.
+
+El nombre del token PNK, *pinakion*, hace referencia a la placa de bronce que los ciudadanos atenienses usaban como identificación para la selección de jurados. El paralelismo es intencionado: Kleros aplica principios democráticos antiguos a los sistemas descentralizados modernos.
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Jerarquía de cortes" icon="sitemap" href="/es/court/court-hierarchy">
+    Cómo se organizan las cortes y cómo funciona el staking entre cortes
+  </Card>
+  <Card title="Yellow Paper de Kleros §4.5" icon="file" href="https://kleros.io/yellowpaper.pdf">
+    Tratamiento formal de la selección de jurados, la resistencia Sybil y la generación de números aleatorios
+  </Card>
+</CardGroup>

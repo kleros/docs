@@ -1,0 +1,121 @@
+---
+title: "Formato de políticas"
+description: "Formato de políticas de Kleros V2: especificación JSON para las políticas de las cortes en PolicyRegistry y las políticas de disputa referenciadas mediante policyURI en las plantillas de disputa."
+---
+
+Kleros utiliza dos tipos de documentos de política:
+
+1. **Políticas de corte**: definen las reglas generales de una corte específica de Kleros. Se registran en el contrato `PolicyRegistry` y se muestran a los jurados en cada disputa de esa corte.
+2. **Políticas de disputa**: definen las reglas específicas de una aplicación arbitrable concreta. Se referencian mediante `policyURI` en la plantilla de disputa. Se espera que los jurados lean ambas.
+
+Ambas son archivos JSON almacenados en IPFS.
+
+---
+
+## JSON de la política de corte
+
+```json
+{
+  "name": "General Court Policy",
+  "description": "Rules for the General Court - handles disputes not covered by specialized courts.",
+  "summary": "The General Court is the court of last resort for disputes without a specialized subcourt. Jurors should apply reasonable judgment to the facts presented.",
+  "requiredFields": [
+    {
+      "label": "Contract terms",
+      "description": "The original agreement between the parties, if any"
+    },
+    {
+      "label": "Evidence of breach",
+      "description": "Specific evidence showing how the agreement was violated"
+    }
+  ],
+  "rulingOptions": {
+    "titles": ["Option A", "Option B"],
+    "descriptions": [
+      "What happens if Option A is selected",
+      "What happens if Option B is selected"
+    ]
+  },
+  "uri": "/ipfs/QmPolicyFileHash"
+}
+```
+
+---
+
+## Política de disputa (por aplicación)
+
+Las políticas de disputa se vinculan mediante el campo `policyURI` en las plantillas de disputa. Definen cómo deben fallar los jurados para **tu aplicación específica**.
+
+Una política de disputa bien redactada debe incluir:
+
+| Sección | Descripción |
+|---------|-------------|
+| **Contexto** | Qué hace tu aplicación y qué representa la disputa |
+| **Criterios de fallo** | Condiciones exactas para cada opción de fallo |
+| **Casos límite** | Cumplimiento parcial, evidencia ambigua, información faltante |
+| **Negarse a arbitrar** | Cuándo deben los jurados seleccionar el fallo 0 (disputa inválida, fuera de alcance) |
+| **Requisitos de evidencia** | Qué tipos de evidencia son aceptables |
+
+### Ejemplo de estructura de política de disputa
+
+```json
+{
+  "name": "Escrow V2 Dispute Policy",
+  "version": "1.0",
+  "description": "Rules for resolving escrow payment disputes on Escrow V2.",
+  "rulingCriteria": {
+    "0": "Refuse to Arbitrate - The dispute is invalid, the question is unanswerable, or critical evidence is missing.",
+    "1": "Refund the Buyer - The seller failed to deliver the goods or services as described.",
+    "2": "Pay the Seller - The seller fulfilled their obligations as described in the transaction terms."
+  },
+  "edgeCases": [
+    "If delivery is partial, consider whether it materially meets the contract terms.",
+    "If the buyer raised the dispute in bad faith with no evidence, prefer ruling 2.",
+    "If terms are ambiguous and both parties have plausible claims, prefer ruling 0."
+  ],
+  "evidenceGuidelines": "Acceptable: screenshots, delivery confirmations, contract terms, payment records. Not acceptable: personal testimony without supporting evidence.",
+  "policyURI": "/ipfs/QmPolicyIPFSHash"
+}
+```
+
+---
+
+## Campo `specification` en las plantillas de disputa
+
+Las plantillas de disputa pueden incluir un campo `specification` que hace referencia al KIP (Kleros Improvement Proposal) o al estándar que sigue la plantilla:
+
+```json
+{
+  "specification": "KIP-99",
+  ...
+}
+```
+
+Es informativo: ayuda a auditores e integradores a entender qué estándar rige la estructura de la plantilla. Reality V2 lo usa para enlazar a la especificación de arbitraje de Reality.eth.
+
+---
+
+## Contrato PolicyRegistry
+
+```solidity
+function setPolicy(uint96 _courtID, string calldata _courtName, string calldata _policyURI) external
+```
+
+Solo el governor de KlerosCore puede registrar políticas de corte. `_policyURI` es un URI de IPFS que apunta al JSON de la política de corte.
+
+Para leer la política actual de una corte:
+
+```solidity
+(string memory name, string memory uri) = policyRegistry.policies(courtID);
+```
+
+---
+
+## Consejos para redactar buenas políticas
+
+- Escribe para un público general: los jurados no son expertos legales ni especialistas en el dominio
+- Usa ejemplos concretos para cada opción de fallo
+- Especifica exactamente qué evidencia es suficiente para cambiar el fallo
+- Evita lenguaje ambiguo como "razonable" sin definir qué significa en tu contexto
+- Prueba la política con disputas simuladas antes del despliegue
+- Almacénala en IPFS con varios proveedores de pinning (Pinata, Infura, Cloudflare) para garantizar su permanencia

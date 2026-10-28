@@ -1,0 +1,140 @@
+---
+title: "Estilo de código"
+description: "Convenciones de commits de Git, reglas de estilo de Solidity y pautas para lenguajes web para quienes contribuyen en los repositorios del protocolo, frontend y subgraph de Kleros."
+---
+
+# Estilo de código y pautas
+
+Convenciones de código para contribuir a los repositorios de Kleros.
+
+---
+
+## Git
+
+### Mensajes de commit
+
+Sigue [Conventional Commits](https://conventionalcommits.org/):
+
+```
+<type>(<scope>): <description>
+
+feat(contracts): add DisputeKitShutter
+fix(web): correct appeal cost calculation
+docs(reference): update sortition module spec
+chore(deps): bump ethers to v6
+test(contracts): add edge case for court jump
+```
+
+Tipos: `feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `style`, `perf`, `ci`, `build`
+
+El monorepo kleros-v2 lo impone con [commitlint](https://commitlint.js.org/) y [Commitizen](http://commitizen.github.io/cz-cli/).
+
+### Nombres de ramas
+
+Usa nombres de rama descriptivos con el tipo como prefijo:
+
+```
+feat/appeal-crowdfunding
+fix/sortition-drawing-timeout
+docs/vea-bridge-routes
+```
+
+---
+
+## Solidity
+
+### Versión
+
+Los contratos de Kleros V2 usan Solidity `0.8.24`. Fija la versión en el pragma:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.24;
+```
+
+### Formato
+
+Los repositorios de Kleros usan [Prettier](https://prettier.io/) con el plugin de Solidity. La configuración está en la raíz del repositorio.
+
+```bash
+# Format all files
+yarn prettier --write .
+```
+
+### Convenciones
+
+- Usa comentarios NatSpec (`///` o `/** */`) en todas las funciones public y external
+- Agrupa las secciones del contrato con encabezados de comentario:
+
+```solidity
+// ************************************* //
+// *             Storage               * //
+// ************************************* //
+
+// ************************************* //
+// *        Function Modifiers         * //
+// ************************************* //
+
+// ************************************* //
+// *            Constructor            * //
+// ************************************* //
+
+// ************************************* //
+// *         State Modifiers           * //
+// ************************************* //
+
+// ************************************* //
+// *           Public Views            * //
+// ************************************* //
+```
+
+- Usa la anotación `custom:oz-upgrades-unsafe-allow constructor` en los contratos proxiables UUPS
+- Usa el patrón `reinitializer(n)` para la inicialización de contratos actualizables
+- Prefiere la visibilidad explícita (`public`, `external`, `internal`, `private`)
+- Usa `require` con mensajes de error o errores personalizados
+
+### Patrón de proxy
+
+Los contratos de V2 usan el patrón de proxy UUPS. Los contratos de implementación heredan de `UUPSProxiable` e `Initializable`:
+
+```solidity
+contract KlerosCore is IArbitratorV2, UUPSProxiable, Initializable {
+    function _authorizeUpgrade(address) internal view override onlyByGovernor {
+        // NOP
+    }
+}
+```
+
+---
+
+## Lenguajes web (TypeScript/React)
+
+### Formato
+
+- Prettier para el formato (configuración en la raíz del repositorio)
+- ESLint para el linting (configuración en `.eslintrc` o en el paquete `eslint-config/`)
+
+### Convenciones
+
+- Modo estricto de TypeScript
+- Componentes funcionales de React con hooks
+- Nombres de archivo: `kebab-case` para archivos, `PascalCase` para componentes
+- Usa la biblioteca compartida `kleros-app` para hooks y utilidades comunes de React
+- El código generado (p. ej., los bindings de tipos de contratos) va en `src/hooks/contracts/generated.ts`
+
+---
+
+## Ejecutar los linters
+
+```bash
+# Lint all packages in the monorepo
+yarn lint
+
+# Fix auto-fixable issues
+yarn lint --fix
+
+# Format with Prettier
+yarn prettier --write .
+```
+
+La CI ejecuta el linting en todos los pull requests. Los PR con errores de lint no pasarán las comprobaciones.

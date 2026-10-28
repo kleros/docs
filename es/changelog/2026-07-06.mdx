@@ -1,0 +1,40 @@
+---
+title: "6 de julio de 2026"
+description: "Recompensas de jurados de junio en Court, Foresight añade métricas de traders y volumen, Scout incorpora orientación para agentes y correcciones de conexión de billetera en Curate y Scout."
+---
+
+## Nuevas funciones
+
+### Recompensas de jurados de junio disponibles para reclamar
+
+Las recompensas de jurados de junio de 2026 ya están disponibles en [Kleros Court](/es/court/overview). Abre el modal de reclamo en mainnet o xDai para cobrar las recompensas de los casos que resolviste el mes pasado.
+
+### Métricas de traders y volumen en Foresight
+
+[Kleros Foresight](/es/products/foresight) ahora muestra el número de traders y el volumen de trading junto con los datos de mercado existentes, lo que te ofrece una imagen más completa de la actividad y la liquidez al evaluar un mercado de predicción.
+
+### Orientación lista para agentes y modo Learn · AI en Scout
+
+[Kleros Scout](/es/products/scout) añade una experiencia dedicada para agentes en la página de la guía. La antigua Guía rápida ahora es **Learn · AI**, con un selector Humano/Agente para que puedas alternar entre el recorrido para personas y las instrucciones escritas para asistentes de IA. Scout también incorpora un punto de entrada legible por agentes (`/llms.txt`) y un enlace visible en el pie de página para que los agentes puedan descubrir la orientación de Scout desde cualquier ruta. La orientación para agentes cubre los cuatro registros fijos de Scout en Gnosis.
+
+## Actualizaciones
+
+### Entrega de datos de Foresight más rápida y fiable
+
+Las respuestas de la API de [Foresight](/es/products/foresight) ahora se sirven mediante caché de CDN con opción de exclusión por solicitud, y las rutas de datos frescos y obsoletos se gestionan por separado. Las páginas de mercado cargan más rápido y siguen respondiendo bajo carga, mientras que las solicitudes sensibles aún pueden omitir la caché cuando sea necesario.
+
+### Valores actualizados de la plantilla CSV en Foresight
+
+La plantilla CSV de mercados de [Foresight](/es/products/foresight) ahora usa los valores predeterminados actuales, de modo que los creadores que parten de la plantilla obtienen parámetros sensatos y actualizados desde el principio.
+
+## Corrección de errores
+
+**Conexión de billetera restablecida en Curate y Scout**: [Kleros Curate](/es/products/curate) (clásico) y [Kleros Scout](/es/products/scout) fijaron la biblioteca de conexión de billeteras en una versión compatible, lo que resuelve problemas en los que el flujo "Connect Wallet" podía fallar o quedarse bloqueado para algunos usuarios.
+
+**Los elementos eliminados ahora se ordenan correctamente en Scout**: [Kleros Scout](/es/products/scout) corrige el orden de los elementos eliminados en las listas de registros para que las entradas aparezcan en el orden esperado según su marca de tiempo.
+
+**Financiación de apelaciones de Proof of Humanity V2 en Dispute Resolver**: [Dispute Resolver](/es/developers/products/dispute-resolver/overview) ahora usa los multiplicadores correctos de la tarifa de apelación para las disputas de Proof of Humanity V2, de modo que las estimaciones del costo de apelación y los depósitos requeridos coinciden con lo que espera el contrato.
+
+**El gráfico ya no duplica el último punto en Foresight**: los gráficos de mercado de [Foresight](/es/products/foresight) dejaron de repetir el último punto de datos al final de la serie.
+
+**La estimación del mercado y la predicción ya no se superponen en Foresight**: los indicadores de la estimación del mercado y de la predicción del usuario en las páginas de mercado de [Foresight](/es/products/foresight) ahora se ubican limpiamente uno al lado del otro en lugar de superponerse en pantallas pequeñas.

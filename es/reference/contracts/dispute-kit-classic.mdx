@@ -1,0 +1,37 @@
+---
+title: "DisputeKitClassic"
+description: "Referencia de DisputeKitClassic: selección de jurados proporcional al PNK, votación por pluralidad, commit-reveal, financiación de apelaciones e incentivos repartidos equitativamente entre jurados."
+---
+
+
+
+Dispute kit predeterminado con selección proporcional al PNK, votación por pluralidad (commit-reveal opcional) e incentivos repartidos equitativamente. Todas las cortes lo admiten como respaldo.
+
+## Métodos para jurados
+
+### `castCommit(uint256 _coreDisputeID, uint256[] _voteIDs, bytes32 _commit)`
+Envía el compromiso de voto durante el periodo de commit (solo en cortes con voto oculto).
+
+### `castVote(uint256 _coreDisputeID, uint256[] _voteIDs, uint256 _choice, uint256 _salt, string _justification)`
+Emite o revela un voto. En las cortes con voto oculto, la opción y la sal deben coincidir con el compromiso.
+
+## Métodos de apelación
+
+### `fundAppeal(uint256 _coreDisputeID, uint256 _choice) payable`
+Financia una apelación. Los ganadores pagan 1× el costo y los perdedores 2×. Los perdedores disponen de la mitad del periodo de financiación. La apelación avanza cuando se financian dos opciones.
+
+### `withdrawFeesAndRewards(uint256 _coreDisputeID, address _beneficiary, uint256 _coreRoundID, uint256 _choice) → uint256`
+Retira las tarifas de apelación y las recompensas tras la resolución.
+
+## Eventos
+
+| Evento | Descripción |
+|---|---|
+| `VoteCommitted` | Compromiso enviado |
+| `Justification` | Justificación del voto registrada |
+| `Contribution` | Contribución a la financiación de la apelación |
+| `ChoiceFunded` | Opción de apelación totalmente financiada |
+
+**Versión**: 2.0.0 | **Proxy**: UUPS actualizable
+ 
+[Ver código fuente](https://github.com/kleros/kleros-v2/blob/master/contracts/src/arbitration/dispute-kits/DisputeKitClassicBase.sol)

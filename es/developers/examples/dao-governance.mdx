@@ -1,0 +1,120 @@
+---
+title: "Gobernanza de DAO"
+description: "Integra Kleros con la gobernanza de una DAO usando el Zodiac Reality Module para convertir los votos de Snapshot en transacciones en la cadena con resolución de disputas."
+---
+
+## Descripción general
+
+Esta guía cubre **solo la instalación y la configuración**. Para saber qué es SafeSnap, cuáles son sus componentes y cómo funciona el flujo completo, consulta la **[página del producto SafeSnap](/es/products/safesnap)**.
+
+---
+
+## Pasos de configuración
+
+<Steps>
+  <Step title="Desplegar el Zodiac Reality Module">
+    Despliega el Reality Module a través de la [aplicación Zodiac](https://zodiac.wiki/) y conéctalo a tu Gnosis Safe. Configúralo con:
+
+    - La dirección del contrato de Reality.eth para tu cadena
+    - Un proxy de árbitro de Kleros como árbitro
+    - Los parámetros de fianza mínima y tiempo de espera
+  </Step>
+  <Step title="Instalar el plugin SafeSnap">
+    Añade el plugin SafeSnap a tu espacio de Snapshot. Esto añade un generador de transacciones a las propuestas, lo que permite a los proponentes adjuntar transacciones en la cadena.
+  </Step>
+  <Step title="Establecer los requisitos de la DAO">
+    Sube un documento de requisitos de la DAO a IPFS y regístralo como registro de texto ENS bajo la clave `daorequirements` en el nombre ENS de tu espacio de Snapshot.
+
+    Este documento define los criterios para que una propuesta sea válida. Los jurados de Kleros evalúan las propuestas con respecto a este documento al arbitrar disputas.
+
+    ```
+    // ENS record example:
+    // gnosis.eth → daorequirements → /ipfs/QmYourPolicyDoc...
+    ```
+  </Step>
+  <Step title="Supervisar las propuestas">
+    Cualquier dirección puede publicar una pregunta en el Reality Module, por lo que la supervisión forma parte del modelo de seguridad y no es opcional. Ejecuta [`kleros/zodiac-bots`](https://github.com/kleros/zodiac-bots), el servicio de código abierto que Kleros mantiene para vigilar los módulos Zodiac Reality. Hace seguimiento de uno o más espacios de Snapshot —identificados por su nombre ENS y un bloque inicial— y envía alertas a **Slack, Telegram o correo electrónico** cuando aparecen propuestas y respuestas:
+
+    ```bash
+    SPACES=kleros.eth:3000000,1inch.eth:6000000
+    ```
+
+    Los destinatarios de correo electrónico pueden definirse por espacio, de modo que las alertas de distintas DAO lleguen a bandejas de entrada diferentes. Si prefieres no alojarlo tú mismo, un servicio de supervisión de uso general como OpenZeppelin Defender o un bot personalizado puede vigilar los mismos eventos de Reality.eth.
+  </Step>
+</Steps>
+
+---
+
+## Formato de las preguntas de Reality.eth
+
+El Reality Module crea preguntas con este formato:
+
+```
+"Did the Snapshot proposal with the linked transactions pass
+and does it meet the requirements of the document referenced
+in the dao requirements record at <dao>.eth?"
+```
+
+Los jurados evalúan:
+- Si el voto de Snapshot realmente se aprobó según las reglas de votación del espacio
+- Si las transacciones propuestas coinciden con lo descrito en la propuesta
+- Si la propuesta cumple con el documento de requisitos de la DAO
+
+---
+
+## Arbitraje
+
+Cuando se disputa una respuesta de Reality.eth, cualquiera puede solicitar el arbitraje pagando la tarifa de arbitraje de Kleros. El Kleros Arbitrator Proxy:
+
+1. Crea una disputa en Kleros Court (normalmente en el subtribunal Blockchain o Technical)
+2. Muestra a los jurados los detalles de la propuesta, los datos de la transacción y el documento de requisitos de la DAO
+3. Devuelve el fallo a Reality.eth, que finaliza la respuesta
+
+### Evidencia
+
+La evidencia se presenta a través del Kleros Arbitrator Proxy. La evidencia típica incluye:
+- Capturas de pantalla de los resultados de la votación de Snapshot
+- Enlaces a la discusión de la propuesta
+- Resultados de la simulación de transacciones
+- Referencias al documento de requisitos de la DAO
+
+---
+
+## Referencia de configuración
+
+| Parámetro | Descripción | Recomendado |
+| --- | --- | --- |
+| **Fianza mínima** | Fianza inicial requerida para responder una pregunta | 0.1 ETH o equivalente |
+| **Tiempo de espera** | Tiempo antes de que una respuesta no impugnada se finalice | 24–72 horas |
+| **Enfriamiento** | Retraso entre la finalización de la respuesta y la ejecución | 24 horas |
+| **Expiración** | Tiempo tras el cual ya no se puede responder la pregunta | 7 días |
+| **Árbitro** | Dirección del proxy de árbitro de Kleros | Específica de cada cadena |
+
+---
+
+## Consideraciones de seguridad
+
+**Propuestas maliciosas**: cualquiera puede enviar propuestas al Reality Module. El requisito de fianza y el respaldo del arbitraje de Kleros mitigan este riesgo, pero la supervisión activa es esencial.
+
+**Requisitos de la DAO ausentes**: si el registro ENS `daorequirements` no está configurado, las preguntas pueden resolverse de forma ambigua. Configura este registro antes de activar el módulo.
+
+**Agotamiento de fianzas**: un atacante con muchos fondos puede forzar varias rondas de escalada de fianzas. La opción de arbitraje de Kleros ofrece una vía de resolución de costo fijo cuando las fianzas se vuelven prohibitivamente caras.
+
+---
+
+## Recursos
+
+<CardGroup cols={2}>
+  <Card title="Documentación de Zodiac" icon="book" href="https://zodiac.wiki/">
+    Documentación completa de los módulos Zodiac
+  </Card>
+  <Card title="Guía de SafeSnap" icon="camera" href="https://docs.snapshot.org/user-guides/plugins/safesnap">
+    Configuración del plugin SafeSnap de Snapshot
+  </Card>
+  <Card title="Integración con Reality.eth" icon="link" href="/es/developers/products/reality/overview">
+    Documentación de Kleros + Reality.eth
+  </Card>
+  <Card title="Guía del Kleros Reality Module" icon="shield" href="https://docs.kleros.io/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module">
+    Instrucciones detalladas de configuración del módulo
+  </Card>
+</CardGroup>

@@ -1,0 +1,30 @@
+---
+title: "Resolver V1"
+description: "Kleros Dispute Resolver V1: la aplicación independiente en resolve.kleros.io para crear disputas en Court V1. En V2, la creación de disputas está integrada en la interfaz de Court V2."
+---
+
+# Resolver V1
+
+<Note>
+Dispute Resolver V1 es una aplicación independiente en [resolve.kleros.io](https://resolve.kleros.io) que funciona con Kleros Court V1. En V2 no hay una aplicación separada: la creación de disputas está integrada en la interfaz de [Court V2](/es/court/overview).
+</Note>
+
+Kleros Dispute Resolver V1 (anteriormente conocido como "Resolve") es una aplicación web independiente que permite a los usuarios crear disputas arbitrarias en Kleros Court V1 sin necesidad de crear un contrato arbitrable personalizado. Los usuarios definen la pregunta de la disputa, las opciones y las evidencias, y luego la envían directamente a la Corte para su resolución.
+
+---
+
+## Qué hace
+
+- Permite a cualquiera crear una disputa desde una interfaz web
+- No requiere desarrollo de contratos inteligentes
+- Se usa para desacuerdos sencillos entre dos partes
+- Envío de evidencias y gestión de apelaciones a través de la interfaz de Resolver
+- Crea disputas mediante el [ArbitrableProxy](/es/developers/arbitrable-apps/arbitrable-proxy) de V1 en las cadenas donde está desplegado Court V1 (consulta las [redes compatibles](/es/developers/products/dispute-resolver/overview#redes-compatibles))
+
+---
+
+## Estado actual
+
+Dispute Resolver V1 sigue activo en [resolve.kleros.io](https://resolve.kleros.io) para las disputas de Court V1.
+
+En V2 no existe una aplicación Resolver separada. Los usuarios crean disputas y envían evidencias directamente desde la interfaz de [Court V2](/es/court/overview), respaldada por el contrato `DisputeResolver` de V2.

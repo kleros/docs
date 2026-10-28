@@ -1,0 +1,76 @@
+---
+title: "Descripción general de los subgraphs"
+description: "Consulta datos de KlerosCore de Kleros V2 y de Curate, PoH, Escrow y Linguo de V1 mediante subgraphs de The Graph para disputas, cortes, jurados y elementos de registros."
+---
+
+# Subgraphs y datos
+
+Kleros V2 usa [The Graph](https://thegraph.com/) para indexar datos on-chain. El paquete `subgraph` del [monorepo kleros-v2](https://github.com/kleros/kleros-v2/tree/dev/subgraph) indexa KlerosCore, SortitionModule, DisputeKitClassic y los contratos relacionados en Arbitrum.
+
+Para los productos V1 (Curate, PoH, Escrow, Linguo), existen subgraphs independientes en Ethereum y Gnosis Chain.
+
+---
+
+## Cuándo usar subgraphs
+
+- Obtener datos de disputas (estado, fallos, pruebas, rondas)
+- Consultar estadísticas de cortes (stakes, número de jurados, parámetros)
+- Listar elementos de registros de Curate con los datos de sus campos
+- Comprobar el estado de registro en PoH
+- Crear paneles o herramientas de analítica
+- Mostrar el historial de disputas en tu frontend
+
+---
+
+## Subgraph V2 (Arbitrum)
+
+El subgraph core de V2 indexa toda la actividad de las cortes en Arbitrum One. Se mantiene en el monorepo kleros-v2.
+
+**Código fuente**: [kleros-v2/subgraph](https://github.com/kleros/kleros-v2/tree/dev/subgraph)
+
+### Desarrollo local
+
+Para ejecutar el subgraph V2 localmente:
+
+```bash
+# Start a local Hardhat node with contracts deployed
+yarn workspace @kleros/kleros-v2-contracts start-local
+
+# Start a local Graph Node (requires Docker)
+yarn workspace @kleros/kleros-v2-subgraph start-local-indexer
+
+# Deploy the subgraph to the local Graph Node
+yarn workspace @kleros/kleros-v2-subgraph rebuild-deploy:local
+```
+
+El endpoint GraphQL local estará disponible en:
+```
+http://localhost:8000/subgraphs/name/kleros/kleros-v2-core-local
+```
+
+---
+
+## Entidades clave (V2)
+
+| Entidad | Descripción |
+| --- | --- |
+| `Court` | Parámetros de la corte, totales de stake, número de disputas |
+| `Dispute` | Estado de la disputa, corte, fallo, rondas, plantilla |
+| `Round` | Datos por ronda: sorteos de jurados, votos, financiación de apelaciones |
+| `Draw` | Registros individuales de sorteos de jurados |
+| `TokenAndETHShift` | Registros de recompensas/penalizaciones por jurado y por ronda |
+| `JurorTokensPerCourt` | PNK en stake por jurado y por corte |
+| `DisputeKit` | Contratos de dispute kits registrados |
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Endpoints de subgraphs" icon="link" href="/es/developers/subgraph/endpoints">
+    Lista completa de URL de subgraphs para V1 y V2
+  </Card>
+  <Card title="Ejemplos de consultas" icon="magnifying-glass" href="/es/developers/subgraph/queries">
+    Consultas GraphQL comunes para disputas, cortes y registros
+  </Card>
+</CardGroup>

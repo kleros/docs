@@ -1,0 +1,168 @@
+---
+title: "ERC-1497: estándar de evidencia"
+description: "El estándar de evidencia de V1 que define cómo los contratos arbitrables comparten MetaEvidence y Evidence con los árbitros de Kleros mediante IPFS y registros de eventos."
+---
+
+<Note>
+  ERC-1497 es el estándar de evidencia de V1. Kleros V2 reemplaza MetaEvidence por **Dispute Templates** (plantillas de disputa) registradas en el `DisputeTemplateRegistry`, y amplía la evidencia para admitir su presentación entre cadenas. Consulta la [guía de arquitectura](/es/developers/architecture) para conocer los detalles de V2.
+</Note>
+
+## Descripción general
+
+ERC-1497 estandariza cómo las DApps comparten contexto y evidencia durante la resolución de disputas. Define dos categorías de información:
+
+- **MetaEvidence**: el contexto de una disputa: el acuerdo, las partes involucradas, las opciones de fallo y la pregunta que los jurados deben responder. Cada disputa tiene una única MetaEvidence, creada al mismo tiempo que el acuerdo.
+- **Evidence**: las pruebas presentadas por cualquier parte para respaldar su posición en una disputa.
+
+Ambas se almacenan fuera de la cadena (normalmente en IPFS) y se referencian en la cadena mediante registros de eventos.
+
+---
+
+## Interfaz
+
+ERC-1497 introduce tres eventos:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "../IArbitrator.sol";
+
+interface IEvidence {
+    /// @dev Emitted when meta-evidence is submitted.
+    /// @param _metaEvidenceID Unique identifier of meta-evidence.
+    /// @param _evidence IPFS path to metaevidence JSON.
+    event MetaEvidence(
+        uint256 indexed _metaEvidenceID,
+        string _evidence
+    );
+
+    /// @dev Emitted when evidence is submitted.
+    /// @param _arbitrator The arbitrator for the dispute.
+    /// @param _evidenceGroupID Unique identifier of the evidence group
+    ///        (typically the dispute ID or external ID).
+    /// @param _party The address submitting the evidence.
+    /// @param _evidence IPFS path to evidence JSON.
+    event Evidence(
+        IArbitrator indexed _arbitrator,
+        uint256 indexed _evidenceGroupID,
+        address indexed _party,
+        string _evidence
+    );
+
+    /// @dev Emitted when a dispute is created to link meta-evidence
+    ///      and evidence group to the dispute.
+    /// @param _arbitrator The arbitrator for the dispute.
+    /// @param _disputeID ID of the dispute in the Arbitrator contract.
+    /// @param _metaEvidenceID ID to look up the MetaEvidence event.
+    /// @param _evidenceGroupID ID for the evidence group.
+    event Dispute(
+        IArbitrator indexed _arbitrator,
+        uint256 indexed _disputeID,
+        uint256 _metaEvidenceID,
+        uint256 _evidenceGroupID
+    );
+}
+```
+
+---
+
+## JSON de MetaEvidence
+
+MetaEvidence es un archivo JSON alojado en IPFS que proporciona el contexto de la disputa:
+
+```json
+{
+  "category": "Escrow",
+  "title": "Payment for website development",
+  "description": "Alice hired Bob to develop an e-commerce website...",
+  "question": "Should the payment be released to the developer?",
+  "rulingOptions": {
+    "type": "single-select",
+    "titles": ["Refund Buyer", "Pay Developer"],
+    "descriptions": [
+      "Return the funds to the buyer",
+      "Release the funds to the developer"
+    ]
+  },
+  "fileURI": "/ipfs/QmContractTerms...",
+  "fileHash": "0x...",
+  "evidenceDisplayInterfaceURI": "/ipfs/QmEvidenceDisplay..."
+}
+```
+
+| Campo | Descripción |
+| --- | --- |
+| `title` | Título breve de la disputa |
+| `description` | Contexto detallado para los jurados |
+| `question` | La pregunta que los jurados deben responder |
+| `rulingOptions` | Etiquetas y descripciones de cada opción de fallo |
+| `fileURI` | Ruta de IPFS al acuerdo o documento contractual |
+| `fileHash` | Hash del archivo vinculado para verificar su integridad |
+| `evidenceDisplayInterfaceURI` | Interfaz personalizada opcional para mostrar la evidencia |
+
+---
+
+## JSON de Evidence
+
+Cada pieza de evidencia es un archivo JSON:
+
+```json
+{
+  "name": "Delivery confirmation email",
+  "description": "Email from the developer confirming delivery of the website",
+  "fileURI": "/ipfs/QmEvidence...",
+  "fileHash": "0x...",
+  "fileTypeExtension": "pdf"
+}
+```
+
+---
+
+## Verificación de integridad
+
+El JSON tanto de MetaEvidence como de Evidence contiene campos `fileHash`. Los árbitros usan estos hashes para verificar que los archivos no han sido manipulados después de su presentación. El direccionamiento por contenido de IPFS proporciona integridad incorporada para los archivos alojados en IPFS, ya que el propio CID se deriva del contenido del archivo.
+
+---
+
+## Uso en un contrato de V1
+
+```solidity
+contract SimpleEscrowWithERC1497 is IArbitrable, IEvidence {
+    // Emit MetaEvidence at contract creation
+    constructor(string memory _metaEvidence) {
+        emit MetaEvidence(0, _metaEvidence);
+    }
+
+    // When creating a dispute, link it to the meta-evidence
+    function raiseDispute() external payable {
+        uint256 disputeID = arbitrator.createDispute{value: msg.value}(
+            numberOfChoices, extraData
+        );
+        emit Dispute(arbitrator, disputeID, 0, 0);
+    }
+
+    // Allow parties to submit evidence
+    function submitEvidence(string calldata _evidence) external {
+        emit Evidence(arbitrator, 0, msg.sender, _evidence);
+    }
+}
+```
+
+---
+
+## Reemplazo en V2
+
+En V2, ERC-1497 se reemplaza por:
+
+- **Dispute Templates**: registradas en `DisputeTemplateRegistry` con interpolación de variables al estilo Mustache. Las plantillas definen la pregunta de la disputa, las opciones de fallo y la referencia a la política.
+- **Evento `DisputeRequest`**: reemplaza al evento `Dispute` y vincula las disputas con las plantillas mediante `templateId`.
+- **Evidencia entre cadenas**: la evidencia puede presentarse tanto en la cadena local (home) como en la cadena externa (foreign), y la interfaz de Court consolida la de ambas.
+
+---
+
+## Referencias
+
+- [ERC-1497 en GitHub](https://github.com/ethereum/EIPs/issues/1497)
+- [Implementación de referencia](https://github.com/kleros/erc-792/blob/master/contracts/erc-1497/IEvidence.sol)
+- [Biblioteca Archon](https://github.com/kleros/archon)  Biblioteca de JavaScript para obtener y validar evidencia

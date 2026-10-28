@@ -1,0 +1,611 @@
+---
+title: "Contratos inteligentes"
+description: "Referencia de los contratos inteligentes de Kleros Curate V2, incluidos los structs de ítems, el ciclo de vida de las solicitudes, los hooks de arbitraje y las firmas de funciones para integradores."
+
+---
+
+## Estructuras de datos principales
+
+### Struct Item
+
+```solidity
+struct Item {
+    Status status;                         // Current state
+    uint256 sumDeposit;                    // Total locked deposits
+    uint256 requestCount;                  // Number of requests
+    mapping(uint256 => Request) requests;  // Request history
+}
+```
+
+### Struct Request
+
+```solidity
+struct Request {
+    RequestType requestType;         // Registration or Clearing
+    uint64 submissionTime;           // When submitted
+    uint24 arbitrationParamsIndex;   // Preserves original arbitrator settings
+    address payable requester;       // Who submitted
+    address payable challenger;      // Who challenged (if any)
+}
+```
+
+### Parámetros de arbitraje
+
+```solidity
+struct ArbitrationParams {
+    IArbitratorV2 arbitrator;        // Kleros Court contract
+    bytes arbitratorExtraData;       // Court ID + juror count
+    EvidenceModule evidenceModule;   // Evidence storage contract
+}
+```
+
+### Enumeraciones
+
+```solidity
+enum Status {
+    Absent,                // Item does not exist
+    Registered,            // Item is active in registry
+    RegistrationRequested, // Pending addition
+    ClearingRequested      // Pending removal
+}
+
+enum RequestType {
+    Registration,  // Adding item
+    Clearing       // Removing item
+}
+```
+
+---
+
+## Inicialización
+
+### Función initialize
+
+```solidity
+function initialize(
+    address _governor,                       // Admin address
+    IArbitratorV2 _arbitrator,              // Kleros Core
+    bytes calldata _arbitratorExtraData,    // Court config
+    EvidenceModule _evidenceModule,          // Evidence storage
+    address _connectedList,                  // Optional parent list
+    TemplateRegistryParams calldata _templateRegistryParams,
+    uint256[4] calldata _baseDeposits,       // Deposit amounts
+    uint256 _challengePeriodDuration,        // Challenge window
+    address _relayerContract,                // Direct operations
+    string calldata _listMetadata            // JSON string
+) external
+```
+
+### Array de depósitos base
+
+| Índice | Propósito |
+|-------|---------|
+| 0 | Depósito base de envío |
+| 1 | Depósito base de eliminación |
+| 2 | Depósito de impugnación de envío |
+| 3 | Depósito de impugnación de eliminación |
+
+### Ejemplo de inicialización
+
+```javascript
+// Court ID must be uint96, juror count uint256 - matches IArbitratorV2 spec
+const extraData = ethers.solidityPacked(
+  ["uint96", "uint256"],
+  [1, 3] // Court ID 1 (General Court), 3 jurors
+);
+
+await curate.initialize(
+  governorAddress,
+  klerosCore.target,
+  extraData,
+  evidenceModule.target,
+  ethers.ZeroAddress,           // No connected list
+  {
+    templateRegistry: templateRegistry.target,
+    registrationTemplateParameters: [template, mappings],
+    removalTemplateParameters: [template, mappings]
+  },
+  [
+    ethers.parseEther("0.001"), // submission
+    ethers.parseEther("0.001"), // removal
+    ethers.parseEther("0.001"), // submission challenge
+    ethers.parseEther("0.001")  // removal challenge
+  ],
+  3600,                         // 1 hour challenge period
+  relayerAddress,
+  JSON.stringify(metadata)
+);
+```
+
+<Note>
+**Pautas para el período de impugnación:**
+- Testnet: 3600 segundos (1 hora)
+- Mainnet: 259200-604800 segundos (3-7 días)
+</Note>
+
+---
+
+## Formato de datos de los ítems
+
+Los ítems en Curate V2 se almacenan como una cadena JSON. El `listMetadata` del registro define el esquema mediante un array `columns`, y cada ítem se ajusta a esas columnas:
+
+```json
+{
+  "columns": [
+    { "label": "Name",        "description": "Token name",            "type": "text",    "isIdentifier": true },
+    { "label": "Address",     "description": "Contract address",      "type": "address", "isIdentifier": true },
+    { "label": "Symbol",      "description": "Token ticker symbol",   "type": "text" },
+    { "label": "Decimals",    "description": "Number of decimals",    "type": "number" },
+    { "label": "Logo",        "description": "IPFS URI of token logo","type": "image" }
+  ]
+}
+```
+
+Un ítem enviado debe ser un objeto JSON con una clave por cada etiqueta de columna:
+
+```json
+{
+  "Name": "Dai Stablecoin",
+  "Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  "Symbol": "DAI",
+  "Decimals": 18,
+  "Logo": "/ipfs/QmDAI..."
+}
+```
+
+El `itemID` es `keccak256(abi.encodePacked(itemJSON))`: el hash de la cadena JSON exacta enviada. El sistema de mapeo de datos usa esta estructura de columnas para extraer las variables de plantilla `{{itemName}}` y `{{itemDescription}}`.
+
+---
+
+## `arbitrationParamsIndex`: versionado
+
+Cada `Request` almacena un `uint24 arbitrationParamsIndex` que captura los parámetros de arbitraje del registro en el momento del envío. Esto es fundamental: si el governor actualiza el árbitro o el extraData después de que se envíe una solicitud, **se conservan los parámetros originales** para la impugnación y el ciclo de vida de la disputa de esa solicitud.
+
+Esto significa que:
+- Quienes impugnan deben usar el **mismo arbitrationParamsIndex** que el envío original: obténlo de la solicitud antes de impugnar
+- Los cálculos de costos deben usar los parámetros de arbitraje en `request.arbitrationParamsIndex`, no los parámetros actuales
+
+```solidity
+// Get the arbitration params for a specific request
+(uint256 reqCount,) = curate.getItemInfo(itemId);
+(,, uint24 paramsIndex,,) = curate.getRequestInfo(itemId, reqCount - 1);
+(IArbitratorV2 arb, bytes memory extraData,) = curate.arbitrationParamsAt(paramsIndex);
+uint256 cost = arb.arbitrationCost(extraData);
+```
+
+---
+
+## Registro frente a eliminación: plantillas de disputa separadas
+
+Curate V2 usa **dos plantillas de disputa separadas**: una para las solicitudes de registro y otra para las solicitudes de eliminación (clearing). Tienen una lógica de respuesta diferente:
+
+| Plantilla | Pregunta | Respuesta 0x01 | Respuesta 0x02 |
+|---|---|---|---|
+| Registro | "¿Cumple el ítem con los criterios?" | Sí, añadir ítem | No, rechazar ítem |
+| Eliminación | "¿Debe eliminarse el ítem?" | Sí, eliminar ítem | No, conservar ítem |
+
+Ambas se establecen en la inicialización mediante `TemplateRegistryParams.registrationTemplateParameters` y `removalTemplateParameters`. Debes proporcionar ambas, y deben ser coherentes con tu documento de política.
+
+---
+
+## Envío de ítems
+
+### Añadir ítem
+
+```solidity
+function addItem(string calldata _item) external payable returns (bytes32 itemID)
+```
+
+**Parámetros:**
+- `_item`: cadena JSON que se ajusta al esquema de columnas del registro (consulta Formato de datos de los ítems más arriba)
+
+**Devuelve:**
+- `itemID`: hash keccak256 de la cadena del ítem
+
+### Calcular el costo de envío
+
+```javascript
+// Get required deposit
+const deposit = await curate.submissionBaseDeposit();
+
+// Get arbitration cost
+const arbitrator = await curate.getArbitrator();
+const extraData = await curate.getArbitratorExtraData();
+const arbCost = await arbitrator.arbitrationCost(extraData);
+
+// Total required
+const totalCost = deposit + arbCost;
+```
+
+### Ejemplo de envío
+
+```javascript
+const itemData = {
+  address: "0x1234...",
+  name: "Token Name",
+  symbol: "TKN"
+};
+const itemString = JSON.stringify(itemData);
+
+// Calculate item ID
+const itemID = ethers.keccak256(ethers.toUtf8Bytes(itemString));
+
+// Submit item
+const tx = await curate.addItem(itemString, { value: totalCost });
+await tx.wait();
+
+console.log("Item ID:", itemID);
+```
+
+---
+
+## Eliminación de ítems
+
+### Eliminar ítem
+
+```solidity
+function removeItem(bytes32 _itemID, string calldata _evidence) external payable
+```
+
+**Parámetros:**
+- `_itemID`: hash del ítem que se va a eliminar
+- `_evidence`: cadena JSON de pruebas que respalda la eliminación
+
+### Ejemplo de eliminación
+
+```javascript
+const evidence = JSON.stringify({
+  name: "Removal Request",
+  description: "This item violates the policy because...",
+});
+
+const deposit = await curate.removalBaseDeposit();
+const arbCost = await arbitrator.arbitrationCost(extraData);
+const totalCost = deposit + arbCost;
+
+const tx = await curate.removeItem(itemID, evidence, { value: totalCost });
+await tx.wait();
+```
+
+---
+
+## Impugnación de solicitudes
+
+### Impugnar solicitud
+
+```solidity
+function challengeRequest(bytes32 _itemID, string calldata _evidence) external payable
+```
+
+**Parámetros:**
+- `_itemID`: ítem con una solicitud pendiente
+- `_evidence`: pruebas en JSON que respaldan la impugnación
+
+### Ejemplo de impugnación
+
+```javascript
+// Determine challenge deposit based on request type
+const [status] = await curate.getItemInfo(itemID);
+const challengeDeposit = status === 2 // RegistrationRequested
+  ? await curate.submissionChallengeBaseDeposit()
+  : await curate.removalChallengeBaseDeposit();
+
+const arbCost = await arbitrator.arbitrationCost(extraData);
+const totalCost = challengeDeposit + arbCost;
+
+// Prepare evidence
+const evidence = JSON.stringify({
+  name: "Invalid Submission",
+  description: "This item violates the list policy because...",
+  supportingInfo: "Reference: [link or details]"
+});
+
+// Submit challenge
+const tx = await curate.challengeRequest(itemID, evidence, {
+  value: totalCost
+});
+await tx.wait();
+```
+
+<Warning>
+Las impugnaciones deben enviarse durante el período de impugnación. Comprueba los tiempos antes de impugnar.
+</Warning>
+
+---
+
+## Ejecución de solicitudes
+
+### Ejecutar solicitud
+
+```solidity
+function executeRequest(bytes32 _itemID) external
+```
+
+Ejecuta una solicitud no impugnada una vez transcurrido el período de impugnación.
+
+### Ejemplo de ejecución
+
+```javascript
+// Check if challenge period has passed
+const [status, requestCount] = await curate.getItemInfo(itemID);
+const lastRequestIndex = requestCount - 1;
+
+const requestInfo = await curate.getRequestInfo(itemID, lastRequestIndex);
+const challengePeriod = await curate.challengePeriodDuration();
+const now = Math.floor(Date.now() / 1000);
+
+if (now > requestInfo.submissionTime + challengePeriod) {
+  const tx = await curate.executeRequest(itemID);
+  await tx.wait();
+  console.log("Request executed - deposit refunded");
+}
+```
+
+---
+
+## Funciones de consulta
+
+### Obtener información del ítem
+
+```solidity
+function getItemInfo(bytes32 _itemID) external view returns (
+    Status status,
+    uint256 requestCount
+)
+```
+
+### Obtener información de la solicitud
+
+```solidity
+function getRequestInfo(bytes32 _itemID, uint256 _requestID) external view returns (
+    RequestType requestType,
+    uint64 submissionTime,
+    bool disputed,
+    bool resolved,
+    address requester,
+    address challenger
+)
+```
+
+### Funciones del contrato de vista
+
+El contrato CurateView proporciona consultas por lotes mejoradas:
+
+```solidity
+// Get complete registry configuration
+function fetchArbitrable(address _curate) external view returns (
+    address governor,
+    address relayerContract,
+    uint256 submissionBaseDeposit,
+    uint256 removalBaseDeposit,
+    uint256 submissionChallengeBaseDeposit,
+    uint256 removalChallengeBaseDeposit,
+    uint256 challengePeriodDuration,
+    uint256 arbitrationCost
+)
+
+// Get item with latest request
+function getItem(address _curate, bytes32 _itemID) external view returns (
+    Status status,
+    bool disputed,
+    uint256 sumDeposit,
+    address requester
+)
+
+// Get all requests for an item
+function getItemRequests(address _curate, bytes32 _itemID) external view returns (
+    Request[] memory
+)
+```
+
+### Ejemplo del contrato de vista
+
+```javascript
+const view = await ethers.getContractAt("CurateView", VIEW_ADDRESS);
+
+// Get complete registry configuration
+const config = await view.fetchArbitrable(curateAddress);
+console.log("Challenge period:", config.challengePeriodDuration.toString());
+console.log("Submission deposit:", ethers.formatEther(config.submissionBaseDeposit));
+
+// Get item details
+const item = await view.getItem(curateAddress, itemID);
+console.log("Status:", ["Absent", "Registered", "RegRequested", "ClearRequested"][item.status]);
+console.log("Disputed:", item.disputed);
+
+// Get all requests
+const requests = await view.getItemRequests(curateAddress, itemID);
+requests.forEach((req, i) => {
+  console.log(`Request ${i}:`, {
+    disputed: req.disputed,
+    resolved: req.resolved,
+    requester: req.requester
+  });
+});
+```
+
+---
+
+## Funciones del governor
+
+### Actualizaciones de configuración
+
+```solidity
+// Change arbitrator settings
+function changeArbitrator(
+    IArbitratorV2 _arbitrator,
+    bytes calldata _arbitratorExtraData
+) external onlyGovernor
+
+// Update base deposits
+function changeBaseDeposits(uint256[4] calldata _baseDeposits) external onlyGovernor
+
+// Modify challenge period
+function changeChallengePeriodDuration(uint256 _challengePeriodDuration) external onlyGovernor
+
+// Set connected list (for hierarchical registries)
+function changeConnectedList(address _connectedList) external onlyGovernor
+
+// Update list metadata
+function changeListMetadata(string calldata _listMetadata) external onlyGovernor
+
+// Change relayer contract
+function changeRelayerContract(address _relayerContract) external onlyGovernor
+```
+
+### Gestión directa de ítems
+
+```solidity
+// Add item bypassing challenge period (governor/relayer only)
+function addItemDirectly(string calldata _item) external onlyGovernorOrRelayer
+
+// Remove item bypassing challenge period (governor/relayer only)  
+function removeItemDirectly(bytes32 _itemID) external onlyGovernorOrRelayer
+```
+
+---
+
+## Eventos
+
+### Eventos del ciclo de vida de los ítems
+
+```solidity
+// New item submitted
+event NewItem(
+    bytes32 indexed itemID,
+    string data,
+    bool addedDirectly
+);
+
+// Item status changed
+event ItemStatusChange(
+    bytes32 indexed itemID,
+    bool updatedDirectly
+);
+
+// Request submitted
+event RequestSubmitted(
+    bytes32 indexed itemID,
+    uint256 requestID
+);
+```
+
+### Eventos de disputas
+
+```solidity
+// Dispute created in Kleros Court
+event DisputeRequest(
+    IArbitratorV2 indexed arbitrator,
+    uint256 indexed disputeID,
+    uint256 externalDisputeID,
+    uint256 templateId,
+    string templateUri
+);
+
+// Ruling received from arbitrator
+event Ruling(
+    IArbitratorV2 indexed arbitrator,
+    uint256 indexed disputeID,
+    uint256 ruling
+);
+```
+
+### Eventos de configuración
+
+```solidity
+// Connected list updated
+event ConnectedListSet(address indexed connectedList);
+
+// Metadata updated
+event ListMetadataSet(string listMetadata);
+```
+
+---
+
+## Control de acceso
+
+### Modificador del governor
+
+```solidity
+modifier onlyGovernor() {
+    require(msg.sender == governor, "Must be governor");
+    _;
+}
+```
+
+### Modificador del relayer
+
+```solidity
+modifier onlyRelayer() {
+    require(msg.sender == relayerContract, "Must be relayer");
+    _;
+}
+```
+
+### Acceso combinado
+
+```solidity
+modifier onlyGovernorOrRelayer() {
+    require(
+        msg.sender == governor || msg.sender == relayerContract,
+        "Must be governor or relayer"
+    );
+    _;
+}
+```
+
+---
+
+## Consideraciones de seguridad
+
+<AccordionGroup>
+  <Accordion title="Protección contra reentrancia">
+    - Usa `.send()` con un límite de gas de 2300 para los reembolsos
+    - Las actualizaciones de estado se producen antes de las llamadas externas
+    - No se usa `.call()` directamente para transferencias de ETH
+  </Accordion>
+  
+  <Accordion title="Desbordamiento de enteros">
+    - Solidity 0.8.24 incorpora protección contra desbordamientos
+    - `uint24 arbitrationParamsIndex` permite 16.777.215 cambios
+  </Accordion>
+  
+  <Accordion title="Manipulación de marcas de tiempo">
+    - Los períodos de impugnación usan `block.timestamp`
+    - Los mineros pueden manipularlo en ±15 segundos
+    - Usa períodos suficientemente largos (mínimo de horas/días)
+  </Accordion>
+</AccordionGroup>
+
+### Buenas prácticas
+
+```javascript
+// Always validate item doesn't exist before submission
+const [status] = await curate.getItemInfo(itemID);
+if (status !== 0) {
+  throw new Error("Item already exists");
+}
+
+// Check challenge period before challenging
+const [, requestCount] = await curate.getItemInfo(itemID);
+const request = await curate.getRequestInfo(itemID, requestCount - 1);
+const challengePeriod = await curate.challengePeriodDuration();
+const now = Math.floor(Date.now() / 1000);
+
+if (now > request.submissionTime + challengePeriod) {
+  throw new Error("Challenge period expired");
+}
+
+// Handle transaction errors
+try {
+  const tx = await curate.addItem(itemData, { value: totalCost });
+  await tx.wait();
+} catch (error) {
+  if (error.code === 'INSUFFICIENT_FUNDS') {
+    console.error("Not enough ETH");
+  } else if (error.message.includes("Item must be absent")) {
+    console.error("Item already exists");
+  }
+  throw error;
+}
+```

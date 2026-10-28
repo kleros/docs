@@ -1,0 +1,588 @@
+---
+title: "Una disputa, desde la creación hasta el fallo"
+description: "Una disputa de principio a fin: publica el adjunto, crea la disputa, presenta la evidencia, consulta el fallo de la primera ronda y conoce cada código de rechazo por el camino."
+---
+
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
+
+El recorrido funcional de una disputa de principio a fin: publicar el adjunto, crear la disputa,
+poner la evidencia frente a los jurados y leer de vuelta el fallo de la primera ronda. Es igual para
+todos los socios. Lo que difiere entre socios —los slots de alias, la plantilla que leen los jurados y lo que
+significa cada valor de fallo— está en la página propia de ese socio, y este documento remite a ella siempre que
+sea relevante.
+
+Documentos complementarios, que deliberadamente no se repiten aquí:
+
+<CardGroup cols={2}>
+  <Card title="Llamar al servicio mediante HTTP JSON-RPC directo" icon="plug" href="/es/ai-tools/dispute-service/http-json-rpc">
+    El protocolo de comunicación: encabezados, formato, autenticación, límites de tasa.
+  </Card>
+
+  <Card title="Plantillas de disputa" icon="file-lines" href="/es/ai-tools/dispute-service/dispute-templates">
+    Cómo funciona una plantilla de disputa y lo que nunca contiene.
+  </Card>
+
+  <Card title="Tu página de socio" icon="id-card">
+    Tus claves, slots de alias, plantilla y valores de fallo. Se entrega junto con esta.
+  </Card>
+
+  <Card title="Documento de skill" icon="book-open" href="https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md">
+    La semántica completa del arbitraje, siempre actualizada.
+  </Card>
+</CardGroup>
+
+## Los cuatro pasos y la herramienta de cada uno
+
+| # | Paso | A través de este servicio | Plazo |
+| --- | --- | --- | --- |
+| 1 | Crear la disputa, nombrando a las partes que conoces | ✅ `dispute_create`, si tu Preset la incluye | ninguno: crear una disputa no tiene límite de tiempo |
+| 2 | Publicar el adjunto en IPFS | ✅ `evidence_pin`, si tu Preset la incluye | ninguno, pero hazlo antes del paso 1; consulta [Secuencia](#secuencia-publica-el-adjunto-antes-de-crear-la-disputa) |
+| 3 | Presentar la evidencia sobre la disputa | ✅ `evidence_submit`, si tu Preset la incluye | antes de que cierre el período de evidencia, aunque una presentación tardía igualmente se acepta |
+| 4 | Consultar el fallo de la primera ronda | ✅ `dispute_get` | el fallo te espera |
+
+**La fuente de verdad sobre lo que puede llamar tu clave es `tools/list`, no esta tabla.** Léelo al conectarte y construye en función de lo que contiene. Lee también en `tools/list` el esquema de entrada de cada herramienta, para conocer la grafía exacta de sus argumentos: las tablas de campos de abajo indican qué lleva una llamada, no cómo se escriben las claves.
+
+**Las tres herramientas de escritura se conceden por clave, mediante un único Preset y juntas.** `dispute_create`, `evidence_pin` y `evidence_submit` van siempre como conjunto: si tu clave no tiene un Preset, las tres están ausentes de `tools/list`, y llamar a una devuelve un JSON-RPC `-32601 Method not found` en lugar de un rechazo legible. Esa es una condición distinta de un Preset que solo simula, que se trata en [Qué se devuelve](#qué-se-devuelve) y de nuevo en [Pasos 2 y 3](#pasos-2-y-3-la-evidencia-y-las-dos-herramientas-que-la-transportan).
+
+## Nombres de despliegue y el valor que pasas
+
+<Warning>
+  Cada nombre de despliegue corresponde a un valor de `chain`, y confundir uno con otro es el error con más probabilidades de costar dinero real.
+
+  | Nosotros decimos | Pasas como `chain` | Qué es |
+  | --- | --- | --- |
+  | **Beta** | `arbitrum-one` | **Producción en vivo** de Kleros v2. Disputas reales, tarifas reales, dinero real. "Beta" es el nombre de la versión, no una red de prueba. |
+  | **Testnet** | `arbitrum-sepolia-testnet` | Pruebas públicas de Kleros v2. Solo datos de prueba. |
+</Warning>
+
+No pasas `chain` a `dispute_create`: tu Preset la fija, junto con la corte, el número de jurados y la plantilla. Un socio tiene una clave de API por despliegue, y **la clave que envías decide dónde se crea la disputa**; tu página de socio enumera tus claves. Para una clave que puede crear disputas, la cadena `instructions` que recibes al conectarte indica la `chain`, la corte y el número de jurados con los que tu Preset crea las disputas, y dice si las transmite o solo las simula. **Léela al conectarte y confía en ella por encima de cualquier documento**, incluido este.
+
+Ambos despliegues se usan en ese orden: se crea una disputa en Testnet (`arbitrum-sepolia-testnet`), se revisa en la interfaz de Court y solo entonces se crea en Beta (`arbitrum-one`).
+
+## El reloj
+
+Una disputa de Kleros v2 atraviesa períodos cuya duración es una propiedad de la **corte**, no de la disputa:
+
+```text Dispute lifecycle
+create ──▶ Evidence ──▶ Commit ──▶ Vote ──▶ Appeal ──────▶ Executed
+              ▲                               ▲
+              │                               │
+   step 3 must land here                  the first-round ruling
+   (step 2 belongs before                 is readable from here
+    the dispute exists)
+```
+
+Hoy, las disputas de los socios van a la Agentic Commerce Court (tu página de socio y tu cadena `instructions` indican la tuya), y **no está configurada de forma idéntica en los dos despliegues**. Leído con `court_get` el 2026-09-10:
+
+| Despliegue | `chain` | Corte | Evidencia | Commit | Votación | Apelación |
+| --- | --- | --- | --- | --- | --- | --- |
+| Beta | `arbitrum-one` | `34` | **10 min** | 45 min | 30 min | 36 h |
+| Testnet | `arbitrum-sepolia-testnet` | `8` | **15 min** | 45 min | 30 min | 45 min |
+
+Esos números se devuelven como `timesPerPeriod`, en segundos, en el orden `[evidence, commit, vote, appeal]`. **Léelos en tiempo de ejecución; no los codifiques de forma fija.** Son parámetros de gobernanza, difieren por corte y por despliegue (como muestra la tabla), y la corte en la que tu Preset crea las disputas se indica en tu cadena `instructions`. Ten en cuenta que los **ids** de las cortes también difieren, por lo que un id de corte no es portable entre los dos despliegues.
+
+De esto se derivan tres cosas que importan más que los números:
+
+<AccordionGroup>
+  <Accordion title="El período de evidencia es un mínimo, no una ventana que puedas ampliar" icon="hourglass-start">
+    Diez minutos en Beta (`arbitrum-one`) es lo mínimo que la disputa puede permanecer abierta a la evidencia, y nada de lo que puedes llamar lo alarga. Planifica con la menor de las dos cifras, para que el mismo código funcione en ambos despliegues.
+  </Accordion>
+
+  <Accordion title="Un período puede cerrarse antes de su plazo" icon="forward">
+    Los períodos de commit y de votación avanzan en cuanto todos los jurados seleccionados han actuado, y por eso un fallo de primera ronda puede ser legible entre diez y veinte minutos después de la creación, aunque los períodos de la corte sumen bastante más de una hora. Así que la cifra honesta para planificar es un rango, no un número: trata `deadline` como un límite superior del período actual y **consulta `status` en lugar de modelar el reloj**.
+  </Accordion>
+
+  <Accordion title="Esta corte usa votos ocultos" icon="eye-slash">
+    Esta corte usa votos ocultos (`hiddenVotes: true`), por lo que los jurados primero hacen commit de un hash y lo revelan durante el período de votación. No se puede leer nada significativo en el campo del fallo hasta que se revelan los votos. Espera el valor útil en la transición de votación a apelación, no antes.
+  </Accordion>
+</AccordionGroup>
+
+<Accordion title="Lo que hizo realmente una disputa real" icon="flask">
+  Medido en Testnet (`arbitrum-sepolia-testnet`, corte `8`) el 2026-09-10, con tres jurados: desde la creación hasta `status: "Executed"` con un fallo final pasaron unos **66 minutos**, frente a unos períodos configurados que sumaban bastante más de dos horas. Las dos mitades de la regla anterior aparecieron en la misma disputa: los períodos de commit y de votación se cerraron antes de tiempo una vez que los jurados actuaron, y luego la disputa permaneció en `Vote` con su `deadline` de votación ya en el pasado, porque un período no avanza por sí solo cuando se agota el tiempo. Planifica para un rango amplio, consulta `status` y nunca infieras el período a partir de la hora.
+</Accordion>
+
+## Paso 1: Crear la disputa
+
+```json dispute_create request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"dispute_create",
+  "arguments":{"aliases":{"<slot>":"0x…","<other slot>":"0x…"}}
+}}
+```
+
+`aliases` es el único argumento, y lo único que varía entre una de tus disputas y la siguiente. Los nombres de sus slots son propios de tu Preset: tu página de socio los enumera e indica quién es cada parte, y tu cadena `instructions` también los enumera.
+
+<Info>
+  **`aliases` es obligatorio: envíalo incluso cuando esté vacío.** `dispute_create` lo incluye en el arreglo `required` de su esquema de entrada, por lo que `"arguments":{}` se rechaza con `ALIASES_REQUIRED` y no se crea nada. Para crear una disputa sin ninguna parte nombrada, envía `"arguments":{"aliases":{}}`. No nombrar a ninguna parte es legítimo; simplemente tiene que ser algo que dices, no algo que omites.
+</Info>
+
+- **Omite una parte que no conoces.** Un slot omitido simplemente está ausente de la plantilla presentada, que es como se expresa "desconocido". Una dirección cero o cualquier otro marcador de posición se **rechaza**, no se presenta. Esto es por slot e independiente de la regla anterior: el objeto `aliases` en sí siempre se envía.
+- **No puedes reemplazar la corte, el número de jurados, la plantilla ni el despliegue.** Tu Preset los fija. Pasarlos como argumentos se ignora, no se respeta.
+- **Las partes son etiquetas para los jurados, no permisos.** Nombrar una dirección no le otorga ninguna legitimación, y cualquiera puede presentar evidencia.
+
+### Qué se devuelve
+
+El resultado es el propio payload JSON de la herramienta de presentación, transmitido con tres cambios: se elimina el
+campo `message` del upstream, un resultado `mined` gana `localDisputeID` o `localDisputeIDUnavailable`
+([Los dos ids de disputa](#los-dos-ids-de-disputa)), y un resultado `unknown` lleva como prefijo una advertencia,
+indicada más abajo. El campo según el cual ramificar es `status`:
+
+| `status` | Significado | Qué hacer |
+| --- | --- | --- |
+| `simulated` | Se cotizó la tarifa, se comprobó la billetera y se simuló la llamada. **No se envió nada y no existe ninguna disputa.** | Infórmalo como una simulación. Nunca como una disputa presentada. |
+| `mined` | La disputa existe y la tarifa se ha gastado. | Registra **ambos** ids: `coreDisputeID`, que es la clave de todas las lecturas de abajo, y `localDisputeID`, que es la clave de `evidence_list`; y presenta tu evidencia con el [paso 3](#paso-3-presentar-el-documento-de-evidencia). |
+| `unknown` | Se transmitió, pero no llegó ningún recibo a tiempo. Probablemente la disputa existe. | **No vuelvas a presentarla.** Una segunda presentación paga una segunda tarifa y crea una segunda disputa. Escala a una persona con el `txHash`. |
+
+**No existe el estado `reverted`.** Una transacción de creación que se minó y falló llega como un rechazo, `TRANSACTION_REVERTED` con `isError: true`, nunca como un resultado según el cual ramificar; consulta [Cuando algo sale mal](#cuando-algo-sale-mal). Así que un resultado sin `isError` siempre es una de las tres filas anteriores.
+
+Un fallo se devuelve como `isError: true` con un texto con la forma `CODE: message`, por ejemplo `INSUFFICIENT_BALANCE: …`. No hay ningún campo de código legible por máquina sobre el que hacer switch; como mucho, compara una frase inicial corta, y espera que la prosa cambie entre versiones. Cuando el texto de un fallo dice que la transacción **puede haberse enviado**, trátala exactamente como `unknown` arriba.
+
+**Haz una escritura a la vez.** Los pasos 1, 2 y 3 se ejecutan de uno en uno por clave (estrictamente, por firmante que nombra el Preset de tu clave), por lo que tus claves de Beta y Testnet no se bloquean entre sí. Una escritura enviada mientras otra tuya sigue en ejecución vuelve de inmediato como `isError: true` con un texto que empieza por `WRITE_IN_PROGRESS: `. **No se envió nada**: espera a que la otra escritura termine y vuelve a llamar. Nunca se pone en cola por ti, así que un cliente que hace llamadas a herramientas en paralelo debe serializar estas tres. Las lecturas como `dispute_get` nunca se retienen.
+
+**`unknown` lleva un prefijo.** Ese único resultado lleva como prefijo una advertencia en lenguaje llano antes del JSON, por lo que `JSON.parse` sobre todo el texto lanza una excepción. Todos los demás estados son JSON sin más. Si analizas de forma defensiva, analiza el último objeto JSON del texto en lugar de todo el texto.
+
+**Tú no puedes convertir una simulación en una presentación.** Si tu Preset transmite o no se configura en este servicio, no se pasa como argumento. Si se quiere una presentación real y tus instrucciones dicen que estás en simulación, dilo y deja que una persona lo gestione.
+
+#### Los dos ids de disputa
+
+**El id de la disputa llega en `coreDisputeID`**: con esa grafía exacta, como cadena de texto, en el nivel superior del payload. Medido en la primera ejecución con transmisión, el 2026-09-10; no hay `id` ni `disputeId`, y nada está anidado. Es el id que muestra la interfaz de Court y la clave de todas las lecturas de abajo, con una excepción que debes leer antes de confiar en él: [Verificar una presentación](#verificar-una-presentación-requiere-el-otro-id-de-disputa).
+
+**Un payload `mined` lleva un segundo identificador, y debes conservarlo.** `localDisputeID` es el id propio del contrato arbitrable para la misma disputa: el id que usa como clave `evidence_list`, y el único que nada más aquí devuelve ([Verificar una presentación](#verificar-una-presentación-requiere-el-otro-id-de-disputa)).
+
+- **Se decodifica a partir de la transacción de creación, por lo que solo está en los resultados `mined`:** una presentación `simulated` no creó ninguna disputa que nombrar, y una `unknown` se informa antes de que se lea el recibo, por lo que lleva un `txHash` y ningún `coreDisputeID`, y sin ese número no hay nada con lo que comparar el evento de creación. No esperes recuperar el campo en un `unknown` releyendo tú mismo el recibo con el id que crees que obtuvo.
+- **Cuando el recibo no se puede volver a leer**, ese mismo payload lleva en su lugar `localDisputeIDUnavailable` con el motivo, nunca un número adivinado, así que ramifica según la presencia del campo y no según su valor.
+- **El id de la plantilla sigue sin devolverse.** Si una presentación vuelve como `unknown`, el `txHash` es tu único asidero; resuelve la disputa a partir de él antes de hacer cualquier otra cosa, y nunca volviendo a presentarla.
+
+## Pasos 2 y 3: La evidencia y las dos herramientas que la transportan
+
+La evidencia son dos llamadas, y solo la segunda toca una cadena. `evidence_pin` publica un
+adjunto en IPFS por HTTP (sin billetera, sin firmante, sin gas) y devuelve su URI.
+Luego `evidence_submit` registra un documento de evidencia (un `name`, una `description` y, opcionalmente, esa
+URI) sobre la disputa en una transacción propia, distinta de la que la creó, para que
+los jurados que la deciden lean tu versión de lo que ocurrió. Ambas las concede el mismo Preset que
+concede `dispute_create`: si el paso 1 está en tu `tools/list`, estas dos están a su lado.
+
+| Herramienta | Estados |
+| --- | --- |
+| `dispute_create` (paso 1) | `simulated`, `mined`, `unknown` |
+| `evidence_pin` (paso 2) | `checked`, `published` |
+| `evidence_submit` (paso 3) | `simulated`, `mined`, `unknown` |
+
+**Los dos vocabularios de estado son diferentes, y solo uno se parece al del paso 1.**
+`evidence_pin` responde `checked` o `published` y nada más: un vocabulario propio, que no comparte
+ningún valor con las otras dos herramientas, así que no esperes que un pin diga `mined`. `evidence_submit` responde
+`simulated`, `mined` o `unknown`, que es exactamente la lista del paso 1, y en ambos casos una transacción
+minada y fallida es [un rechazo](#paso-3-presentar-el-documento-de-evidencia) y no un estado. Así que una rama
+escrita para el paso 1 se puede reutilizar para el paso 3, y una rama escrita para cualquiera de ellos es incorrecta para el paso 2.
+
+### Secuencia: publica el adjunto antes de crear la disputa
+
+<Steps>
+  <Step title="Primero el pin (`evidence_pin`)">
+    Publica primero el adjunto. `evidence_pin` no recibe ningún id de disputa.
+  </Step>
+  <Step title="Luego la creación (`dispute_create`)">
+    Crea la disputa. El período de evidencia empieza ahora.
+  </Step>
+  <Step title="Luego la presentación (`evidence_submit`)">
+    Presenta el documento de evidencia, con la URI ya en la mano.
+  </Step>
+</Steps>
+
+Dos hechos sobre el reloj, más que sobre cualquiera de las llamadas, deciden el orden:
+
+- **El período de evidencia empieza cuando se crea la disputa, y en Beta (`arbitrum-one`) tiene un
+  mínimo de diez minutos**; consulta [El reloj](#el-reloj). Nada de lo que puedes llamar lo amplía. Así que ejecuta
+  el paso 2 *antes* del paso 1: `evidence_pin` no recibe ningún id de disputa y nada en él es
+  específico de la disputa, por lo que tener ya la URI significa que ninguno de esos diez minutos se va en la subida.
+- **Una presentación tardía no se rechaza.** No hay ninguna restricción de período en la cadena: un documento de evidencia
+  presentado después de que cierre el período de evidencia igualmente se acepta y se indexa. Lo que pierdes son
+  lectores, ya que los jurados que ya han votado no vuelven atrás. Haber perdido la ventana es un motivo para presentar igualmente
+  y decirlo, no para renunciar a dejar constancia.
+
+### Paso 2: Publicar el adjunto
+
+```json evidence_pin request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"evidence_pin",
+  "arguments":{"attachment":"JVBERi0xLjQK…","extension":"pdf"}
+}}
+```
+
+<Warning>
+  **La publicación es permanente y pública, y no existe ninguna llamada que la deshaga.** Un archivo publicado es accesible para cualquiera que tenga el CID, mientras alguien lo mantenga fijado: este servicio no puede retirarlo y tú tampoco. No llames a esto para experimentar, y no envíes un documento que alguien no haya decidido publicar.
+</Warning>
+
+<ParamField body="attachment" type="string" required>
+  Los bytes del archivo integrados, en base64 (RFC 4648 §4, con relleno). **No** base64url y **no** una URI `data:`: ambos se rechazan en lugar de decodificarse de forma permisiva, porque decodificarlos publicaría bytes que no enviaste. No se descarga ninguna URL que proporciones: no hay ningún argumento que reciba una.
+</ParamField>
+
+<ParamField body="extension" type="string" required>
+  El tipo de archivo sin punto: `pdf`, `png`, `json`. De una a diez letras minúsculas o dígitos. No es un nombre de archivo: no se envía ningún nombre de archivo, porque un documento de evidencia no tiene ningún campo para ello.
+</ParamField>
+
+| `status` | Significado | Qué hacer |
+| --- | --- | --- |
+| `checked` | Tu Preset no publica. El archivo se leyó, se midió y se validó; **no se subió nada y no existe ningún CID.** No hay `fileURI`. | Infórmalo como una comprobación. Nunca como un adjunto publicado, y nunca pases al paso 3 una URI inventada. |
+| `published` | Los bytes están en IPFS. El resultado lleva `fileURI` (normalizada a `/ipfs/<cid>`), `cid` y `verified`. | Pasa `fileURI` al paso 3 como `fileUri`. |
+
+El CID se vuelve a leer a través de un gateway y se confirma que corresponde a los bytes enviados antes de que se
+devuelva un resultado `published`; esa comprobación siempre está activa y no es una opción del Preset. Demuestra que la
+subida llegó intacta; no demuestra que enviaste el archivo completo, así que si los bytes pudieron haberse
+truncado antes de llegarnos, compara `cid` con el tuyo.
+
+- **No hay límite de tamaño en el esquema de esta herramienta, deliberadamente.** El tope pertenece al
+  endpoint upstream y se mide sobre toda la solicitud de subida realizada y no sobre el
+  archivo, así que varía. Un archivo demasiado grande se devuelve como `FILE_TOO_LARGE`, que indica el límite que
+  realmente se aplicó. No codifiques de forma fija un número de ninguna parte, incluido este documento. Ten en cuenta que
+  base64 añade aproximadamente un tercio al tamaño propio del archivo, y es la forma codificada la que viaja
+  en el cuerpo de tu solicitud. El límite de la solicitud está dimensionado para admitir todos los archivos que aceptaría la subida, así que
+  un archivo que apenas supera el tope recibe `FILE_TOO_LARGE`; solo uno que lo supera con creces se topa primero con el HTTP `413` de
+  [Cuando algo sale mal](#cuando-algo-sale-mal), sin ningún resultado que analizar. Gestiona
+  ambos casos.
+- **Reintentar un pin fallido es seguro.** Los mismos bytes dan el mismo CID, no se gasta nada y nada
+  está en una cadena. Tampoco se deduplica nada, así que un reintento realmente vuelve a subir el archivo: eso cuesta tiempo,
+  no dinero ni una segunda identidad para el archivo.
+
+### Paso 3: Presentar el documento de evidencia
+
+```json evidence_submit request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"evidence_submit",
+  "arguments":{"dispute":"219","name":"Order 4412: what was promised and what arrived",
+               "description":"On 2026-09-01 the buyer …",
+               "fileUri":"/ipfs/bafy…","fileTypeExtension":"pdf"}
+}}
+```
+
+<ParamField body="dispute" type="string" required>
+  El id de disputa del Core: el número que muestra Kleros Court y el que el paso 1 devuelve como `coreDisputeID`. **No** es el id que recibe `evidence_list`; consulta [Verificar una presentación](#verificar-una-presentación-requiere-el-otro-id-de-disputa). Solo dígitos. **El id de otra disputa real se acepta, se indexa y es incorrecto**, y nada en la cadena lo rechaza, así que confirma el número antes de llamar.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Un título breve, como lo nombraría una parte. Se envía como texto literal: un nombre que empieza por `@`, o igual a `-`, se registra exactamente como lo escribiste.
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  El cuerpo del documento: tu versión, en prosa. **No pongas aquí una URI sola.** La cadena la acepta y se indexa como un documento sin ningún argumento; los jurados entonces no leen nada. Un adjunto va en `fileUri`.
+</ParamField>
+
+<ParamField body="fileUri" type="string">
+  La URI `/ipfs/<cid>` de un adjunto: lo que devolvió el paso 2, o uno que fijaste tú mismo. Se registra tal cual y **nunca se descarga**, por lo que ya debe resolverse para un jurado. Como máximo 1024 caracteres, sin espacios en blanco, sin caracteres de control y sin un `-` inicial.
+</ParamField>
+
+<ParamField body="fileTypeExtension" type="string">
+  La extensión del adjunto sin punto, con la misma forma que `extension` del paso 2. Solo la lee el subgraph, y **se rechaza con `FILE_URI_INVALID` si la envías sin `fileUri`**: describe ese adjunto y no significa nada por sí sola.
+</ParamField>
+
+| `status` | Significado | Qué hacer |
+| --- | --- | --- |
+| `simulated` | Se leyó la disputa y se simuló la llamada. **No se envió nada y no se registró nada.** | Infórmalo como una simulación. Nunca como un documento presentado. |
+| `mined` | El documento de evidencia está registrado y el gas se ha gastado. | Verifica con `evidence_list` sobre el `localDisputeID` del paso 1 si quieres el registro; no hace falta nada más. |
+| `unknown` | Se transmitió, pero no llegó ningún recibo a tiempo. Probablemente el documento está registrado. | **No vuelvas a presentarlo.** Una lectura de `evidence_list` no puede resolverlo por ti; consulta más abajo. Escala con el `txHash`. |
+
+**`reverted` no es un estado en esta herramienta**, igual que no lo es en el paso 1. Una presentación que se minó y falló llega como un rechazo llamado `TRANSACTION_REVERTED` con `isError: true`, no como un resultado ordinario según el cual ramificar.
+
+Ramifica primero según `isError` en todas las herramientas de aquí: un rechazo es `CODE: message` como texto simple, por lo que analizarlo como JSON lanza una excepción. Tanto en el paso 1 como en el 3, la ausencia de `isError` significa que no se sabe que la transacción se haya revertido: `simulated` no envió nada y `mined` tuvo éxito, pero `unknown` no tiene recibo, así que no puede afirmar ni una cosa ni la otra.
+
+`unknown` lleva aquí como prefijo una advertencia en lenguaje llano antes del JSON exactamente igual que en el paso 1, por lo que `JSON.parse` sobre todo el texto lanza una excepción. Todos los demás estados de ambas herramientas son JSON sin más; analiza el último objeto JSON del texto si analizas de forma defensiva.
+
+Una presentación duplicada es desordenada más que perjudicial, y esa es toda la diferencia con el paso 1: cuesta gas y muestra a los jurados el mismo documento dos veces, pero no paga ninguna tarifa de arbitraje ni crea una segunda disputa. Eso hace que un resultado incierto aquí sea más barato que el `unknown` del paso 1, pero ninguna lectura lo resuelve: escala con el `txHash` y no vuelvas a presentarlo.
+
+<AccordionGroup>
+  <Accordion title="Esto gasta gas, y ningún límite de costo lo acota" icon="gas-pump">
+    El gasto de una creación de disputa está limitado por tu Preset; una presentación no tiene equivalente, así que su costo depende de la longitud de lo que envías. El único límite son los topes de longitud de `name` (1 KiB) y `description` (64 KiB), que están ahí para detener un descontrol, no para fijar precios. Limita `description` al argumento que quieres que se lea.
+  </Accordion>
+
+  <Accordion title="Cualquiera puede presentar, incluida la contraparte" icon="users">
+    Nombrar a una parte en el paso 1 no le otorga ninguna legitimación ni te da exclusividad. No hay control de acceso sobre la evidencia.
+  </Accordion>
+
+  <Accordion title="evidence_list lee lo que quedó registrado" icon="list-check">
+    `evidence_list` lee lo que quedó registrado, sin importar quién lo presentó, con el contenido de IPFS resuelto. Ya está en tu `tools/list` y no necesita Preset. Pero su clave es el `localDisputeID` del paso 1 y no el id sobre el que acabas de presentar, así que lee la siguiente sección antes de tratar su respuesta como verificación.
+  </Accordion>
+</AccordionGroup>
+
+### Verificar una presentación requiere el otro id de disputa
+
+<Warning>
+  **Una disputa de Kleros v2 tiene dos ids**: el id del **Core** que emite el árbitro y muestra Kleros Court, y el id **propio del contrato arbitrable**. `evidence_submit` recibe el id del Core y lo traduce. `evidence_list` recibe el id del arbitrable y no traduce nada.
+
+  En la primera disputa real creada mediante este servicio, en Testnet (`arbitrum-sepolia-testnet`) el 2026-09-10, el id del Core era `131` y el del arbitrable era `81`:
+
+  | Llamada | Resultado |
+  | --- | --- |
+  | `evidence_list` con `131` | `{"items":[]}`, dos veces, con 75 segundos de diferencia, mientras el documento estaba en la cadena |
+  | `evidence_list` con `81` | el documento, resuelto |
+</Warning>
+
+Los dos ids son iguales en Beta (`arbitrum-one`), `ethereum` y `gnosis` por la historia de esos
+despliegues y no por el protocolo, así que el código comprobado solo contra Beta pasa y luego
+falla aquí. La primera disputa de producción creada mediante este servicio, el 2026-09-11, es un caso más
+en el que son iguales, lo que convierte a Beta en un lugar engañoso para probar esto en lugar de uno
+tranquilizador. La igualdad termina para todos los ids posteriores la primera vez que cualquier otro arbitrable
+crea allí una disputa, sin ningún cambio en ninguno de los dos lados y sin ningún error que capturar.
+
+De esto se derivan tres reglas, que prevalecen sobre cualquier otra cosa de este documento:
+
+1. **Un `evidence_list` vacío no es prueba de ausencia.** Es igualmente el síntoma del id equivocado, y llega con una línea de comandos sugerida que afirma "no evidence submitted yet" como un hecho. El `evidenceCount` de `dispute_get` es `null` en la misma disputa, así que tampoco puede contradecirlo.
+2. **Nunca vuelvas a presentar porque una lista haya vuelto vacía.** Esa es la única inferencia que esta asimetría vuelve insegura, y es la inferencia a la que invita la redacción.
+3. **Un payload lleva el id del arbitrable, y solo uno.** Un paso 1 `mined` lo devuelve como `localDisputeID`, decodificado de la transacción de creación por ti. El paso 3 no lo repite, `dispute_get` y `dispute_brief` no lo incluyen, y una disputa que no creaste mediante este servicio nunca te dio uno. Consérvalo junto con el `coreDisputeID` del mismo resultado; si no lo tienes, trata la presentación como no verificada y dilo, en lugar de informarla como ausente.
+
+Incluso con el id correcto, una lectura de la lista es una confirmación y no una prueba: `evidence_list` lee un
+índice y no la cadena, así que una respuesta vacía poco después de una presentación es una prueba débil de
+ausencia. La confirmación más sólida de que una presentación quedó registrada sigue siendo el propio resultado `mined` del paso 3 y
+su `txHash`.
+
+La traducción le corresponde al upstream y se ha reportado a AgentKit. Mientras tanto, `localDisputeID` es la respuesta de este servicio, y sigue siendo útil en cualquier caso.
+
+## Paso 4: Consultar el fallo de la primera ronda
+
+<Check>
+  La respuesta a la pregunta por la que existe esta nota: **sí, la mayoría actual se puede leer antes de que la disputa se resuelva.** `dispute_get` lee el contrato del árbitro en vivo en cada llamada, por lo que incluye un fallo para una disputa que todavía está en curso: no tienes que esperar a la ejecución ni preocuparte por las apelaciones para obtener un número.
+</Check>
+
+```json dispute_get request
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{
+  "name":"dispute_get",
+  "arguments":{"id":"<dispute id>","chain":"<the chain your Preset files on>"}
+}}
+```
+
+### La forma de la respuesta
+
+`dispute_get` responde con un envoltorio paginado, no con una fila sin más. La disputa es el primer elemento de
+`items`, y los campos de abajo se leen de **ese** elemento, no del nivel superior:
+
+```json dispute_get response
+{"items":[{"id":"219","status":"Vote","ruling":"0","tied":true, "…":"…","chain":"arbitrum-one"}],
+ "nextCursor":null,"hasMore":false,"chainStatus":[{"chain":"arbitrum-one","ok":true}]}
+```
+
+Un cliente que lee `.status` del objeto analizado obtiene `undefined`. Lee `items[0].status` y
+revisa `chainStatus` cuando falte un campo que esperabas.
+
+### Los campos importantes
+
+<ResponseField name="status" type="string">
+  El período actual: `Evidence`, `Commit`, `Vote`, `Appeal`, `Executed`. Esta es tu máquina de estados.
+</ResponseField>
+
+<ResponseField name="ruling" type="string">
+  La opción ganadora **actual**, en vivo desde el contrato. Se rellena durante la ronda, no solo después.
+</ResponseField>
+
+<ResponseField name="tied" type="boolean">
+  `true` significa que todavía ninguna opción va por delante. **Este es el campo que hace interpretable a `ruling`.**
+</ResponseField>
+
+<ResponseField name="ruled" type="boolean">
+  Si la disputa llegó a la ejecución. No necesitas que sea `true`.
+</ResponseField>
+
+<ResponseField name="ruledSemantics" type="string">
+  Lo que significa `ruled` en esta fila. En `dispute_get` siempre es `onchain`: se lee directamente del árbitro, por eso `ruled` es fiable aquí. En `dispute_list` dice `period-reached`, donde no lo es.
+</ResponseField>
+
+<ResponseField name="rulingLabel" type="string">
+  La etiqueta legible de `ruling`. Solo por comodidad: no la analices.
+</ResponseField>
+
+<ResponseField name="rulingOptions" type="array">
+  La lista de opciones, cada una con el **valor** de fallo que explica. Compara con ese valor; no es un índice del arreglo.
+</ResponseField>
+
+<ResponseField name="roundCount" type="number">
+  `1` mientras la primera ronda está en curso. Un valor mayor que `1` significa que se financió una apelación.
+</ResponseField>
+
+<ResponseField name="deadline" type="string | null">
+  Fin del período actual en ISO 8601, y un límite superior más que un calendario. `null` cuando el valor subyacente está ausente: no interpretes su presencia como prueba de que la disputa sigue en curso, y no interpretes `1970-01-01` como otra cosa que un valor no establecido.
+</ResponseField>
+
+<ResponseField name="lastPeriodChange" type="string">
+  Entrada en el período actual en ISO 8601.
+</ResponseField>
+
+<ResponseField name="unresolvedFields / unresolvedReason">
+  Siempre presentes. Si no están vacíos, significa que parte de la fila no se pudo resolver: es el estado de la disputa, no un fallo del servicio.
+</ResponseField>
+
+### La trampa: `ruling: "0"` significa dos cosas distintas
+
+<CodeGroup>
+
+```json No majority yet (tied)
+{"id":"219","status":"Vote","ruling":"0","ruled":false,"tied":true,
+ "rulingLabel":"Invalid / Refuse to Arbitrate"}        // NO MAJORITY YET — keep polling
+```
+
+```json Real majority
+{"id":"218","status":"Vote","ruling":"2","ruled":false,"tied":false,
+ "rulingLabel":"No","roundCount":1}                    // a real current majority
+```
+
+</CodeGroup>
+
+Ambas filas se observaron en `arbitrum-one` el 2026-09-10, en otra corte, y se muestran para ilustrar la forma. `0` significa tanto "negarse a arbitrar" como "nadie va por delante todavía", y `rulingLabel` muestra el texto de negarse a arbitrar en **ambos** casos.
+
+<Info>
+  **`tied` es el discriminador.** Un cliente que lee `ruling` sin `tied` informará de una votación que aún no ha ocurrido como una negativa de los jurados.
+</Info>
+
+Dos consecuencias que conviene tener en cuenta en el diseño:
+
+- **Consulta con `dispute_get`, nunca con `dispute_list`.** La herramienta de listado es una instantánea del subgraph, puede ir por detrás de la cadena y no incluye `tied` en absoluto, que es justo el campo que necesitas.
+- **Un empate sobrevive hasta el final.** Si el período de apelación expira con la ronda todavía empatada, el fallo se finaliza como `0`. Tu manejo de "sin mayoría" no es un estado transitorio, es un resultado real.
+
+### La condición de parada
+
+Has terminado con la primera ronda cuando `status` pasa a `Appeal`: ese período se abre una vez que se ha cerrado el período de votación, por lo que la mayoría que lees ahí es el veredicto de la primera ronda.
+
+```text Polling loop
+poll dispute_get every 30 s
+  while status is Evidence, Commit or Vote        → keep waiting
+  when  status is Appeal or Executed, or ruled is true:
+        if tied is true                           → no majority: handle as "undecided"
+        else                                      → record ruling, rulingLabel, roundCount, and the time
+```
+
+<CardGroup cols={3}>
+  <Card title="Cadencia: una llamada cada 30 segundos es más que suficiente" icon="clock">
+    Tu clave se contabiliza a 30 solicitudes por minuto, un `429` no lleva `Retry-After`, y la disputa no avanzará más rápido que la cadena.
+  </Card>
+
+  <Card title="Limita el bucle por tiempo real" icon="stopwatch">
+    Si nada ha llegado a `Appeal` mucho después de la suma de los períodos de la corte, alerta a una persona en lugar de consultar indefinidamente: una disputa atascada en `Evidence` suele significar que no se han seleccionado todos los jurados.
+  </Card>
+
+  <Card title="Registra roundCount junto al fallo" icon="clipboard-list">
+    Es lo que hace que tu instantánea sea auditable más adelante: indica que el número sobre el que actuaste era el de la primera ronda.
+  </Card>
+</CardGroup>
+
+### Qué significa cada valor de fallo
+
+`ruling` es un número; lo que decide depende de tu plantilla. `0` con `tied: false` siempre es una
+negativa a arbitrar, y cualquier otro valor es la respuesta de la plantilla cuyo id lleva el mismo
+número: `1` es `0x01`, `2` es `0x02`, y así sucesivamente. Tu página de socio tiene la tabla de tu
+plantilla, con el resultado que representa cada valor.
+
+Trata esa tabla como lo esperado, y `rulingOptions` en la propia disputa como la verdad: haz que tu manejador compare con el `value` que lleva cada opción. Confirma la correspondencia una vez, en la primera disputa de Testnet (`arbitrum-sepolia-testnet`), antes de conectarla con dinero.
+
+### Ignorar las apelaciones: lo que realmente estás eligiendo
+
+Leer la mayoría de la primera ronda y detenerse es una elección legítima. Sé explícito sobre lo que significa:
+
+- La disputa sigue en curso sin ti. Si se financia una apelación, `roundCount` aumenta y `status` vuelve a pasar por `Commit` y `Vote` con más jurados, y **el fallo final on-chain puede diferir del número que registraste**.
+- En ningún caso hay nada que llame de vuelta a tu sistema. Estas disputas se crean mediante el arbitrable genérico de Kleros, por lo que no hay ningún callback `rule()` a tus contratos: cualquier liquidación posterior es una acción tuya, tomada con el número que leíste.
+- Si más adelante quieres el resultado final, la misma llamada a `dispute_get` te lo da: `ruled: true` con `status: "Executed"`, y `overridden: true` si una corte superior lo cambió en apelación.
+
+## Cuando algo sale mal
+
+<Tabs>
+  <Tab title="General">
+    | Síntoma | Interpretación |
+    | --- | --- |
+    | HTTP `401` | Clave ausente o no reconocida. Se decide antes de JSON-RPC: comprueba primero el estado HTTP. |
+    | HTTP `429` | Más de 30 solicitudes por minuto con tu clave. Sin `Retry-After`; espera sin referencia antes de reintentar. |
+    | HTTP `400` con `-32600` | Enviaste un lote JSON-RPC. Todos los lotes se rechazan, sea cual sea su tamaño; envía una solicitud por POST. |
+    | `WRITE_IN_PROGRESS` | Otra escritura con tu clave (estrictamente, con su firmante), del paso 1, 2 o 3, seguía en ejecución. **No se envió nada.** Vuelve a llamar cuando haya terminado. |
+    | HTTP `413` | El cuerpo de la solicitud HTTP era demasiado grande. Una protección sobre toda la solicitud, no un límite sobre ningún argumento concreto, y se decide antes de JSON-RPC, así que llega como un estado HTTP, nunca como un rechazo de la herramienta. **El paso 2 es la única llamada que puede alcanzarlo**, ya que el archivo viaja integrado en base64; el límite admite todos los archivos que aceptaría la subida, así que un archivo que apenas supera el tope de la subida igualmente recibe `FILE_TOO_LARGE`, y solo uno que lo supera con creces activa esto primero; entonces nunca llega a `evidence_pin` y no hay ningún resultado que analizar. Gestiona ambos casos. Todo lo demás de este documento está muy lejos de alcanzarlo. |
+    | `isError: true` con prosa | Un rechazo de la herramienta. **No hay ningún campo de código de error**: nombres como `IPFS_UNAVAILABLE` solo aparecen en el texto. Ramifica según `isError` y luego lee. |
+    | `unresolvedFields` no vacío | Resolución parcial. Es normal, y más común en Testnet (`arbitrum-sepolia-testnet`). Infórmalo como el estado de la disputa, no como una caída. Reintentar no ayuda. |
+    | `IPFS_UNAVAILABLE` | El contenido necesita volver a fijarse. No cambies de gateway: el que se usa ya distribuye las solicitudes del lado del servidor. |
+    | Un "comando sugerido" en un resultado | Los resultados llevan líneas de comandos **tanto en caso de éxito como de fallo**. No puedes ejecutarlas. Extrae de ellas la herramienta y los argumentos, o ignóralas. Nunca se las muestres a un usuario como algo que ejecutar. |
+    | Un `/health` en verde pero llamadas que fallan | `/health` no requiere autenticación y solo indica que el proceso HTTP está activo. Solo una llamada real a una herramienta pone a prueba el backend de arbitraje. |
+
+    En la ruta de escritura (pasos 1, 2 y 3), los nombres de las otras pestañas aparecen en el texto del rechazo. Cada uno indica que ocurrió algo concreto o, lo que es más útil, que no ocurrió.
+
+    **Lee las tablas por paso, no como un único vocabulario.** Los pasos 1 y 3 se solapan mucho (ambos firman, así que ambos llegan a la billetera, al firmante y a la cadena), pero no por completo: un límite de costo pertenece solo a una creación de disputa, y un id de disputa solo a una presentación. El paso 2 no se solapa con ninguno, porque no firma nada ni lee ninguna cadena.
+  </Tab>
+  <Tab title="Paso 1: Crear">
+    Paso 1, crear la disputa:
+
+    | Nombre en el texto | Interpretación |
+    | --- | --- |
+    | `INSUFFICIENT_BALANCE` | La billetera no puede cubrir la tarifa de arbitraje. **No se envió nada.** Financiarla es un paso manual de este lado. |
+    | `COST_CEILING_EXCEEDED` | La tarifa cotizada supera el tope que fija tu Preset. No se envió nada, y no puedes aumentarlo desde tu lado. |
+    | `ZERO_ADDRESS_ALIAS` | Pasaste la dirección cero para una parte. Omite el slot en su lugar: así se expresa "desconocido". No se presentó nada. |
+    | `ALIASES_REQUIRED` | Llamaste sin ningún `aliases`: un objeto de argumentos vacío, o ninguno. No se presentó nada. Envía `{"aliases":{}}` si quieres no nombrar a ninguna parte; consulta el [Paso 1](#paso-1-crear-la-disputa). |
+    | `UNKNOWN_ALIAS_SLOT`, `INVALID_ALIASES` | `aliases` nombró un slot que tu Preset no tiene, o no era un objeto de slot a dirección. Un nombre del prototipo de JavaScript (`toString`, `constructor`, `__proto__` y los demás) tampoco es un slot, a menos que tu Preset declare realmente uno. Un arreglo también se rechaza aquí, incluido `[]`: no es la forma de decir "sin partes"; `{}` sí lo es. Una dirección que no es una cadena de texto es `INVALID_ALIASES` con el nombre del slot en el que llegó. No se presentó nada. |
+    | `TEMPLATE_INVALID`, `POLICY_URI_INVALID`, `RULING_OPTIONS_INVALID`, `COURT_OUT_OF_RANGE`, `JURORS_INVALID`, `CHAIN_NOT_SUPPORTED`, `UNKNOWN`, `VALIDATION_ERROR` | Tu Preset está mal configurado de este lado. No se envió nada; escala en lugar de reintentar. |
+    | `KEY_FILE_MISSING`, `KEY_FILE_PERMISSIONS` | El firmante que este servicio guarda para ti falta o no se puede usar. No se envió nada, y es un paso manual de este lado. |
+    | `FILING_TIMED_OUT` | La creación no terminó en tres minutos y se detuvo. En un Preset que transmite, la transacción **puede haberse enviado**: trátala exactamente como `unknown`. |
+    | `FILING_CHILD_FAILED` | El proceso de creación murió sin un resultado legible. La misma regla: si el texto dice que puede haberse enviado, trátala como `unknown`. |
+    | `TRANSACTION_REVERTED` | Se minó y falló, así que la disputa no existe. La reversión devolvió la tarifa de arbitraje, pero el gas se ha gastado. Aquí es donde va `reverted` en esta herramienta, como rechazo y no como estado. El texto dice que el fallo se produjo después del envío y que el resultado se conoce (ninguna disputa, ninguna tarifa de arbitraje gastada) y te indica que no vuelvas a presentarla a ciegas: escala con el hash de la transacción que incluye. A diferencia de los fallos con posible envío anteriores, una segunda creación aquí no paga una segunda tarifa, así que crear la disputa de nuevo es legítimo, pero es una decisión que debe tomar una persona después de leer por qué se revirtió esa transacción. |
+    | `FILING_FAILED` | La Disputant CLI se negó y no indicó ningún código propio, así que este servicio proporcionó uno. No garantiza nada en ningún sentido: lee el texto y, en un Preset que transmite, trátalo como posiblemente enviado a menos que el texto diga lo contrario. |
+  </Tab>
+  <Tab title="Paso 2: Pin">
+    Paso 2, publicar el adjunto. **La lista segura es cerrada y lo predeterminado fuera de ella es "en duda"**: cualquier cosa que no se nombre abajo, incluido un código que este documento nunca ha visto, se informa en un Preset que publica como posiblemente publicada. El servicio falla de forma cerrada en lugar de adivinar, y los pasos 1 y 3 hacen lo mismo con sus propias listas.
+
+    #### No se publicó nada
+
+    Estos, y solo estos, significan que no se publicó nada:
+
+    | Nombre en el texto | Interpretación |
+    | --- | --- |
+    | `ATTACHMENT_INVALID` | `attachment` no era base64 estándar con relleno. Se rechaza en lugar de decodificarse de forma permisiva. |
+    | `EXTENSION_INVALID` | `extension` no tenía de una a diez letras minúsculas o dígitos. Envía `pdf`, no `.pdf`. |
+    | `FILE_UNREADABLE`, `FILE_EMPTY`, `FILE_TOO_LARGE` | Se deciden antes de abrir un socket, tanto en un Preset que comprueba como en uno que publica, y eso es lo que convierte una comprobación en una verificación previa real. `FILE_TOO_LARGE` indica el límite que se aplicó; no lo codifiques de forma fija. |
+    | `UNKNOWN`, `VALIDATION_ERROR` | El pin se rechazó antes de empezar. |
+
+    #### En duda
+
+    Todo lo demás deja la publicación en duda en un Preset que publica, y el texto del rechazo lo indica:
+
+    | Nombre en el texto | Interpretación |
+    | --- | --- |
+    | `UPLOAD_FAILED`, `UPLOAD_MISMATCH` | `UPLOAD_FAILED` cubre una respuesta que no se pudo leer; `UPLOAD_MISMATCH` significa que los bytes salieron y volvió otra cosa. |
+    | `PIN_TIMED_OUT`, `PIN_CHILD_FAILED` | Este servicio dejó de esperar, o el proceso de pin murió sin un resultado legible. |
+    | `PIN_FAILED` | El pin se rechazó, sin ningún código propio que informar. |
+    | cualquier cosa no nombrada arriba | Se trata como en duda por defecto en lugar de asumirse segura. |
+
+    **En duda no es lo mismo que perdido, y la respuesta a todo ello es la misma: reintentar.** Los mismos bytes dan el mismo CID, así que una repetición publica el mismo adjunto en lugar de uno nuevo, y no se gasta nada. Lo que no debes hacer es informar del archivo como no publicado.
+
+    Desde el paso 2 no se puede alcanzar en absoluto ningún código de billetera, cadena, gas o disputa: no firma nada ni lee ninguna cadena. Un rechazo que nombre alguno de ellos no proviene de esta llamada.
+  </Tab>
+  <Tab title="Paso 3: Presentar">
+    Paso 3, presentar el documento de evidencia:
+
+    | Nombre en el texto | Interpretación |
+    | --- | --- |
+    | `DISPUTE_INVALID`, `NAME_INVALID`, `DESCRIPTION_INVALID`, `FILE_URI_INVALID`, `EXTENSION_INVALID` | Tus argumentos, rechazados aquí antes de que se lance nada: un `dispute` no numérico, un `name` (1 KiB) o `description` (64 KiB) vacío o demasiado largo, un `fileUri` vacío, de más de 1024 caracteres o con espacios en blanco, un carácter de control o un `-` inicial, o un `fileTypeExtension` con una forma incorrecta o enviado sin `fileUri`. Ten en cuenta que las unidades difieren: `name` y `description` se limitan en bytes UTF-8, `fileUri` en caracteres. **No se envió nada.** |
+    | `EVIDENCE_INVALID` | El documento se rechazó en el upstream. No se envió nada. |
+    | `DISPUTE_NOT_FOUND`, `DISPUTE_NOT_ADDRESSABLE` | El árbitro no puede resolver ese id, o un arbitrable distinto es el dueño de esa disputa y deben ser sus propias herramientas las que presenten sobre ella. Ambos tienen que ver con la accesibilidad: **ninguno comprueba que la disputa sea tuya.** No se envió nada. |
+    | `SIMULATION_REVERTED` | Se simuló la llamada y habría fallado. No se envió nada. |
+    | `INSUFFICIENT_BALANCE` | La billetera no puede cubrir el gas. No se envió nada; financiarla es un paso manual de este lado. |
+    | `WRONG_CHAIN`, `NUMBER_INVALID`, `CHAIN_NOT_SUPPORTED`, `UNKNOWN`, `VALIDATION_ERROR` | Tu Preset está mal configurado de este lado, o el endpoint respondió para el despliegue equivocado. No se envió nada; escala en lugar de reintentar. |
+    | `KEY_FILE_MISSING`, `KEY_FILE_PERMISSIONS`, `KEY_FILE_UNREADABLE`, `KEY_FILE_INVALID` | El firmante que este servicio guarda para ti falta o no se puede usar. No se envió nada, y es un paso manual de este lado; un Preset que simula también se topa con estos, porque se necesita un firmante incluso para simular. |
+    | `TRANSACTION_REVERTED` | Se minó y falló. Se gastó gas y **no se registró nada**: aquí es donde va `reverted` en esta herramienta, como rechazo y no como estado. El texto dice que el fallo se produjo después del envío y que el resultado se conoce, y te indica que no vuelvas a presentarlo a ciegas: escala con el hash de la transacción que incluye. A diferencia de los fallos en duda de abajo, no hay nada que volver a leer (el documento no está registrado), así que presentarlo de nuevo es legítimo, pero es una decisión que debe tomar una persona después de leer por qué se revirtió esa transacción. |
+    | `BROADCAST_FAILED`, `RPC_ERROR` | El nodo rechazó la transacción firmada, o falló una llamada RPC. Trata el resultado como en duda. |
+    | `SUBMISSION_TIMED_OUT`, `SUBMISSION_CHILD_FAILED` | Este servicio dejó de esperar, o el proceso de presentación murió sin un resultado legible. En un Preset que transmite, el texto indica si la transacción puede haber salido. |
+    | `SUBMISSION_FAILED` | La presentación se rechazó, sin ningún código propio que informar. No es un fallo puntual de infraestructura ni algo transitorio: en un Preset que transmite se trata como posiblemente enviada. |
+
+    Se aplica la misma regla de lista cerrada: un código no nombrado arriba se informa en un Preset que transmite como posiblemente enviado, en lugar de asumirse seguro.
+
+    **Ante cualquier resultado del paso 3 que esté en duda, escala en lugar de reintentar**: `evidence_list` no lo resuelve por ti ([Verificar una presentación](#verificar-una-presentación-requiere-el-otro-id-de-disputa)), así que un reintento a ciegas es pura conjetura. Sigue siendo más barato que el `unknown` del paso 1, donde un reintento compra una segunda disputa y una segunda tarifa, pero que sea barato no es motivo para adivinar.
+  </Tab>
+</Tabs>
+
+Cualquier cosa que recibas que no esté en ninguna de estas tres tablas ni en las filas de la ruta de lectura de arriba es un código que este documento no ha visto. Ramifica primero según `isError` y escala el texto: no busques patrones en un código cuyo significado no se te ha dado. Ante un código no reconocido, reintenta solo el paso 2: repetir el pin de los mismos bytes publica el mismo adjunto y no gasta nada, mientras que repetir el paso 1 o el paso 3 gasta dinero frente a un resultado que no has establecido.
+
+## Antes de pasar a producción
+
+<Steps>
+  <Step title="Lee tools/list al conectarte y construye en función de él">
+    Es la única declaración de lo que puede llamar tu clave. Las tres herramientas de escritura llegan juntas o no llegan, así que una clave que puede crear una disputa también puede publicar un adjunto y presentar un documento de evidencia. Lee también los esquemas de entrada y respeta sus arreglos `required`: `dispute_create` requiere `aliases` incluso cuando está vacío, y un cliente que lo omite recibe un rechazo con `ALIASES_REQUIRED` en cada llamada.
+  </Step>
+  <Step title="Comprueba si tu Preset transmite">
+    Un único indicador rige las tres escrituras. Si tu cadena `instructions` dice simulación, el paso 1 no crea nada y no hay ninguna disputa que el paso 4 pueda leer, el paso 2 comprueba el archivo y no publica nada, y el paso 3 no registra nada. Configurar un Preset que transmita es un paso manual de este lado, no un argumento que puedas pasar.
+  </Step>
+  <Step title="Ensaya primero en Testnet">
+    Ensaya primero en Testnet (`arbitrum-sepolia-testnet`) y revisa la disputa en la interfaz de Court: la plantilla se renderiza ahí, y una que un jurado lea mal es mucho más barata de detectar antes de Beta (`arbitrum-one`) que después.
+  </Step>
+  <Step title="Confirma en esa primera ejecución real">
+    Confirma en esa primera ejecución real, y compruébalo en tu cliente, que los valores de `rulingOptions` se corresponden con tus tres respuestas tal como espera la tabla de fallos de tu página de socio ([Paso 4](#qué-significa-cada-valor-de-fallo)). El propio payload `mined` ya se ha leído en una creación real (una disputa de Testnet, `arbitrum-sepolia-testnet`, llevada hasta un fallo) y lleva ambos identificadores: `coreDisputeID`, el número que muestra la interfaz de Court, y `localDisputeID`, el que usa como clave `evidence_list`. Lee el segundo del resultado de la creación y consérvalo; ninguna otra llamada de aquí lo devuelve.
+  </Step>
+</Steps>

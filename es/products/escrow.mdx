@@ -1,0 +1,353 @@
+---
+title: "Escrow"
+description: "Kleros Escrow protege los pagos en blockchain entre desconocidos mediante contratos inteligentes y arbitraje descentralizado, con soporte para ETH y tokens ERC-20."
+sidebarTitle: "Escrow"
+
+---
+
+
+<img src="/images/escrowv1-hero.png" alt="Interfaz de Kleros Escrow" />
+
+# Escrow
+
+**Kleros Escrow** es una plataforma de escrow descentralizado que protege las transacciones en blockchain entre partes que no confían entre sí. Combina la automatización de los contratos inteligentes con el sistema de arbitraje descentralizado de Kleros para ofrecer seguridad en las transacciones de comercio digital sin necesidad de confianza.
+
+Las transacciones en línea tradicionales requieren confianza entre desconocidos, lo que crea oportunidades para el fraude y las disputas. Kleros Escrow elimina este requisito de confianza al proteger los fondos en contratos inteligentes y ofrecer arbitraje descentralizado a través de Kleros Court cuando los acuerdos fallan.
+
+
+---
+
+## V1 - Protocolo en producción
+
+Escrow V1 funciona en Ethereum Mainnet. Dos partes bloquean fondos en un contrato inteligente, con Kleros Court disponible como mecanismo de resolución de disputas si no están de acuerdo.
+
+
+
+- **Red**: Ethereum Mainnet
+- **Modelo**: Escrow entre dos partes con acuerdo básico
+- **Tokens**: ETH y tokens ERC-20 estándar (los tokens no estándar como USDT no son compatibles)
+- **Evidencias y apelaciones**: Gestionadas por el contrato de escrow
+
+---
+
+## V2 - Actualización de nueva generación
+
+Escrow V2 funciona en Arbitrum y añade negociación estructurada de acuerdos, soporte multitoken (ETH, USDC, USDT, DAI o cualquier ERC-20 mediante `SafeERC20`) y traslada la gestión de evidencias y apelaciones a la Corte.
+<Frame>
+  <img src="/images/escrow-hero.png" alt="Interfaz de Escrow V1, captura de pantalla pendiente" />
+</Frame>
+
+---
+
+## Qué cambió en V2
+
+| Característica | V1 | V2 |
+|---------|----|----|
+| Red | Ethereum Mainnet | Arbitrum One |
+| Soporte de tokens | ETH + ERC-20 estándar | ETH + cualquier ERC-20 (mediante SafeERC20) |
+| Acuerdo | Básico | Propuesta / contrapropuesta estructurada |
+| Evidencias y apelaciones | Gestionadas por el contrato de escrow | Gestionadas por la Corte |
+| Comisiones de la plataforma | Ninguna | Ninguna |
+
+
+---
+
+## Capacidades clave
+
+<CardGroup cols={2}>
+
+<Card title="Seguridad de contratos inteligentes" icon="lock">
+  Fondos protegidos en contratos inteligentes antes de la prestación del servicio
+</Card>
+
+<Card title="Negociación de acuerdos" icon="comments-dollar">
+  Proceso de negociación estructurado para disputas parciales
+</Card>
+
+<Card title="Soporte multitoken" icon="coins">
+  Paga con ETH, USDC, USDT, DAI o cualquier token ERC20
+</Card>
+
+<Card title="Arbitraje descentralizado" icon="gavel">
+  Kleros Court resuelve las disputas cuando los acuerdos fallan
+</Card>
+
+<Card title="Cero comisiones de plataforma" icon="badge-percent">
+  Completamente gratuito: solo pagas las comisiones de gas de la red
+</Card>
+
+<Card title="Ejecución automática" icon="robot">
+  Los contratos inteligentes ejecutan los fallos automáticamente
+</Card>
+
+</CardGroup>
+
+---
+
+## Cómo funciona
+
+<Steps>
+
+<Step title="Creación">
+  El comprador crea la transacción de escrow especificando el vendedor, el monto, el plazo y las condiciones.
+</Step>
+
+<Step title="Bloqueo de fondos">
+  El pago queda protegido en el contrato inteligente usando ETH o el token elegido.
+</Step>
+
+<Step title="Período de entrega">
+  El vendedor proporciona el servicio o producto acordado antes del plazo especificado.
+</Step>
+
+<Step title="Resolución">
+  La transacción concluye mediante el pago, un acuerdo, la ejecución manual tras el plazo o el arbitraje.
+</Step>
+
+</Steps>
+
+---
+
+## Mecanismos de resolución
+
+Kleros Escrow V2 ofrece varias formas de resolver las transacciones:
+
+<Tabs>
+  <Tab title="Pago directo">
+    **Cuando las partes están totalmente de acuerdo**
+
+    - **Pago completo**: El comprador libera el monto total al vendedor cuando está satisfecho
+    - **Reembolso completo**: El vendedor devuelve el monto total al comprador si no puede cumplir con la entrega
+    - **Transacciones parciales**: Cualquiera de las partes puede procesar montos parciales por las partes completadas
+  </Tab>
+
+  <Tab title="Acuerdo">
+    **Cuando las partes están parcialmente en desacuerdo**
+
+    El proceso de negociación estructurado:
+
+    1. **Propuesta**: Cualquiera de las partes propone un monto de acuerdo
+    2. **Contrapropuesta**: La otra parte puede proponer un monto diferente
+    3. **Acuerdo**: Cuando una parte acepta, los fondos se distribuyen automáticamente
+    4. **Escalamiento**: Si no hay acuerdo tras el tiempo límite, cualquiera de las partes puede iniciar una disputa
+
+    <Warning>
+    Proponer un acuerdo NO transfiere fondos. El dinero solo se mueve cuando una parte acepta explícitamente la propuesta de la otra.
+    </Warning>
+  </Tab>
+
+  <Tab title="Ejecución tras el plazo">
+    **Cuando vence el plazo**
+
+    Después del plazo, cualquiera puede activar la ejecución para transferir los fondos restantes al vendedor si:
+    - No existen disputas activas
+    - No hay negociaciones de acuerdo pendientes
+    - El plazo ha vencido
+
+    <Info>
+    Esto requiere una llamada de transacción manual: NO es automático. Cualquier dirección puede activarla una vez que se cumplen las condiciones.
+    </Info>
+  </Tab>
+
+  <Tab title="Resolución de disputas">
+    **Cuando el acuerdo fracasa**
+
+    1. **Pago de tarifas**: Ambas partes pagan las tarifas de arbitraje dentro del tiempo límite
+    2. **Envío de evidencias**: Las partes envían evidencias de respaldo
+    3. **Selección del jurado**: Kleros selecciona aleatoriamente jurados imparciales
+    4. **Fallo**: El jurado decide el resultado basándose en las evidencias
+    5. **Ejecución**: El contrato inteligente ejecuta el fallo automáticamente
+
+    Las tarifas de arbitraje se reembolsan a la parte ganadora. Si una parte no paga las tarifas dentro del tiempo límite, la parte que pagó gana automáticamente.
+  </Tab>
+</Tabs>
+
+---
+
+## Mejoras de V2
+
+| Característica | Descripción |
+| --- | --- |
+| **Soporte universal de tokens** | ETH, tokens populares (USDC, USDT, DAI) o cualquier token ERC20 |
+| **Comprobaciones de seguridad automáticas** | El sistema valida la compatibilidad de los tokens |
+| **Acuerdo estructurado** | Propuesta/aceptación formal con reglas de transferencia claras |
+| **Protección del acuerdo** | Un período de espera evita un arbitraje precipitado |
+| **Disputas simplificadas** | Reembolsos automáticos por pagos en exceso y lógica de tiempos límite clara |
+
+### Selección de tokens
+
+<Steps>
+<Step title="Elige el tipo de pago">
+  Selecciona ETH, elige entre los tokens populares o introduce la dirección de un token personalizado
+</Step>
+<Step title="Verificación">
+  El sistema verifica que el token funciona con Escrow
+</Step>
+<Step title="Establece el monto">
+  Introduce el monto y continúa con la transacción
+</Step>
+</Steps>
+
+<Note>
+Las transacciones con tokens pueden tener límites de monto máximo establecidos por la gobernanza para la gestión de riesgos.
+</Note>
+
+---
+
+## Casos de uso
+
+<AccordionGroup>
+
+<Accordion title="Contratación de servicios" icon="briefcase">
+Una agencia de marketing y su cliente usan escrow para una campaña en redes sociales. Si el cliente está parcialmente satisfecho, puede proponer un monto de acuerdo. La agencia puede aceptar, hacer una contrapropuesta o pasar a la resolución de disputas.
+</Accordion>
+
+<Accordion title="Intercambio de criptomonedas" icon="bitcoin">
+Operadores que intercambian ETH por activos en otras blockchains usan escrow por seguridad. Una parte bloquea ETH mientras la otra transfiere los activos externos. Si surgen problemas, las partes pueden negociar o recurrir a la resolución de disputas.
+</Accordion>
+
+<Accordion title="Proyectos freelance" icon="laptop-code">
+Una empresa contrata a un desarrollador para una aplicación web. El desarrollador trabaja sabiendo que el pago está asegurado, mientras que la empresa puede probar el entregable y liberar el pago, negociar o iniciar una disputa si es necesario.
+</Accordion>
+
+<Accordion title="Venta de productos físicos" icon="box">
+Un artista vende una obra personalizada a un coleccionista mediante escrow. El comprador tiene hasta el plazo para inspeccionarla. Si tiene dudas sobre la calidad, puede proponer un pago parcial o iniciar una disputa.
+</Accordion>
+
+</AccordionGroup>
+
+---
+
+## Estructura de costos
+
+| Tipo de costo | Monto |
+| --- | --- |
+| **Comisiones de la plataforma** | **Gratis** - Kleros Escrow V2 no tiene comisiones de plataforma |
+| **Comisiones de red** | Comisiones de gas estándar de la blockchain para las transacciones |
+| **Costos de disputa** | Tarifas de arbitraje solo si inicias una disputa (se reembolsan si ganas) |
+
+<Tip>
+La función de negociación de acuerdos a menudo evita las disputas por completo al permitir que las partes lleguen a acuerdos parciales, lo que ahorra posibles costos de arbitraje.
+</Tip>
+
+---
+
+## Beneficios
+
+<Tabs>
+  <Tab title="Para compradores">
+    - **Protección del pago**: Los fondos permanecen seguros hasta que se confirma la entrega
+    - **Garantía de calidad**: Recurso claro en caso de falta de entrega o trabajo deficiente
+    - **Resolución flexible**: Negociación de acuerdos para trabajos completados parcialmente
+    - **Arbitraje justo**: Acceso a la imparcial Kleros Court
+    - **Pagos parciales**: Libera fondos de forma incremental a medida que avanza el trabajo
+  </Tab>
+
+  <Tab title="Para vendedores">
+    - **Garantía de pago**: Disponibilidad de fondos verificada antes de comenzar el trabajo
+    - **Ejecución tras el plazo**: Activa la liberación del pago una vez vencido el plazo
+    - **Equidad en las disputas**: Igualdad de condiciones con decisiones basadas en evidencias
+    - **Derechos de acuerdo**: La misma capacidad para proponer montos de acuerdo
+    - **Pagos parciales**: Negocia la compensación por las partes completadas
+  </Tab>
+
+  <Tab title="Para el ecosistema">
+    - **Infraestructura de confianza**: Permite el comercio entre partes desconocidas en todo el mundo
+    - **Reducción del fraude**: La seguridad de los contratos inteligentes disuade a los estafadores
+    - **Arbitraje descentralizado**: Reduce la dependencia de servicios centralizados
+    - **Eficiencia del mercado**: Menores barreras para el comercio digital
+    - **Transparencia**: Contratos de código abierto y registros públicos de las disputas
+  </Tab>
+</Tabs>
+
+---
+
+## Buenas prácticas
+
+<CardGroup cols={2}>
+
+<Card title="Para compradores" icon="user">
+  - Establece plazos realistas (la ejecución requiere activación manual)
+  - Define entregables claros
+  - Conserva registros de las comunicaciones para posibles disputas
+  - Considera pagos por hitos para proyectos grandes
+</Card>
+
+<Card title="Para vendedores" icon="user-tie">
+  - Verifica la financiación del escrow antes de comenzar el trabajo
+  - Documenta el progreso y las comunicaciones
+  - Comunica los retrasos de forma proactiva
+  - Comprende las implicaciones de los plazos
+</Card>
+
+</CardGroup>
+
+**Para ambas partes:**
+- Usa descripciones detalladas con condiciones y criterios de éxito claros
+- Conserva todos los registros de comunicación como evidencia
+- Ten en cuenta que las propuestas de acuerdo no transfieren fondos hasta que se aceptan
+- Considera un acuerdo antes de escalar a una disputa
+
+---
+
+## Primeros pasos
+
+<Steps>
+
+<Step title="Conecta tu billetera">
+  Usa MetaMask, Rabby o cualquier billetera Web3 compatible
+</Step>
+
+<Step title="Elige el pago">
+  Selecciona ETH o tu token preferido
+</Step>
+
+<Step title="Crea la transacción">
+  Especifica la contraparte, el monto, las condiciones y un plazo realista
+</Step>
+
+<Step title="Financia el escrow">
+  Transfiere el pago al contrato inteligente seguro
+</Step>
+
+<Step title="Sigue y resuelve">
+  Supervisa el estado y luego libera el pago, negocia un acuerdo o inicia una disputa
+</Step>
+
+</Steps>
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={3}>
+
+<Card title="Crear un escrow" icon="plus" href="https://escrow-v2.kleros.builders/#/new-transaction">
+  Inicia una nueva transacción de escrow
+</Card>
+
+<Card title="Guía de integración" icon="code" href="/es/developers/products/escrow">
+  Integra escrow en tu aplicación
+</Card>
+
+<Card title="Resolución de disputas" icon="gavel" href="/es/concepts/dispute-resolution">
+  Aprende cómo funciona Kleros Court
+</Card>
+
+</CardGroup>
+
+---
+
+## Enlaces rápidos
+
+<CardGroup cols={2}>
+
+<Card title="Abrir Escrow" icon="rocket" href="https://escrow.kleros.io">
+  Abre la aplicación Escrow
+</Card>
+
+<Card title="Direcciones de contratos" icon="file-contract" href="/es/reference/contracts/deployment-addresses">
+  Direcciones de despliegue de Escrow V2
+</Card>
+
+</CardGroup>

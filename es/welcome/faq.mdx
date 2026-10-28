@@ -1,0 +1,224 @@
+---
+title: "Preguntas frecuentes sobre Kleros"
+description: "Preguntas frecuentes sobre Kleros: cómo funciona el protocolo, cómo se selecciona a los jurados, cómo funciona el stake de PNK y qué ocurre durante las disputas y apelaciones."
+---
+
+
+
+<AccordionGroup>
+  <Accordion title="¿Qué es Kleros?">
+    Kleros es un protocolo descentralizado de resolución de disputas en Ethereum (actualmente funciona en Arbitrum One). Utiliza incentivos basados en la teoría de juegos y jurados seleccionados al azar para resolver disputas de forma confiable sin intermediarios, asequible y rápida.
+  </Accordion>
+
+  <Accordion title="¿Cómo selecciona Kleros a los jurados?">
+    Los jurados se autoseleccionan haciendo stake de tokens PNK en las cortes en las que desean participar. Cuando se crea una disputa, los jurados se sortean al azar con una probabilidad proporcional a su stake. Esto previene los ataques Sybil y garantiza que los jurados tengan algo en juego.
+  </Accordion>
+
+  <Accordion title="¿Qué es PNK?">
+    PNK (Pinakion) es el token nativo de Kleros. Cumple dos funciones: (1) se utiliza para hacer stake y convertirse en jurado, y (2) proporciona alineación de incentivos: los jurados incoherentes pierden PNK en favor de los coherentes.
+  </Accordion>
+
+  <Accordion title="¿Cómo se paga a los jurados?">
+    Los jurados reciben tarifas de arbitraje (en ETH) por cada disputa en la que participan. Además, los jurados que votan de forma coherente (en línea con el fallo final) reciben PNK redistribuido de los jurados incoherentes.
+  </Accordion>
+
+  <Accordion title="¿Qué impide que los jurados voten de forma deshonesta?">
+    La teoría de juegos. Los jurados tienen incentivos para votar como esperan que vote la mayoría (punto de Schelling). Los jurados deshonestos pierden su PNK en stake, mientras que los honestos se benefician de la redistribución. El sistema de apelaciones protege además contra errores de juicio iniciales.
+  </Accordion>
+
+  <Accordion title="¿Se puede apelar un fallo?">
+    Sí. Cualquier parte puede apelar un fallo financiando el costo de la apelación. Cada ronda de apelación aumenta el número de jurados. Las apelaciones pueden escalar en la jerarquía de cortes hasta la General Court. Esto hace que los ataques sean exponencialmente costosos.
+  </Accordion>
+
+  <Accordion title="¿Qué ocurre si un jurado no vota?">
+    Los jurados que no votan durante el período de votación se consideran incoherentes y pierden una parte de su PNK en stake. Esto incentiva la participación activa.
+  </Accordion>
+
+  <Accordion title="¿En qué blockchain funciona Kleros?">
+    Kleros V2 funciona en **Arbitrum One** (un rollup L2 de Ethereum). Se admiten disputas entre cadenas desde Ethereum mainnet y Gnosis Chain mediante el puente Vea y el sistema de Gateways.
+  </Accordion>
+
+  <Accordion title="¿En qué se diferencia Kleros del arbitraje tradicional?">
+    El arbitraje tradicional depende de instituciones de confianza y es caro y lento. Kleros es descentralizado (sin un único punto de control), asequible (las tarifas son una fracción de los costos tradicionales), rápido (días en lugar de meses) y transparente (toda la evidencia y los votos están on-chain).
+  </Accordion>
+
+  <Accordion title="¿Cómo se gobierna Kleros?">
+    Los poseedores de PNK gobiernan el protocolo mediante votaciones en Snapshot. Las propuestas de gobernanza (KIP) se presentan en el [Foro de Kleros](https://forum.kleros.io) y la comunidad las vota. La ejecución on-chain utiliza el contrato KlerosGovernor.
+  </Accordion>
+
+  <Accordion title="¿Puedo usar una cuenta de contrato inteligente para hacer stake en la Corte?">
+    Los jurados no deben hacer stake con una cuenta de contrato inteligente, concretamente en las cortes que tienen hiddenVotes habilitado, porque actualmente la interfaz no puede verificar la firma. Por ahora, las cortes con hiddenVotes habilitado son la General Court en Gnosis Chain y la Spanish General Court tanto en Ethereum Mainnet como en Gnosis Chain.
+
+    Además, al usar una billetera de contrato inteligente, la función `receive()` puede hacer que fallen las transferencias realizadas con `.send()`. Por ejemplo, la recepción de recompensas de jurado en ETH podría fallar. Se trata de un problema conocido causado por el hardfork Berlin, tal como [documenta Safe](https://help.safe.global/en/articles/40813-why-can-t-i-transfer-eth-from-a-contract-into-a-safe). Los contratos de Kleros desplegados a partir de 2025 utilizan un mecanismo SafeSend que no se ve afectado por esta limitación.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## General
+
+<AccordionGroup>
+  <Accordion title="¿Realmente se puede confiar en una decisión tomada por un grupo de personas anónimas en Internet?">
+    Satoshi Nakamoto nos enseñó que varias computadoras anónimas que no confían entre sí pueden llegar a un consenso, siempre que los incentivos estén correctamente estructurados. Kleros extiende este principio a la toma de decisiones humana. Varios jurados anónimos que no confían entre sí pueden llegar a un consenso sobre una decisión correcta, siempre que los incentivos estén correctamente estructurados.
+
+    Dado que las decisiones tomadas en Kleros afectan la asignación de recursos, las partes tienen un incentivo para intentar sobornar o intimidar al tribunal. El seudonimato pretende proteger a los jurados de intentos de soborno, intimidación y represalias. Favorece su independencia funcional (la capacidad de emitir libremente su juicio). También simplifica el proceso para que los usuarios se conviertan en jurados y evita los costos de la verificación de identidad. Al proporcionar un entorno seguro y simplificar el proceso de selección, Kleros amplía enormemente el grupo de posibles jurados. Esto se traduce en menores costos de arbitraje y en la democratización del acceso a la justicia.
+
+    Para saber más sobre el sistema de incentivos, lee nuestro white paper.
+  </Accordion>
+
+  <Accordion title="¿Desde cuándo funciona Kleros?">
+    Kleros Court está en funcionamiento desde 2018 en Ethereum mainnet; ha gestionado y fallado en más de mil casos distintos y cuenta con una comunidad de más de 760 jurados activos que hacen stake en 23 cortes diferentes (fuente: KlerosBoard). Kleros Court ha fallado de forma justa en varios casos controvertidos en los que estaban en juego millones de dólares (cf. casos famosos de Kleros). Múltiples dApps del ecosistema en distintos ámbitos confían en él como una capa de arbitraje imparcial y transparente (mercados de predicción, seguros, DEX, resistencia Sybil, marketplaces... consulta todas esas integraciones aquí).
+  </Accordion>
+
+  <Accordion title="¿Cuál es el suministro del token PNK?">
+    El suministro total actual es de 764,626,704 PNK. El suministro solo puede ser modificado por la comunidad de Kleros mediante una votación de gobernanza de la DAO.
+  </Accordion>
+
+  <Accordion title="¿Una parte que quiere que se resuelva un caso necesita tener PNK?">
+    No, solo los jurados necesitan PNK para poder ser seleccionados. Las partes ni siquiera necesitan saber qué es el token de Kleros.
+  </Accordion>
+
+  <Accordion title="¿Se revela la identidad de los jurados?">
+    Dado que las decisiones tomadas en Kleros afectan la asignación de recursos, las partes tienen un incentivo para intentar sobornar o intimidar al tribunal. El anonimato pretende proteger a los jurados de la intimidación y las represalias. También simplifica el proceso para que los usuarios se conviertan en jurados y evita los costos de la verificación de identidad. Al proporcionar un entorno seguro y simplificar el proceso de selección, Kleros amplía enormemente el grupo de posibles jurados. Esto se traduce en menores costos de arbitraje y en la democratización del acceso a la justicia.
+  </Accordion>
+
+  <Accordion title="¿Cuál es la asignación de tokens de Kleros?">
+    - Miembros del equipo: 18 %
+    - Primera ronda de venta de tokens: 16 %
+    - Airdrop: 4 %
+    - Rondas posteriores y programa de incentivos para jurados: 50 %
+    - Reserva de desarrollo de Kleros Cooperative: 12 %
+  </Accordion>
+
+  <Accordion title="¿Podría Kleros convertirse en una plataforma utilizada por grandes minoristas en línea como eBay o Amazon?">
+    Sí, al adoptar Kleros, cualquier plataforma de comercio electrónico convencional podría disponer de un método de resolución de disputas rápido, asequible y transparente. Si quieres saber más, mira la charla "When Decentralized Protocols Meet the Real World" o contáctanos.
+  </Accordion>
+
+  <Accordion title="¿Es Kleros una corte donde los ricos tienen más derechos que la gente común (porque las apelaciones son más asequibles para los ricos)? / ¿Cómo puedo esperar imparcialidad de una corte en la que las ballenas han hecho stake de mucho PNK?">
+    Cualquiera puede apelar el fallo de una disputa en Kleros. La mayoría de las veces se pedirá a ambas partes que aporten tarifas para la siguiente ronda de votación, a fin de garantizar que los jurados sean recompensados y que a la parte ganadora se le reembolsen las tarifas pagadas. Este sistema de apelaciones garantiza que la decisión final de los jurados siempre converja hacia la verdad y que los jurados de las rondas iniciales voten de forma coherente desde el principio para no ser penalizados.
+
+    Esto suele llevar a algunos críticos a decir que una de las partes, con muchos más recursos que la otra, siempre puede ganar un caso. Hemos tomado varias decisiones de diseño sobre la estructura del proceso de tarifas de apelación para que Kleros ofrezca resultados justos incluso en esta situación:
+
+    - Las tarifas de apelación pueden financiarse colectivamente ("crowdfunding"). Es decir, cualquiera puede aportar una parte de las tarifas de apelación de cualquiera de las partes, y muchas pequeñas contribuciones pueden sumarse hasta cubrir la tarifa completa.
+    - Quienes financian parte de las tarifas de la parte que finalmente gana reciben una recompensa económica.
+
+    Por ello, las personas tienen incentivos para revisar los casos apelados en curso, detectar fallos claramente incorrectos y ayudar a financiar a la otra parte para obtener la totalidad o parte de las recompensas. Esto ha demostrado ser eficaz para disuadir a las partes "ricas" de intentar ganar simplemente apelando varias veces, y puede hacerles perder mucho dinero si actúan de forma maliciosa. Más información aquí.
+  </Accordion>
+
+  <Accordion title="¿No podría alguien simplemente comprar muchos tokens de Kleros y realizar un ataque del 51 % contra Kleros Court?">
+    Para que un atacante "ballena" inunde el grupo de jurados e intente "controlar la corte", necesitaría comprar suficiente PNK para ser seleccionado las veces necesarias como jurado del mismo caso y así cambiar el resultado. En general, esto significa que los ataques necesitan el 51 % del total de tokens en stake.
+
+    Un atacante podría tener suerte en circunstancias excepcionales y ser seleccionado para dos de tres puestos de jurado con solo una minoría del PNK. Sin embargo, para mantener el ataque a lo largo del proceso de apelación, tendría que ser seleccionado para la mayoría de los puestos de jurado en jurados cada vez más grandes, lo cual solo será posible si el atacante realmente posee la mayoría del PNK. Por lo tanto, se necesitarían recursos económicos sustanciales, del orden de cientos de millones de dólares, para realizar un ataque del 51 %.
+
+    **Si una "ballena" intenta comprar el 51 % de todo el PNK en stake:** la liquidez del mercado de PNK se agotará. A medida que el atacante compra PNK, este empezará a escasear y cada PNK adicional costará cada vez más. Es posible que el atacante ni siquiera encuentre el 51 % del PNK a la venta en el mercado abierto en un momento dado, y progresivamente costará tanto que el ataque no sería económicamente viable.
+
+    **Si un atacante malicioso lograra de algún modo comprar la mayoría del PNK en stake:** la comunidad se daría cuenta de que está siendo atacada, especialmente si el atacante utiliza su nuevo PNK para cometer errores judiciales evidentes. En ese caso, Kleros perdería credibilidad como plataforma de arbitraje y el valor del PNK disminuiría. El atacante sufriría entonces una pérdida sustancial sobre el PNK que compró, lo que representa un alto costo económico para llevar a cabo el ataque.
+
+    **Si un atacante malicioso realizara con éxito un ataque del 51 %:** la comunidad llevaría a cabo una defensa de último recurso mediante un fork del sistema para eliminar las tenencias del atacante. Luego, el mercado determinaría qué versión de PNK debería utilizarse en adelante. Esto es similar al mecanismo de apelación definitivo de Augur.
+
+    Más detalles aquí.
+  </Accordion>
+
+  <Accordion title="¿Cómo puedo seguir el proceso de resolución de disputas y estar seguro de que no ha sido manipulado?">
+    El protocolo Kleros está comprometido con la transparencia total. Sus casos son completamente abiertos y cualquier persona con conexión a Internet puede seguirlos. El historial completo de casos también está disponible y publicado on-chain como referencia. El procedimiento de resolución de disputas de Kleros está documentado en muchos lugares. Toda la investigación criptoeconómica es pública y el código es de código abierto. Cualquier persona con conocimientos técnicos de blockchain podría replicar una versión totalmente funcional de Kleros en cuestión de minutos.
+  </Accordion>
+
+  <Accordion title="¿Puede Kleros ir más allá de los casos binarios simples?">
+    Kleros puede ir más allá de los casos de arbitraje simples de Sí/No y abarcar también opciones múltiples e incluso resultados numéricos/escalares (por ejemplo, ¿cuántos votos del colegio electoral obtuvo Biden en las elecciones de 2020?).
+
+    Normalmente recomendamos ofrecer opciones binarias al jurado, ya que evita los efectos negativos de la división del voto y permite que un número reducido de jurados (posiblemente tan solo uno) llegue ya a un resultado útil.
+
+    Para casos complejos con múltiples factores, se puede utilizar el método de arbitraje Pendulum para pedir al jurado de Kleros que elija entre dos (o más) conjuntos de resultados.
+  </Accordion>
+</AccordionGroup>
+
+## Jurados
+
+<AccordionGroup>
+  <Accordion title="¿Se pueden gestionar las apelaciones fuera de Kleros?">
+    Sí, es posible crear un contrato inteligente arbitrable que utilice Kleros para resolver disputas en primera instancia y permita que las apelaciones se gestionen fuera de Kleros.
+  </Accordion>
+
+  <Accordion title="He sido seleccionado para fallar en una disputa, ¿puedo excusarme del caso sin penalización?">
+    Los jurados seleccionados para una disputa deben participar y no pueden excusarse. Sin embargo, pueden optar por un voto "Refuse to Arbitrate" en condiciones específicas; más detalles a continuación.
+
+    Permitir que los jurados se excusen alteraría el equilibrio de los costos de resolución de disputas, que pretenden ser competitivos y justos, en particular en casos complejos. Estas disputas complejas son las que más exigen a los jurados, y la abstención podría comprometer la integridad de los resultados, rebajando potencialmente el umbral para influir en las decisiones y empeorando así la calidad de los fallos en los casos difíciles.
+  </Accordion>
+
+  <Accordion title='¿Cuándo debo votar "Refuse to Arbitrate"?'>
+    Hay situaciones en las que un jurado debe votar "Refuse to Arbitrate":
+
+    - Si así lo indican las directrices de la General Court. Por ejemplo, las directrices de la General Court pueden exigir negarse a arbitrar cuando ambas partes de la disputa han participado en actividades inmorales, como en una disputa sobre un mercado de asesinatos.
+    - Si así lo indican las directrices de la corte o subcorte específica. Por ejemplo, si tu caso corresponde a la corte de traducción francés-inglés, sus directrices pueden indicar que, si el contenido en disputa es de gran tamaño y las partes no especifican las partes en disputa, los jurados deben negarse a arbitrar.
+    - Si así lo indica la política aplicable al caso.
+
+    Puedes acceder fácilmente a las directrices de la corte y a las políticas aplicables en la página de detalles del caso. Como jurado, es esencial revisar todos los documentos pertinentes para votar con precisión.
+  </Accordion>
+
+  <Accordion title="Si las partes también pueden ser jurados, ¿no supone esto un conflicto de intereses? / ¿Cómo se puede garantizar que los jurados sean perfectamente imparciales?">
+    El procedimiento de selección aleatoria de jurados entre quienes han hecho stake de tokens en una subcorte hace que sea extremadamente difícil ser seleccionado a propósito como jurado de un caso en el que estás involucrado.
+
+    - Es extremadamente difícil que un jurado sea seleccionado en una corte en la que tiene un interés personal. En la práctica, sería sumamente improbable que los jurados con un interés personal en un caso compongan una parte significativa de los jurados seleccionados y, aunque eso llegara a ocurrir, el sistema de apelaciones permitiría corregir el fallo.
+    - Es posible que sigan existiendo sesgos internos en los jurados. Existen algunas formas dentro de Kleros de presentar la información de manera que se minimice este sesgo. Sin embargo, también podría argumentarse que ningún sistema puede estar completamente libre de sesgos. Para un análisis en profundidad sobre este tema, lee este artículo.
+  </Accordion>
+
+  <Accordion title="¿Tienen contratos de ejemplo que muestren qué tipo de disputas podría resolver Kleros?">
+    Aunque por ahora existen algunos contratos inteligentes de ejemplo, es un área que requiere mayor desarrollo. Kleros se centra en el proceso de resolución de disputas, no en la redacción de los contratos en sí. Otras empresas del ecosistema se centrarán en la redacción de contratos. Para poder ser arbitrado por Kleros, un contrato inteligente debe seguir el estándar de contratos inteligentes que hemos desarrollado. Consulta nuestro repositorio de GitHub para obtener más información y únete a nuestra conversación en Telegram si te interesa seguir el desarrollo.
+  </Accordion>
+
+  <Accordion title="¿Han considerado cómo se podría evaluar a los jurados, así como su experiencia y conocimientos, para que puedan participar en cortes o disputas específicas?">
+    En los sistemas descentralizados, el principal problema de evaluar a los jurados es: `Who vets the vetters?` (¿quién evalúa a los evaluadores?), que es un problema del huevo y la gallina. Una de las características más atractivas de las blockchains públicas es que cualquiera puede unirse, de modo que nadie puede monopolizar el registro.
+  </Accordion>
+
+  <Accordion title="¿Cómo puede Kleros saber que los jurados tienen conocimientos específicos si son seudónimos?">
+    Los jurados de Kleros se autoseleccionan en la subcorte en la que desean arbitrar. Kleros no pide a los jurados su identidad real ni que demuestren que están cualificados para arbitrar disputas en la subcorte en la que quieren trabajar.
+
+    El requisito de conocimientos se gestiona mediante incentivos económicos. Kleros genera para los usuarios el incentivo de autoseleccionarse en las subcortes en las que tienen conocimientos. Los usuarios que se autoseleccionan en las cortes para las que tienen las habilidades adecuadas ganarán dinero, en promedio, con el tiempo. Los usuarios que se autoseleccionan en cortes para las que no tienen las habilidades adecuadas perderán dinero y tenderán a abandonar el sistema.
+
+    Aunque, en teoría, los jurados podrían no tener conocimientos en la materia (cualquiera puede participar en la subcorte), en la práctica los usuarios sin los conocimientos adecuados sufrirían una pérdida económica y saldrían de la subcorte (a menos que deseen perder dinero mientras trabajan para adquirir esas habilidades). Esto funciona de forma similar a Wikipedia, en el sentido de que un usuario que no tiene conocimientos en el campo al que se refiere un artículo que edita puede editarlo de todos modos, pero probablemente será sancionado por Wikipedia.
+  </Accordion>
+
+  <Accordion title="¿Cómo se presenta y gestiona la evidencia en el sistema?">
+    La forma en que se presenta la evidencia depende del tipo de disputa. Una disputa de trabajo freelance requerirá evidencia distinta a la de una disputa de seguros o de pagos. Kleros Cooperative proporciona un back end para que los jurados arbitren disputas. La forma en que está construido permite que cualquiera desarrolle su propio front end. La lógica es similar a la de Ethereum Wallet. El equipo central de Ethereum proporciona una billetera a los usuarios, pero cualquiera puede crear una billetera de Ethereum. Esto significa, por ejemplo, que una plataforma de comercio electrónico podría crear un front end en el que los usuarios arbitren disputas sin salir de la plataforma. El front end se conectaría a la red de jurados de Kleros. Esperamos que muchas empresas del ecosistema creen interfaces basadas en nuestra plataforma. Para saber más, lee este artículo sobre la evolución del ecosistema de Kleros Cooperative.
+  </Accordion>
+
+  <Accordion title="Dado que los jurados se seleccionan de un grupo global, ¿cómo se garantiza que todos hablen el idioma en el que se plantea la disputa?">
+    Kleros está formado por subcortes especializadas en distintos tipos de disputas. El idioma es uno de los parámetros de especialización. Por ejemplo, podría haber una "corte de disputas de sitios web en inglés", una "corte de disputas de sitios web en español", una "corte de disputas de sitios web en francés", etc.
+  </Accordion>
+
+  <Accordion title="¿Cómo se sabe que los jurados revisaron la evidencia en lugar de votar al azar?">
+    Kleros no tiene una forma específica de asegurarse de que los jurados hayan revisado la evidencia. La manera de garantizar que los jurados actúen con honestidad es mediante la creación de los incentivos económicos adecuados. Los jurados que votan al azar sin revisar la evidencia tienen más probabilidades de votar de forma incoherente con la mayoría y perder los tokens que pusieron en stake para ser seleccionados. Por lo tanto, en promedio pierden dinero. Con el tiempo, esto haría que los jurados deshonestos abandonen la corte. Para saber más sobre cómo funcionan los incentivos en Kleros, lee el white paper.
+  </Accordion>
+
+  <Accordion title="¿Están obligados los jurados a justificar su voto? ¿Se revela la justificación a las partes en disputa y a los demás jurados?">
+    Sí, los jurados deben aportar una justificación en forma de texto breve. La justificación se revela a las partes en disputa y a los demás jurados una vez finalizada la votación.
+  </Accordion>
+
+  <Accordion title="¿Hay plazos para las disputas? ¿Deben los jurados responder dentro de un período determinado?">
+    Sí, cada subcorte tiene un plazo dentro del cual los jurados deben presentar su decisión. Los jurados recibirán notificaciones de los casos pendientes de resolución.
+  </Accordion>
+
+  <Accordion title="¿Qué les ocurre a los jurados que no responden o no revisan la evidencia dentro del plazo establecido?">
+    Los jurados que no emiten su fallo antes de la fecha límite son penalizados con la pérdida de parte de sus tokens en stake y no reciben la tarifa de arbitraje.
+  </Accordion>
+
+  <Accordion title="¿Tienen los jurados incentivos para fallar de manera que les lleguen más casos en el futuro?">
+    Votar de forma incoherente en un mismo caso para provocar apelaciones solo expondrá a los jurados iniciales al riesgo de perder aún más dinero.
+
+    Como PNK y Kleros son económica y gubernamentalmente independientes de todas las demás DAO, no es posible que los jurados hagan que lleguen más casos a Kleros Court.
+
+    Dicho esto, si una actividad adecuada de los jurados en Kleros Court lleva a más DAO o socios a confiarle sus disputas, debería considerarse algo positivo.
+  </Accordion>
+</AccordionGroup>
+
+## Aspectos legales
+
+<AccordionGroup>
+  <Accordion title="En sistemas jurídicos como el de Estados Unidos, los jueces son responsables de instruir a los jurados y explicarles los matices legales. ¿Cómo aborda Kleros las cuestiones de interpretación de los términos legales del contrato?">
+    Un moderador de un foro en línea sigue unas reglas predefinidas para decidir si el comentario de un usuario infringe los términos y condiciones. Al tomar decisiones, los jurados siguen reglas similares definidas previamente, que les indican cómo tratar los matices legales. Sin embargo, en las primeras etapas del proyecto, Kleros estaba pensado para casos más sencillos, en los que los matices legales no son tan importantes.
+  </Accordion>
+
+  <Accordion title="¿Cuáles son los principales obstáculos legales y regulatorios para la implantación de Kleros?">
+    Debido a su práctica innovadora basada en la criptoeconomía, Kleros no está reconocido como arbitraje según los acuerdos internacionales. Esto podría ser un obstáculo para su adopción en casos de uso "convencionales" (por ejemplo, un regulador gubernamental no podría usar Kleros para resolver disputas entre, por ejemplo, una compañía de tarjetas de crédito y sus usuarios). Sin embargo, esto no debería ser un obstáculo para su adopción en otros casos de uso (especialmente dentro de la industria cripto). A medida que Kleros demuestre que puede resolver disputas en casos de uso no convencionales, esperamos que surja interés en los casos de uso convencionales. Con el tiempo, las asociaciones de arbitraje aceptarán el enfoque de Kleros para la resolución de disputas. La plataforma Kleros es un sistema de adhesión voluntaria ("opt-in"), lo que significa que la ejecución es automática y está aceptada de antemano por las partes contratantes que acuerdan usar Kleros como árbitro.
+  </Accordion>
+</AccordionGroup>

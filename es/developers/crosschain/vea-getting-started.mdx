@@ -1,0 +1,162 @@
+---
+title: "Construir con Vea"
+description: "Integra la mensajería entre cadenas de Vea usando gateways emisores y receptores, VeaInbox y VeaOutbox para transmitir datos entre Arbitrum, Ethereum y Gnosis."
+---
+
+# Construir con Vea
+
+Esta página explica cómo integrar Vea en una aplicación entre cadenas. Para conocer los detalles a nivel de protocolo, consulta la [descripción general de Vea Bridge](/es/developers/crosschain/vea-bridge).
+
+---
+
+## Patrón de integración
+
+Para integrar Vea, despliegas dos contratos gateway:
+
+1. **Sender Gateway** en la cadena emisora, que interactúa con VeaInbox
+2. **Receiver Gateway** en la cadena receptora, que interactúa con VeaOutbox
+
+```
+Sender Gateway (Chain A) -> VeaInbox -> [Vea Bridge] -> VeaOutbox -> Receiver Gateway (Chain B)
+```
+
+Para cada par de cadenas emisora-receptora admitido por Vea existe un conjunto independiente de despliegues de contratos de Vea. En cada cadena hay exactamente un contrato desplegado.
+
+---
+
+## 1. Sender Gateway
+
+El Sender Gateway llama a `sendMessage()` en VeaInbox para iniciar la comunicación entre cadenas.
+
+```solidity
+interface IVeaInbox {
+    function sendMessage(
+        address _to,        // address of Receiver Gateway on destination chain
+        bytes4 _fnSelector, // function selector to call on Receiver Gateway
+        bytes memory _data  // encoded parameters
+    ) external;
+}
+```
+
+Debes especificar:
+- La dirección del contrato de destino en la cadena receptora (`_to`)
+- La función que se llamará en el destino (`_fnSelector`)
+- Los parámetros codificados (`_data`)
+
+### Ejemplo: Sender Gateway
+
+```solidity
+contract SenderGateway {
+    IVeaInbox public immutable veaInbox;
+    address public immutable receiverGateway;
+
+    constructor(IVeaInbox _veaInbox, address _receiverGateway) {
+        veaInbox = _veaInbox;
+        receiverGateway = _receiverGateway;
+    }
+
+    function sendMyMessage(uint256 _data) external {
+        bytes4 selector = IReceiverGateway.receiveMessage.selector;
+        bytes memory data = abi.encode(_data);
+        veaInbox.sendMessage(receiverGateway, selector, data);
+    }
+}
+```
+
+---
+
+## 2. Receiver Gateway
+
+El Receiver Gateway recibe el mensaje transmitido en la cadena de destino. Vea pasa el `msg.sender` de la cadena emisora como primer argumento de cualquier llamada entre cadenas.
+
+```solidity
+interface IReceiverGateway {
+    function veaOutbox() external view returns (address);
+    function senderGateway() external view returns (address);
+}
+```
+
+Tu función receptora siempre debe incluir `address msgSender` como primer parámetro:
+
+```solidity
+contract ReceiverGateway is IReceiverGateway {
+    address public override veaOutbox;
+    address public override senderGateway;
+
+    modifier onlyFromVea() {
+        require(msg.sender == veaOutbox, "Only VeaOutbox");
+        _;
+    }
+
+    function receiveMessage(address msgSender, uint256 _data) external onlyFromVea {
+        require(msgSender == senderGateway, "Only SenderGateway");
+        // Process _data
+    }
+}
+```
+
+<Warning>
+Vea inserta el parámetro `msgSender` por motivos de seguridad. Tu interfaz siempre debe tener `address msgSender` como primer argumento. Los parámetros que enviaste realmente van a continuación.
+</Warning>
+
+---
+
+## 3. Transmisión de mensajes
+
+Una vez transcurrido el periodo de impugnación, un relayer llama a `verifyAndRelay()` en VeaOutbox para entregar el mensaje al Receiver Gateway.
+
+El SDK de Vea proporciona funciones auxiliares para calcular pruebas de inclusión de Merkle y obtener los datos del mensaje para su transmisión:
+
+```typescript
+import VeaSdk from "@kleros/vea-sdk";
+
+// Create client for a specific route
+  const vea = VeaSdk.ClientFactory.arbitrumSepoliaToChiadoDevnet(
+  "https://sepolia-rollup.arbitrum.io/rpc",
+  "https://rpc.chiadochain.net"
+  
+);
+
+// Get message info by ID
+const messageInfo = await vea.getMessageInfo(messageId);
+
+// Calculate proof and relay
+// ... relay logic using proof data
+```
+
+<Note>
+El SDK está en desarrollo activo. Consulta el [paquete del SDK de Vea](https://github.com/kleros/vea) para conocer la API más reciente.
+</Note>
+
+---
+
+## Demo Lightbulb
+
+La [Vea Lightbulb Demo](https://docs.vea.ninja/build-xchain-dapps/lightbulb-demo) es una aplicación mínima entre cadenas en la que un interruptor en una cadena controla una bombilla en otra cadena mediante Vea. El [repositorio del tutorial](https://github.com/kleros/vea-lightbulb-tutorial) explica paso a paso cómo desplegar los contratos para cada par de cadenas.
+
+El estado del puente puede seguirse en [VeaScan](https://veascan.io).
+
+---
+
+## Direcciones de despliegue
+
+Consulta [Direcciones de despliegue de Vea](/es/developers/crosschain/vea-deployment-addresses) para conocer las direcciones de los contratos en cada ruta admitida.
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Guía completa de desarrollo" icon="book" href="https://docs.vea.ninja/build-xchain-dapps/getting-started">
+    Guía de integración completa en docs.vea.ninja
+  </Card>
+  <Card title="Demo Lightbulb" icon="lightbulb" href="https://docs.vea.ninja/build-xchain-dapps/lightbulb-demo">
+    Aplicación de demostración interactiva entre cadenas
+  </Card>
+  <Card title="Ejecutar un validador" icon="server" href="https://docs.vea.ninja/run-a-validator/getting-started">
+    Ejecuta un nodo validador del puente Vea
+  </Card>
+  <Card title="Arquitectura de Vea Bridge" icon="sitemap" href="/es/developers/crosschain/vea-bridge">
+    Arquitectura del protocolo y tipos de puente
+  </Card>
+</CardGroup>

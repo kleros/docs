@@ -5,10 +5,10 @@ description: "Instala los contratos de Kleros, implementa la interfaz arbitrable
 
 El arbitraje de Kleros puede integrarse en cualquiera de las dos versiones del protocolo:
 
-- **V1** usa el estándar de arbitraje ERC-792 (`IArbitrable` / `IArbitrator`) en Ethereum Mainnet y Gnosis Chain. Consulta [ERC-792](/developers/arbitrable-apps/erc-792) y [ERC-1497](/developers/arbitrable-apps/erc-1497) para ver los estándares completos de V1.
+- **V1** usa el estándar de arbitraje ERC-792 (`IArbitrable` / `IArbitrator`) en Ethereum Mainnet y Gnosis Chain. Consulta [ERC-792](/es/developers/arbitrable-apps/erc-792) y [ERC-1497](/es/developers/arbitrable-apps/erc-1497) para ver los estándares completos de V1.
 - **V2** usa `IArbitrableV2` / `IArbitratorV2` en Arbitrum, con plantillas de disputa y soporte cross-chain.
 
-Los pasos siguientes muestran ambas. Elige la versión que corresponda a la red en la que vas a desplegar. Para las direcciones de los contratos, consulta [Direcciones de despliegue V2](/reference/contracts/deployment-addresses) y [Direcciones de despliegue V1](/reference/contracts/deployment-addresses-v1).
+Los pasos siguientes muestran ambas. Elige la versión que corresponda a la red en la que vas a desplegar. Para las direcciones de los contratos, consulta [Direcciones de despliegue V2](/es/reference/contracts/deployment-addresses) y [Direcciones de despliegue V1](/es/reference/contracts/deployment-addresses-v1).
 
 ## Instalación
 
@@ -39,7 +39,7 @@ address constant DISPUTE_KIT_CLASSIC = 0x70B464be85A547144C72485eBa2577E5D3A4542
 ```
 
 <Warning>
-Verifica siempre las direcciones con [Direcciones de despliegue V2](/reference/contracts/deployment-addresses) y el [repositorio oficial](https://github.com/kleros/kleros-v2) antes de desplegar en producción.
+Verifica siempre las direcciones con [Direcciones de despliegue V2](/es/reference/contracts/deployment-addresses) y el [repositorio oficial](https://github.com/kleros/kleros-v2) antes de desplegar en producción.
 </Warning>
 
 ## Integración mínima
@@ -231,10 +231,10 @@ const dispute = await getDispute({
 });
 ```
 
-Las URL de los subgraphs se encuentran en [Endpoints de subgraphs](/developers/subgraph/endpoints). La evidencia se envía on-chain a través del EvidenceModule; consulta [Direcciones de despliegue V2](/reference/contracts/deployment-addresses).
+Las URL de los subgraphs se encuentran en [Endpoints de subgraphs](/es/developers/subgraph/endpoints). La evidencia se envía on-chain a través del EvidenceModule; consulta [Direcciones de despliegue V2](/es/reference/contracts/deployment-addresses).
 
 ## Próximos pasos
 
-<Card title="Análisis detallado de la arquitectura" icon="sitemap" href="/developers/architecture">
+<Card title="Análisis detallado de la arquitectura" icon="sitemap" href="/es/developers/architecture">
   Comprende cómo funcionan en conjunto KlerosCore, los Dispute Kits y el Sortition Module
 </Card>

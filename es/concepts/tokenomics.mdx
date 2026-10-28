@@ -1,0 +1,84 @@
+---
+title: "Tokenomía"
+description: "Cómo el staking de PNK, las recompensas por tarifas de arbitraje, las penalizaciones por votos incoherentes y la gobernanza en Snapshot sostienen la resolución de disputas de Kleros y los incentivos de los jurados."
+---
+
+
+
+El **token PNK** (pinakion) cumple dos funciones en el protocolo Kleros: es el token de staking que se usa para la selección de jurados y es el token de gobernanza que se usa para votar cambios en el protocolo.
+
+---
+
+## ¿Por qué un token nativo?
+
+Kleros usa PNK en lugar de ETH para el staking porque un token dedicado ofrece mayores garantías de seguridad frente a ataques del 51 %.
+
+Si los jurados hicieran stake de ETH, un atacante podría adquirir lo suficiente para dominar una corte aprovechando la profunda liquidez global de Ethereum. Con PNK, el atacante se enfrenta a un mercado mucho menos profundo: a medida que compra PNK, la oferta escasea y el precio sube bruscamente. La profundidad de mercado del token está acotada de forma natural por el ecosistema de Kleros, lo que hace que los ataques sean cada vez más caros.
+
+Es el mismo principio por el que las blockchains usan tokens nativos para el consenso: el presupuesto de seguridad es proporcional al valor del activo nativo, no a la liquidez externa.
+
+---
+
+## Suministro de PNK
+
+El suministro total de PNK es de **764,626,704 tokens**. Este suministro solo puede modificarse mediante una votación de gobernanza de la DAO; no existe ninguna función de acuñación controlada por el equipo.
+
+En Kleros V2, el PNK en Arbitrum (la cadena principal) usa el token puente estándar en lugar del complejo token Minime que se usa en Ethereum mainnet. Esto hace que las transferencias de PNK sean más baratas y sencillas.
+
+---
+
+## Cómo funciona el staking
+
+### Staking en V1 frente a V2
+
+En Kleros V1, el staking era una operación "virtual": el PNK permanecía en tu billetera y el contrato registraba la cantidad en stake.
+
+En Kleros V2, el staking **transfiere PNK al contrato KlerosCore**. Tus tokens en stake quedan en poder del contrato y se te devuelven cuando retiras el stake (menos las penalizaciones por votos incoherentes). Es similar a cómo funcionan los protocolos de staking DeFi y requiere una transacción ERC-20 estándar `approve()` antes de hacer stake.
+
+### La economía del staking
+
+Cuando haces stake de PNK en una corte:
+- Tu **probabilidad de ser sorteado** como jurado es proporcional a tu stake en relación con el stake total de esa corte
+- Cuando eres sorteado, una parte de tu stake queda **bloqueada** como garantía (determinada por el parámetro `alpha` de la corte)
+- Si votas de forma **coherente** (con la mayoría), recibes tarifas de arbitraje (ETH) y PNK de los jurados incoherentes
+- Si votas de forma **incoherente**, pierdes tu PNK bloqueado, que se redistribuye entre los jurados coherentes
+
+### Recompensas de staking (KIP-66)
+
+KIP-66 es una propuesta de gobernanza aprobada por la comunidad que introduce recompensas de staking adicionales más allá de las ganancias tradicionales por tarifas de arbitraje. El mecanismo de recompensas está implementado en los contratos inteligentes de V2. Consulta el [blog de Kleros](https://blog.kleros.io) o [Snapshot](https://snapshot.box/#/s:kleros.eth) para conocer su estado de activación actual.
+
+---
+
+## Fuentes de ingresos
+
+Los jurados obtienen ingresos de dos fuentes independientes:
+
+**Tarifas de arbitraje**: las pagan los creadores de disputas en ETH o en tokens ERC-20 incluidos en la lista blanca. Son el "salario" por ejercer como jurado. La tarifa por jurado se fija para cada corte y puede ajustarse mediante la gobernanza.
+
+**Redistribución de PNK**: los tokens que pierden los jurados incoherentes se redistribuyen entre los coherentes. Este es el mecanismo de "penalización/recompensa" que impone la votación honesta. La cantidad en riesgo por voto es `minStake × alpha / 10000`.
+
+Cuando todos los jurados de una ronda son incoherentes (no existe mayoría), tanto las tarifas como las penalizaciones de PNK se envían al governor del protocolo en lugar de distribuirse.
+
+---
+
+## Gobernanza
+
+Los poseedores de PNK votan los cambios en el protocolo mediante la [gobernanza de Kleros en Snapshot](/es/governance/snapshot). El poder de voto es proporcional a las tenencias de PNK. Las decisiones de gobernanza incluyen:
+
+- Añadir o modificar cortes y sus parámetros
+- Ajustar las estructuras de tarifas y las listas blancas de tokens
+- Aprobar actualizaciones del protocolo a través del contrato [Governor](/es/products/governor)
+- Aprobar Kleros Improvement Proposals (KIP)
+
+---
+
+## Lecturas adicionales
+
+<CardGroup cols={2}>
+  <Card title="Página del token PNK" icon="coins" href="https://kleros.io/pnk-token">
+    Dónde comprar PNK e información de mercado actual
+  </Card>
+  <Card title="Teoría de juegos" icon="chess" href="/es/concepts/game-theory">
+    La mecánica de incentivos detrás de la votación honesta
+  </Card>
+</CardGroup>

@@ -1,0 +1,106 @@
+---
+title: "Flujo de trabajo de contratos inteligentes"
+description: "El ciclo de vida completo de los contratos inteligentes de Kleros: especificación, implementación, revisión interna, auditoría externa dentro del proceso RAB, despliegue y monitorización."
+---
+
+
+El proceso para desarrollar, revisar, auditar y desplegar los contratos inteligentes de Kleros.
+
+---
+
+## Ciclo de vida de las tareas
+
+Las tareas de contratos inteligentes siguen el [flujo de trabajo de desarrollo](/es/contributing/dev-workflow) general con etapas adicionales:
+
+1. **Especificación**: definir el comportamiento del contrato, sus interfaces y los casos límite
+2. **Implementación**: escribir el código Solidity con pruebas
+3. **Revisión interna**: al menos otro desarrollador revisa el código
+4. **Auditoría**: revisión de seguridad externa (consulta el proceso RAB más abajo)
+5. **Despliegue**: desplegar en testnet y después en mainnet
+6. **Monitorización**: monitorización posterior al despliegue para detectar comportamientos inesperados
+
+---
+
+## RAB: Review, Audit, Bounty
+
+El proceso RAB garantiza la seguridad de los contratos inteligentes antes del despliegue:
+
+### Revisión
+
+Revisión interna del código por parte de desarrolladores de Kleros. Los revisores comprueban:
+- La corrección respecto a la especificación
+- La gestión de los casos límite
+- La optimización de gas
+- El cumplimiento de las [pautas de estilo de Solidity](/es/contributing/code-style)
+- La cobertura de pruebas
+
+### Auditoría
+
+Auditoría de seguridad externa a cargo de una empresa independiente. Kleros ha trabajado con auditores como Certora. El proceso de auditoría:
+
+1. Enviar los contratos para su revisión
+2. Recibir el informe de hallazgos
+3. Resolver todos los hallazgos de gravedad crítica y alta
+4. Volver a enviarlos para su verificación
+5. Publicar el informe de auditoría
+
+### Bounty
+
+Programas de bug bounty para la seguridad posterior al despliegue. Kleros ha usado anteriormente Hats Finance para sus bóvedas de bounty. El equipo está evaluando alternativas como HackenProof y Code4rena.
+
+---
+
+## RABd: Review, Audit, Bounty + Deploy
+
+El proceso RABd completo añade la etapa de despliegue:
+
+1. Completar el RAB (Review, Audit, Bounty)
+2. Desplegar en testnet y ejecutar pruebas de integración
+3. Desplegar en mainnet mediante los scripts de despliegue del repositorio
+4. Verificar los contratos en los exploradores de bloques
+5. Actualizar los artefactos de despliegue en el repositorio
+6. Actualizar la documentación con las nuevas direcciones
+
+---
+
+## Notificación de vulnerabilidades
+
+Si descubres una vulnerabilidad de seguridad en los contratos de Kleros:
+
+1. NO abras un issue público en GitHub
+2. Consulta el archivo `SECURITY.md` del repositorio para ver las instrucciones de notificación
+3. El repositorio kleros-v2 tiene un [SECURITY.md](https://github.com/kleros/kleros-v2/blob/dev/SECURITY.md) con pautas de divulgación
+4. Ponte en contacto con el equipo a través de los canales indicados en ese archivo
+5. Concede al equipo un tiempo razonable para resolver el problema antes de divulgarlo públicamente
+
+---
+
+## Pruebas
+
+Los contratos de Kleros usan Hardhat para las pruebas. El repositorio kleros-v2 también admite Foundry.
+
+```bash
+# Run Hardhat tests
+yarn workspace @kleros/kleros-v2-contracts test
+
+# Run with gas reporting
+yarn workspace @kleros/kleros-v2-contracts test --gas
+```
+
+Todos los cambios en los contratos deben incluir las actualizaciones de pruebas correspondientes. La CI ejecuta las pruebas automáticamente en los pull requests.
+
+---
+
+## Despliegue
+
+Los scripts de despliegue se mantienen en cada repositorio. Para kleros-v2:
+
+```bash
+# Deploy to local Hardhat network
+yarn workspace @kleros/kleros-v2-contracts deploy-local
+
+# Deploy to Arbitrum Sepolia (testnet)
+yarn workspace @kleros/kleros-v2-contracts deploy --network arbitrumSepolia
+```
+
+Los artefactos de despliegue (direcciones, ABI) se incluyen en `contracts/deployments/` del repositorio.

@@ -1,0 +1,166 @@
+---
+title: "PoH: registrarse y avalar"
+description: "Guía paso a paso de Proof of Humanity 2.0: registra un perfil humano con foto y video, obtén avales de humanos existentes y avala a otros solicitantes."
+---
+
+# Tutorial de Proof of Humanity: registrarse y avalar
+
+Este tutorial cubre el proceso de registro de Proof of Humanity 2.0: registrar tu perfil, el proceso de validación y avalar a otras personas.
+
+Para impugnar o eliminar perfiles, consulta el [tutorial de eliminación e impugnación](/es/tutorials/poh-remove-and-challenge).
+
+---
+
+## Fase 1: Registra tu perfil
+
+<Steps>
+  <Step title="Accede a la dApp">
+    Ve a la [aplicación PoH v2](https://v2.poh.id/), donde puedes ver los perfiles registrados recientemente.
+  </Step>
+  <Step title="Conecta tu billetera Web3">
+    Haz clic en **Connect** en la esquina superior derecha y selecciona tu billetera en el menú emergente. Revisa la política del registro de Proof of Humanity mediante el botón Policy antes de continuar.
+
+    <Warning>
+    Tu dirección de billetera quedará vinculada públicamente a tu identidad. Considera usar una dirección nueva financiada desde un exchange para proteger tu historial de transacciones.
+    </Warning>
+  </Step>
+  <Step title="Haz clic en Register">
+    Una vez conectada tu billetera, el botón **Register** aparece en el menú superior.
+  </Step>
+</Steps>
+
+
+
+### Información de registro
+
+Antes de empezar, ten en cuenta estos requisitos:
+
+- Un humano = un perfil activo. Los envíos duplicados simultáneos se enfrentan a impugnaciones y a la pérdida del depósito.
+- Los usuarios de V1 deben reclamar su Humanity ID anterior o registrarse correctamente en v2.
+- Elige la acción adecuada: **Renew** (actualizar un perfil v2 existente), **Claim Humanity** (perfil v1 vencido) o **Revoke** (eliminar un perfil).
+
+<Steps>
+  <Step title="Información">
+    Confirma la dirección de billetera que se asociará, proporciona tu nombre oficial o comúnmente conocido y marca la casilla de consentimiento que reconoce el vínculo permanente entre la billetera y la identidad. Haz clic en **Next**.
+   <Frame >
+  <img src="/images/info-poh.png"  />
+</Frame>
+  </Step>
+  <Step title="Foto">
+    Revisa las pautas y la lista de comprobación de la foto, toma una foto con la cámara de la aplicación (con recorte opcional) y haz clic en **Ready** cuando estés conforme o en **Retake** para cambiarla.
+
+    <Tip>Explora los perfiles con estado "Resolved Claim" para ver ejemplos de envíos aceptados.</Tip>
+   <Frame >
+  <img src="/images/photo-poh.png"  />
+</Frame>
+  </Step>
+  <Step title="Video">
+    Graba un video que muestre claramente tu rostro y un cartel con tu dirección de billetera completa (impresa, escrita o en pantalla), mientras dices:
+
+    *"I certify that I am a real human and that I am not already registered in this registry"*
+
+    Verifica que el video cumpla los requisitos de la lista de comprobación antes de continuar.
+   <Frame >
+  <img src="/images/video-poh.png"  />
+</Frame>
+ <Frame >
+  <img src="/images/vitalik-poh.png"  />
+</Frame>
+  </Step>
+  <Step title="Finaliza el registro">
+    Revisa toda la información enviada e introduce el depósito requerido. El depósito queda bloqueado con tu envío: incentiva a los impugnadores y cubre las tarifas de arbitraje. Un registro exitoso te lo devuelve; un registro fallido implica perderlo.
+
+    Asegúrate de tener suficiente xDAI o ETH para el depósito y las comisiones de transacción. Los envíos son definitivos y no pueden editarse después de enviarlos.
+
+    Haz clic en **Sign In**, espera a que finalice la carga de los archivos multimedia y confirma la transacción en tu billetera.
+
+    <Frame >
+  <img src="/images/submission-poh.png"  />
+</Frame>
+  </Step>
+</Steps>
+
+
+
+---
+
+## Fase 2: Suscríbete a las notificaciones
+
+El sistema de notificaciones está en desarrollo. Hasta su lanzamiento, comprueba manualmente el estado de tu perfil.
+
+---
+
+## Fase 3: Validación del perfil (~3-5 días)
+
+Los perfiles avanzan por: **Needs Vouch → In Review → Verified Human**.
+<Frame caption="Este es un diagrama de flujo simplificado que ofrece una visión general de las distintas fases del registro.">
+  <img src="/images/pohregistration.png"  />
+</Frame>
+
+### De Needs Vouch a In Review
+
+Para avanzar, tu perfil necesita:
+
+- Al menos 1 aval de una persona con estado "Resolved Claim" que te conozca
+- El pago completo del depósito (100 %)
+- Iniciar el aval mediante **Advance**
+
+Los avales se procesan de forma secuencial, aproximadamente 3.5 días por persona. Varios avales simultáneos de una misma persona retrasan el procesamiento de los demás. Si necesitas corregir algo, la retirada solo está disponible durante la fase de avales.
+
+### De In Review a Verified Human
+
+Un período de impugnación de 3.5 días permite a la comunidad verificar el cumplimiento:
+
+- **Si se impugna**: se abre una disputa en Kleros Court. Aporta evidencia para defender tu caso. Hay apelaciones disponibles si no estás de acuerdo con el fallo.
+- **Si no se impugna**: haz clic en **Execute** después de 3.5 días para finalizar tu registro. Cualquier dirección puede enviar esta transacción. Tu depósito se reembolsa al finalizar.
+
+Una vez verificado, obtienes la capacidad de avalar a otras personas.
+ <Frame >
+  <img src="/images/registerdone-poh.png"  />
+</Frame>
+
+---
+
+## Fase 4: Avala otro perfil
+
+Debes estar conectado a la aplicación y tener el estado "Verified Human".
+
+<Steps>
+  <Step title="Busca el perfil">
+    Ve al perfil de destino mediante un enlace compartido o buscando por nombre.
+  <Frame >
+  <img src="/images/needsvouch-poh.png"  />
+</Frame>
+  
+  </Step>
+  <Step title="Avala">
+    Haz clic en el botón **Vouch** en su perfil y firma el mensaje desde tu billetera.
+  <Frame >
+  <img src="/images/vouch-poh.png"  />
+</Frame>
+  </Step>
+</Steps>
+
+Existen dos tipos de aval:
+
+- **Vouch**: gratuito, sin comisiones de transacción, no revocable
+- **Vouch on-chain**: requiere comisiones de transacción, pero puede retirarse mientras el perfil está en la fase "Needs Vouch"
+
+Puedes avalar a varias personas, pero cada aval cuenta de forma secuencial: una vez que una persona pasa a "In Review", tu siguiente aval se activa por orden de llegada.
+
+<Warning>
+Avalar envíos sybil o falsos pone en riesgo tu propia eliminación del registro. Avalar perfiles con errores menores de información no conlleva ninguna penalización.
+</Warning>
+
+---
+
+## ¿Qué sigue?
+
+<CardGroup cols={2}>
+  <Card title="Tutorial de eliminación e impugnación" icon="flag" href="/es/tutorials/poh-remove-and-challenge">
+    Impugna perfiles que no cumplen las normas o elimina el tuyo
+  </Card>
+  <Card title="Página del producto Proof of Humanity" icon="fingerprint" href="/es/products/proof-of-humanity">
+    Descubre cómo funciona el registro
+  </Card>
+</CardGroup>

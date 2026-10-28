@@ -1,0 +1,130 @@
+---
+title: "Contratos inteligentes"
+description: "Referencia de los contratos inteligentes de Proof of Humanity V2, que abarca la interfaz IProofOfHumanity, las consultas de identidad y las funciones del ciclo de vida del registro."
+---
+
+## Interfaz principal
+
+La interfaz `IProofOfHumanity` expone las funciones necesarias para consultar e interactuar con el registro de PoH V2.
+
+### Consultas de identidad
+
+```solidity
+/// @dev Returns true if the address is registered as a verified human.
+/// Checks both V2 registrations and V1 via Fork Module.
+function isHuman(address _account) external view returns (bool);
+
+/// @dev Returns the humanityId bound to an address.
+/// Returns bytes20(0) if the address is not registered.
+function humanityOf(address _account) external view returns (bytes20);
+
+/// @dev Returns the address currently bound to a humanityId.
+/// Returns address(0) if the humanityId is not claimed.
+function boundTo(bytes20 _humanityId) external view returns (address);
+
+/// @dev Returns true if the humanityId is currently claimed by any address.
+function isClaimed(bytes20 _humanityId) external view returns (bool);
+```
+
+### Funciones de registro
+
+```solidity
+/// @dev Submits a new registration claim.
+/// Requires payment of the registration deposit.
+function claimHumanity(bytes20 _humanityId, string calldata _evidence) external payable;
+
+/// @dev Vouches for a pending registration.
+/// Voucher must be a registered human.
+function vouch(address _claimer, bytes20 _humanityId) external;
+
+/// @dev Challenges a pending or existing registration.
+/// Creates a dispute in Kleros Court.
+function challengeRequest(
+    bytes20 _humanityId,
+    uint256 _reason,
+    string calldata _evidence
+) external payable;
+```
+
+---
+
+## Interfaz cross-chain
+
+El contrato `ICrossChainProofOfHumanity` replica el estado de identidad en cadenas externas. Expone las mismas funciones de lectura:
+
+```solidity
+interface ICrossChainProofOfHumanity {
+    function isHuman(address _account) external view returns (bool);
+    function isClaimed(bytes20 _humanityId) external view returns (bool);
+    function humanityOf(address _account) external view returns (bytes20);
+    function boundTo(bytes20 _humanityId) external view returns (address);
+}
+```
+
+Las actualizaciones de estado se propagan desde la cadena de origen (Gnosis) hacia las cadenas externas mediante transacciones de puente.
+
+---
+
+## Estructuras de datos
+
+### Humanity
+
+Cada humano registrado se representa mediante una estructura `Humanity` que contiene el estado del registro:
+
+| Campo | Tipo | Descripción |
+| --- | --- | --- |
+| `owner` | `address` | Dirección de wallet actualmente vinculada a esta humanidad |
+| `humanityId` | `bytes20` | Identificador único soulbound |
+| `expirationTime` | `uint40` | Momento en que el registro vence y requiere renovación |
+| `nbPendingRequests` | `uint256` | Número de solicitudes de registro o renovación activas |
+
+### Motivos de impugnación
+
+Las impugnaciones deben especificar un código de motivo:
+
+| Código | Motivo | Descripción |
+| --- | --- | --- |
+| 0 | None | Inválido |
+| 1 | IncorrectSubmission | El perfil no cumple los requisitos de la política de registro |
+| 2 | Deceased | El humano registrado ha fallecido |
+| 3 | Duplicate | El solicitante ya está registrado con un humanityId diferente |
+| 4 | DoesNotExist | El solicitante no existe o el video es falso |
+
+---
+
+## Eventos
+
+```solidity
+/// @dev Emitted when a new registration claim is submitted.
+event ClaimRequest(address indexed _requester, bytes20 indexed _humanityId);
+
+/// @dev Emitted when a claim is challenged.
+event ChallengePeriodRestart(
+    bytes20 indexed _humanityId,
+    uint256 indexed _requestId,
+    uint256 _challengeId
+);
+
+/// @dev Emitted when a registration is confirmed after the challenge period.
+event HumanityClaimed(bytes20 indexed _humanityId, address indexed _owner);
+
+/// @dev Emitted when a registered human is removed (revocation or expiry).
+event HumanityRevoked(bytes20 indexed _humanityId, address indexed _owner);
+```
+
+---
+
+## Integración de disputas
+
+Cuando se impugna un registro, PoH crea una disputa en Kleros Court con los siguientes parámetros:
+
+| Parámetro | Valor |
+| --- | --- |
+| **Árbitro** | KlerosCore en la cadena de origen |
+| **Corte** | Humanity Court (courtId configurado en el despliegue) |
+| **Opciones** | 2 (Aceptar registro / Rechazar registro) |
+| **Fallo 0** | Negarse a arbitrar |
+| **Fallo 1** | Aceptar -> el registro es válido |
+| **Fallo 2** | Rechazar -> el registro no es válido |
+
+Las pruebas se envían on-chain y se muestran en la interfaz de Court V2. La plantilla de disputa especifica la política de registro de PoH como documento principal para la evaluación de los jurados.

@@ -1,0 +1,117 @@
+---
+title: "SDK de Kleros V2"
+description: "Referencia de la biblioteca TypeScript @kleros/kleros-sdk: población de plantillas de disputa, gestión de evidencia e interacciones con los contratos de Kleros V2 en Arbitrum."
+---
+
+El Kleros SDK (`@kleros/kleros-sdk`) es una biblioteca de TypeScript para interactuar con el protocolo Kleros V2. Sucede a Archon y ofrece utilidades para poblar plantillas de disputa, gestionar evidencia e interactuar con los contratos.
+
+<Warning>
+  El SDK está en desarrollo activo. Para uso en producción, fija una versión específica y revisa el changelog antes de actualizar. Las ABI de `@kleros/kleros-v2-contracts` son estables para la interacción directa con los contratos.
+</Warning>
+
+## Instalación
+
+```bash
+npm install @kleros/kleros-sdk
+# Peer dependencies
+npm install @kleros/kleros-v2-contracts viem
+```
+
+## Paquetes
+
+El SDK se encuentra en [github.com/kleros/kleros-v2](https://github.com/kleros/kleros-v2) dentro del workspace `kleros-sdk/`. Se publica como `@kleros/kleros-sdk`.
+
+## Funcionalidades clave
+
+### Población de plantillas de disputa
+
+El SDK resuelve los `templateDataMappings` para rellenar los marcadores `{{variable}}` de las plantillas de disputa. Este es el caso de uso principal: ejecutar los mapeos en el cliente para mostrar un contexto enriquecido de la disputa.
+
+```typescript
+import { populateTemplate } from "@kleros/kleros-sdk";
+
+// disputeTemplate: the JSON template string from DisputeTemplateRegistry
+// mappings: the JSON mappings array string from DisputeTemplateRegistry
+// externalDisputeID: your app's dispute/transaction ID
+const populated = await populateTemplate(
+  disputeTemplate,
+  mappings,
+  externalDisputeID,
+  { graphApiKey: process.env.GRAPH_API_KEY }
+);
+
+console.log(populated.title);       // "Escrow dispute: Widget delivery"
+console.log(populated.description); // "Buyer claims goods were not delivered..."
+```
+
+### Codificación / decodificación de ExtraData
+
+```typescript
+import { encodeExtraData, decodeExtraData } from "@kleros/kleros-sdk";
+
+// Encode: General Court (ID 1), 3 jurors
+const extraData = encodeExtraData(1n, 3n);
+// → "0x000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003"
+
+// Decode
+const { courtId, minJurors } = decodeExtraData(extraData);
+// → { courtId: 1n, minJurors: 3n }
+```
+
+### Envío de evidencia
+
+```typescript
+import { uploadEvidence, submitEvidence } from "@kleros/kleros-sdk";
+
+// Upload evidence to IPFS
+const { uri } = await uploadEvidence({
+  name: "Delivery Receipt",
+  description: "Screenshot showing delivery on Jan 15",
+  fileURI: "/ipfs/QmFile...",
+});
+
+// Submit on-chain
+await submitEvidence(walletClient, {
+  arbitrator: KLEROS_CORE_ADDRESS,
+  evidenceGroupID: txID,
+  evidence: uri,
+});
+```
+
+### Descubrimiento de contratos
+
+```typescript
+import { getContracts } from "@kleros/kleros-sdk";
+
+const contracts = await getContracts(chainId);
+// → { klerosCore, sortitionModule, disputeKitClassic, templateRegistry, ... }
+```
+
+## Staking
+
+```typescript
+import { setStake } from "@kleros/kleros-sdk";
+
+// Stake 200 PNK in court 1
+await setStake(walletClient, {
+  courtId: 1n,
+  amount: parseUnits("200", 18),
+});
+```
+
+## Resumen de capacidades
+
+| Funcionalidad | Descripción |
+| --- | --- |
+| Población de plantillas | Resuelve los `templateDataMappings` para rellenar las `{{variables}}` de las plantillas de disputa |
+| Códec de ExtraData | Codifica/decodifica el ID de corte \+ el número de jurados para `createDispute()` |
+| Carga de evidencia | Sube el JSON de evidencia a IPFS y emite el evento on-chain `Evidence` |
+| Descubrimiento de contratos | Resuelve KlerosCore, SortitionModule, etc. por chain ID |
+| Staking | Establece/retira el stake de PNK en las cortes |
+| Consultas de disputas | Obtiene las disputas activas, los votos de los jurados y el estado del sorteo |
+| Crowdfunding de apelaciones | Contribuye a las rondas de apelación |
+| Validación de contenido | Verifica la integridad de la evidencia/plantilla mediante hash |
+
+## Código fuente
+
+[GitHub - kleros/kleros-v2/kleros-sdk](https://github.com/kleros/kleros-v2/tree/dev/kleros-sdk)

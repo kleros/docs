@@ -1,0 +1,100 @@
+---
+title: "Arquitectura"
+description: "Compara el contrato monolítico KlerosLiquid en Ethereum con la arquitectura modular de KlerosCore, SortitionModule y Dispute Kits de V2 en Arbitrum."
+---
+
+Esta página describe la arquitectura de Kleros Court para ambas versiones del protocolo. Comienza con el diseño de V1, continúa con el diseño de V2 y termina con lo que cambió entre ellas.
+
+---
+
+## Arquitectura de V1
+
+Court V1 se basa en un único contrato, **KlerosLiquid**, desplegado en Ethereum Mainnet (y Gnosis Chain). KlerosLiquid es monolítico: el staking de jurados, la selección aleatoria, la votación y la gestión de disputas residen en el mismo contrato.
+
+| Componente | Responsabilidad |
+|---|---|
+| **KlerosLiquid** | Staking, sorteo de jurados, votación, apelaciones y ejecución de fallos en un solo contrato |
+| **PolicyRegistry** | Almacenamiento de las políticas de las cortes |
+| **Token PNK Minime** | El token de staking usado en V1 |
+
+Características clave:
+
+- **Red**: Ethereum Mainnet (también Gnosis Chain)
+- **Estándares**: ERC-792 (arbitraje) y ERC-1497 (evidencia); la evidencia y las apelaciones las gestiona el contrato arbitrable, no la Court
+- **Selección de jurados**: integrada en KlerosLiquid, mediante un árbol de sumas de sorteo ponderado por stake
+- **Aleatoriedad**: RNG basado en blockhash
+- **Votación**: commit-reveal con agregación por pluralidad
+- **Cortes**: un árbol jerárquico de subcortes con la General Court como raíz
+
+Para más información sobre V1, consulta [Court V1](/es/legacy/court-v1).
+
+---
+
+## Arquitectura de V2
+
+Court V2 se ejecuta en Arbitrum y divide el contrato monolítico de V1 en componentes modulares. El resto de esta sección describe ese diseño.
+
+### Principios de diseño
+
+Kleros V2 se diseñó en torno a seis principios clave:
+
+1. **Modularidad**: La lógica de resolución de disputas se separa en Dispute Kits intercambiables
+2. **Soporte para múltiples Dispute Kits**: Distintas cortes pueden usar distintos mecanismos de votación, incentivos y apelación
+3. **Compatible con forks**: El protocolo admite forks para reducir la rentabilidad de los ataques
+4. **PNK ligero**: Token ERC-20 simple (que reemplaza el complejo token Minime de V1)
+5. **Protección contra fraude de jurados**: Mecanismos para detectar y penalizar la revelación anticipada, el soborno y la formación de cárteles
+6. **Protección contra spam de evidencia**: Envío de evidencia con depósito en L2, donde el gas es barato
+
+### Mapa de componentes
+
+| Componente | Responsabilidad |
+|---|---|
+| **KlerosCore** | Creación de disputas, gestión de periodos, apelaciones, ejecución de fallos, recompensas de jurados |
+| **DisputeKitClassic** | Votación por pluralidad, commit-reveal, incentivos repartidos por igual, financiación asimétrica de apelaciones |
+| **SortitionModule** | Selección aleatoria de jurados ponderada por stake mediante árboles de sumas |
+| **DisputeTemplateRegistry** | Registro on-chain de plantillas de preguntas/respuestas de disputas |
+| **PolicyRegistry** | Almacenamiento de las políticas de las cortes (URIs de IPFS) |
+| **KlerosGovernor** | Ejecución de la gobernanza on-chain (Snapshot → transacciones) |
+| **Home/Foreign Gateways** | Retransmisión de disputas entre cadenas |
+| **Vea Bridge** | Transporte optimista de mensajes entre cadenas |
+
+### Visión multicadena
+
+La arquitectura a largo plazo admite Arbitrables en cualquier cadena EVM:
+- Los usuarios interactúan principalmente con la cadena Home (Arbitrum) para la mayoría de las operaciones
+- La evidencia puede enviarse desde cadenas foráneas por comodidad
+- Los Gateways y el puente Vea abstraen la complejidad del bridging
+- Cada cadena foránea admitida tiene su propio despliegue de Foreign Gateway
+
+### Sistema de Dispute Kits
+
+Las cortes pueden admitir múltiples dispute kits, lo que permite distintos:
+- **Métodos de sorteo**: ponderado por PNK, basado en Proof of Humanity, etc.
+- **Sistemas de votación**: pluralidad, Condorcet-IRV, etc.
+- **Modelos de incentivos**: reparto equitativo, funciones ponderadas, etc.
+- **Sistemas de apelación**: financiar solo 2, financiar múltiples, basados en stake, etc.
+
+Actualmente, `DisputeKitClassic` (sorteo por PNK + votación por pluralidad + reparto equitativo + apelaciones de financiar solo 2) es el único kit desplegado y es de soporte obligatorio en todas las cortes.
+
+### Modelo de seguridad
+
+- **Criptoeconómico**: Los jurados hacen staking de PNK; los votantes incoherentes pierden parte de su stake
+- **Selección aleatoria**: Impide la manipulación de la composición del jurado
+- **Escalada de apelaciones**: Coste exponencialmente creciente para sostener un ataque
+- **Controles de emergencia**: Pausa por parte del Guardian + reanudación por parte del Governor para una respuesta rápida
+- **Mecanismo de fork**: Defensa definitiva: una minoría honesta puede hacer un fork del protocolo
+
+---
+
+## Qué cambió en V2
+
+| Aspecto | V1 (KlerosLiquid) | V2 (KlerosCore) |
+|---|---|---|
+| **Estructura** | Monolítica: un solo contrato para staking, sorteo, votación y disputas | Modular: KlerosCore, SortitionModule y DisputeKits están separados |
+| **Red** | Ethereum L1 (también Gnosis Chain) | Arbitrum L2 |
+| **Selección de jurados** | Integrada en KlerosLiquid | SortitionModule (contrato separado) |
+| **Resolución de disputas** | Un único mecanismo integrado | DisputeKits intercambiables (Classic, Shutter, Gated, GatedShutter) |
+| **Token PNK** | Token Minime | ERC-20 ligero |
+| **Evidencia y apelaciones** | Gestionadas por el contrato arbitrable | Gestionadas por la Court |
+| **Multicadena** | Una sola cadena | Multicadena mediante el puente Vea y los Gateways |
+| **RNG** | Basado en blockhash | Interfaz RNG genérica con mecanismo de respaldo |

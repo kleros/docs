@@ -1,0 +1,105 @@
+---
+title: "Dispute Resolver"
+description: "Guía heredada de Kleros Dispute Resolver V1: crea, gestiona y resuelve disputas personalizadas en Kleros Court V1 a través de una interfaz web, sin contratos inteligentes."
+---
+
+# Dispute Resolver
+
+[resolve.kleros.io](https://resolve.kleros.io)
+
+Kleros Dispute Resolver permite a los usuarios crear, gestionar e interactuar con disputas en el protocolo Kleros a través de una interfaz web. Ofrece una forma sencilla de crear disputas personalizadas, enviar evidencias, financiar apelaciones y seguir el progreso de las disputas sin escribir contratos inteligentes.
+
+---
+
+## Cuándo usar Dispute Resolver
+
+- **Disputas independientes**: Crea una disputa sin integrarte con una dApp existente.
+- **Disputas off-chain**: Disputas relacionadas con actividades off-chain que no pueden integrarse con Kleros sin necesidad de confianza.
+- **Configuración de Reconocimiento de Jurisdicción (RoJ)**: Tu plataforma se compromete a hacer cumplir los fallos de Kleros. Creas disputas independientes en resolve.kleros.io, compartes el enlace de la disputa con las partes y aplicas el resultado manualmente. Esto te permite probar Kleros antes de invertir en el desarrollo de contratos inteligentes.
+- **Sin recursos para contratos inteligentes**: Cuando no dispones de recursos para una integración completa con contratos inteligentes.
+- **Contratos arbitrables personalizados sin frontend**: Si tu contrato arbitrable implementa la interfaz `IDisputeResolver` ([paquete NPM](https://www.npmjs.com/package/@kleros/dispute-resolver-interface-contract)), puede usar el frontend de Dispute Resolver para el envío de evidencias y la financiación de apelaciones.
+
+---
+
+## Funcionalidades
+
+### Crear disputa
+
+- Selecciona una corte de Kleros
+- Elige el número de jurados
+- Define el título, la descripción y la categoría de la disputa
+- Establece el tipo de pregunta: selección única, selección múltiple, número no negativo o fecha
+- Define las opciones de fallo
+- Añade información de las partes (alias y direcciones)
+- Sube documentación de respaldo (hasta 4MB)
+- Revisa el costo del arbitraje antes de enviar
+
+### Disputas en curso
+
+Explora las disputas activas filtradas por fase: envío de evidencias, commit, votación o apelación.
+
+### Interactuar
+
+- Consulta los detalles y la cronología de la disputa
+- Envía evidencias durante la fase de evidencias
+- Financia apelaciones durante la fase de apelación
+- Retira recompensas después de la resolución
+
+---
+
+## Uso de la aplicación
+
+### Requisitos previos
+
+1. Una billetera Web3 (p. ej., MetaMask)
+2. La billetera conectada a la red correcta
+3. Fondos suficientes para crear la disputa o financiar la apelación
+
+### Crear una disputa
+
+1. Ve a la pestaña "Create"
+2. Completa el formulario: corte, número de jurados, título, descripción, tipo de pregunta, opciones de fallo, información de las partes y documentación
+3. Revisa el costo del arbitraje
+4. Envía la transacción
+
+### Enviar evidencias
+
+1. Abre la página de detalles de la disputa durante la fase de evidencias
+2. Introduce un título y una descripción para tu evidencia
+3. Sube los archivos de respaldo
+4. Especifica a qué parte respalda la evidencia
+5. Envía
+
+### Financiar apelaciones
+
+1. Abre una disputa en fase de apelación
+2. Elige qué opción de fallo apoyar
+3. Consulta el progreso de la financiación y el posible rendimiento
+4. Introduce el monto de la contribución y confirma
+
+Cuando se apela, ambas partes deben aportar fondos. Si solo una parte está completamente financiada, esa parte gana por defecto. Si ambas están financiadas, el caso pasa a una nueva ronda con más jurados.
+
+---
+
+## Para desarrolladores con contratos personalizados
+
+Si tienes un contrato arbitrable personalizado y necesitas una interfaz para interactuar con las disputas:
+
+1. Implementa la interfaz `IDisputeResolver` en tu contrato
+2. Dispute Resolver será compatible con tu contrato automáticamente
+3. Los usuarios podrán enviar evidencias y financiar apelaciones a través del frontend de Dispute Resolver
+
+La interfaz `IDisputeResolver` estandariza las apelaciones con financiación colectiva y el envío de evidencias. Está disponible como [paquete NPM](https://www.npmjs.com/package/@kleros/dispute-resolver-interface-contract).
+
+---
+
+## Recursos
+
+<CardGroup cols={2}>
+  <Card title="Abrir Dispute Resolver" icon="rocket" href="https://resolve.kleros.io">
+    resolve.kleros.io
+  </Card>
+  <Card title="Tipos de integración" icon="puzzle-piece" href="/es/legacy/integrate/types-of-integration">
+    Todas las vías de integración
+  </Card>
+</CardGroup>

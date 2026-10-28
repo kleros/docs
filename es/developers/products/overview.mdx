@@ -1,0 +1,62 @@
+---
+title: "Productos de Kleros"
+description: "Referencia para desarrolladores de todos los productos de Kleros, con V1 y V2 cubiertos conjuntamente, incluidas guías de integración, direcciones de contratos y ejemplos de código."
+---
+
+## Descripción general
+
+Esta sección documenta todos los productos de Kleros, con V1 y V2 cubiertos conjuntamente en la página de cada producto.
+
+**Los productos V1 incluyen guías de integración completas y ejemplos de código. Los productos V2 documentan especificaciones técnicas, interfaces de contratos y arquitectura.**
+
+Todos los productos usan Kleros Court como backend de arbitraje. Las disputas iniciadas a través de cualquier producto siguen el mismo flujo de resolución: sorteo de jurados, envío de pruebas, votación, apelación y ejecución del fallo.
+
+---
+
+## Productos
+
+<CardGroup cols={2}>
+  <Card title="Court" icon="scale-balanced" href="/es/developers/products/court/overview">
+    La interfaz principal de resolución de disputas. V1 en Ethereum / Gnosis Chain, V2 en Arbitrum.
+  </Card>
+  <Card title="Curate" icon="list-check" href="/es/developers/products/curate/overview">
+    Registros gobernados por la comunidad. Curate clásico y Light Curate (V1) más Curate V2.
+  </Card>
+  <Card title="Escrow" icon="handshake" href="/es/developers/products/escrow/overview">
+    Transacciones seguras con arbitraje de Kleros. V1 en Ethereum, V2 en Arbitrum.
+  </Card>
+  <Card title="Proof of Humanity" icon="fingerprint" href="/es/developers/products/poh/overview">
+    Registro resistente a ataques Sybil de humanos únicos verificados. V1 en Ethereum, V2 en Gnosis Chain.
+  </Card>
+  <Card title="Reality" icon="crystal-ball" href="/es/developers/products/reality/overview">
+    Oráculo Reality.eth + Kleros con integración de SafeSnap para la gobernanza de DAOs.
+  </Card>
+  <Card title="Foresight" icon="chart-line" href="/es/developers/products/foresight/overview">
+    Toma de decisiones basada en mercados de predicción con resolución de disputas de Kleros.
+  </Card>
+  <Card title="Governor" icon="landmark" href="/es/developers/products/governor/overview">
+    Ejecución de gobernanza on-chain con resolución de disputas para acciones impugnadas.
+  </Card>
+  <Card title="Scout" icon="shield-check" href="/es/developers/products/scout/overview">
+    Información de seguridad curada por la comunidad para contratos, tokens y dApps.
+  </Card>
+  <Card title="Dispute Resolver" icon="gavel" href="/es/developers/products/dispute-resolver/overview">
+    Herramienta V1 para crear disputas en Court sin un contrato arbitrable personalizado.
+  </Card>
+</CardGroup>
+
+---
+
+## Infraestructura compartida
+
+Todos los productos de Kleros V2 comparten estos componentes:
+
+| Componente | Función |
+| --- | --- |
+| **KlerosCore** | Contrato árbitro central en Arbitrum One |
+| **SortitionModule** | Selección aleatoria de jurados ponderada por stake |
+| **DisputeKitClassic** | Lógica predeterminada de votación y apelación |
+| **DisputeTemplateRegistry** | Almacena los metadatos de visualización de disputas para la interfaz de Court |
+| **Vea** | Puente de mensajes cross-chain para retransmitir disputas y fallos |
+
+Para la arquitectura completa, consulta la [guía de arquitectura](/es/developers/architecture).

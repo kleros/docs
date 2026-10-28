@@ -1,0 +1,69 @@
+---
+title: "Referencia de la API"
+description: "API HTTP para el gateway de IPFS de Kleros: sube y recupera plantillas de disputa, archivos de evidencia, documentos de políticas y metadatos de elementos de Curate."
+---
+
+Toda integración de Kleros en la que intervienen jurados necesita contenido off-chain: plantillas de disputa que indican a los jurados qué pregunta deben responder, archivos de evidencia que presentan las partes y documentos de políticas que definen los criterios de resolución. Todo este contenido se almacena en IPFS y se referencia on-chain mediante su CID.
+
+
+
+
+El gateway de IPFS de Kleros en `cdn.kleros.link` es el gateway recomendado para subir y servir este contenido.
+
+## URL base
+
+```
+https://cdn.kleros.link
+```
+
+## Endpoints
+
+<CardGroup cols={2}>
+  <Card title="Subir a IPFS" icon="upload" href="/es/api-reference/endpoint/create">
+    Sube plantillas de disputa, archivos de evidencia y documentos de políticas
+  </Card>
+  <Card title="Obtener desde IPFS" icon="download" href="/es/api-reference/endpoint/get">
+    Recupera contenido por el hash CID de IPFS
+  </Card>
+</CardGroup>
+
+## Tipos de contenido comunes
+
+| Contenido | Dónde se usa | Esquema |
+|---------|----------------|--------|
+| JSON de plantilla de disputa | `DisputeTemplateRegistry.setDisputeTemplate()` | [Plantillas de disputa](/es/reference/data-formats/dispute-templates) |
+| JSON de archivo de evidencia | `EvidenceModule`: lo presentan las partes durante una disputa | [Formato de evidencia](/es/reference/data-formats/evidence-format) |
+| JSON de documento de política | Campo `policyURI` en las plantillas de disputa | [Formato de política](/es/reference/data-formats/policy-format) |
+| Adjunto de elemento | Metadatos de elementos de Curate V2 | Esquema JSON basado en columnas |
+
+## Subir contenido con el SDK
+
+`@kleros/kleros-sdk` envuelve la subida al gateway en un helper tipado:
+
+```typescript
+import { uploadToIPFS } from "@kleros/kleros-sdk";
+
+const evidence = {
+  name: "Transaction Screenshot",
+  description: "Shows the buyer confirmed delivery on 2024-01-15.",
+  fileURI: "/ipfs/QmImageHash...",
+  evidenceType: "Image"
+};
+
+const { cids } = await uploadToIPFS(JSON.stringify(evidence));
+const evidenceURI = cids[0]; // "/ipfs/Qm..."
+```
+
+## Pinning redundante
+
+El contenido subido al gateway de Kleros queda fijado (pinned) por la infraestructura de Kleros. Para integraciones en producción, fíjalo también con un proveedor secundario para que tu contenido siga disponible si el gateway de Kleros no está accesible temporalmente:
+
+```typescript
+// Example: pin with Pinata in addition to Kleros gateway
+const pinataRes = await pinata.pinJSONToIPFS(evidence);
+// Both pins point to the same CID
+```
+
+<Warning>
+El contenido de IPFS que no está fijado puede desaparecer si ningún nodo lo sirve. En producción, fíjalo siempre desde al menos dos fuentes independientes.
+</Warning>
