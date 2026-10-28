@@ -1,0 +1,164 @@
+---
+title: "Servidor MCP"
+description: "Consulta la documentación de Kleros directamente desde Claude, Cursor, Copilot y otros asistentes de IA compatibles con MCP para obtener un contexto de integración preciso y actualizado."
+---
+
+El sitio de documentación de Kleros expone un **servidor MCP (Model Context Protocol)** que permite a los asistentes de programación con IA (Claude, Cursor, VS Code Copilot y otros) consultar esta documentación directamente como contexto cuando estás creando una integración con Kleros.
+
+Esto significa que tu asistente de IA puede responder preguntas como "¿cuál es la codificación correcta de extraData para V2?" o "muéstrame la interfaz IArbitrableV2" leyendo la documentación oficial en lugar de depender de datos de entrenamiento que pueden estar desactualizados.
+
+---
+
+## URL del servidor MCP
+
+```
+https://docs.kleros.io/mcp
+```
+
+El servidor MCP expone todo el contenido de la documentación de Kleros en un formato que los clientes MCP pueden consultar con lenguaje natural.
+
+---
+
+## Instrucciones de configuración
+
+<Tabs>
+  <Tab title="Claude Code">
+    Ejecuta esto desde cualquier directorio (se instala de forma global):
+
+    ```bash
+    claude mcp add kleros-docs --transport http https://docs.kleros.io/mcp
+    ```
+
+    O añádelo manualmente a `~/.claude/settings.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "kleros-docs": {
+          "type": "http",
+          "url": "https://docs.kleros.io/mcp"
+        }
+      }
+    }
+    ```
+
+    Una vez conectado, Claude Code puede responder preguntas sobre la integración con Kleros mientras programas.
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    Añádelo a `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+    ```json
+    {
+      "mcpServers": {
+        "kleros-docs": {
+          "type": "http",
+          "url": "https://docs.kleros.io/mcp"
+        }
+      }
+    }
+    ```
+
+    Reinicia Claude Desktop después de guardar.
+  </Tab>
+
+  <Tab title="Cursor">
+    Abre **Settings → MCP → Add Server** e introduce:
+
+    - **Name:** `kleros-docs`
+    - **URL:** `https://docs.kleros.io/mcp`
+    - **Transport:** HTTP
+
+    O añádelo a `.cursor/mcp.json` en tu proyecto:
+
+    ```json
+    {
+      "mcpServers": {
+        "kleros-docs": {
+          "type": "http",
+          "url": "https://docs.kleros.io/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="VS Code">
+    Añádelo a tu `.vscode/settings.json` o a la configuración de usuario:
+
+    ```json
+    {
+      "github.copilot.chat.mcp.servers": {
+        "kleros-docs": {
+          "type": "http",
+          "url": "https://docs.kleros.io/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+
+  <Tab title="Windsurf">
+    Añádelo a `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "kleros-docs": {
+          "type": "http",
+          "url": "https://docs.kleros.io/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Qué puedes preguntar
+
+Una vez conectado, tu asistente de IA tiene acceso a toda la documentación de Kleros. Prompts útiles al crear integraciones:
+
+```
+What is the correct extraData encoding for Kleros V2?
+Show me the IArbitrableV2 interface.
+How do I register a dispute template?
+What are the data mapping types for dispute templates?
+How do I handle ruling 0 (refuse to arbitrate)?
+What are the KlerosCore contract addresses on Arbitrum One?
+How do I integrate Curate V2 into my contract?
+What subgraph queries can I use to fetch dispute data?
+How do I set up cross-chain arbitration with Vea?
+```
+
+---
+
+## Endpoints aptos para LLM
+
+Además del servidor MCP, el sitio de documentación expone dos endpoints de archivo plano para su consumo por LLM:
+
+| Endpoint | Descripción |
+|----------|-------------|
+| `https://docs.kleros.io/llms.txt` | Índice de todas las páginas con títulos y descripciones |
+| `https://docs.kleros.io/llms-full.txt` | Contenido de texto completo de todas las páginas concatenado |
+
+Son útiles para cargar el contexto de una sola vez en sistemas que no admiten MCP, como pipelines de LLM personalizados o sistemas RAG.
+
+---
+
+## IA contextual en cada página
+
+Cada página de la documentación incluye un botón de IA sensible al contexto en la esquina superior derecha. Haz clic en el botón **Ask AI** (o pulsa el atajo de teclado correspondiente) para abrir un chat que tiene la página actual como contexto.
+
+La IA a nivel de página entiende la sección concreta que estás leyendo y puede responder preguntas de seguimiento sin que tengas que copiar y pegar contenido.
+
+---
+
+<Note>
+El contenido del servidor MCP se reconstruye en cada despliegue de la documentación. Siempre obtienes la versión más reciente de la documentación, incluidas las direcciones de contratos más recientes, los cambios de API y los patrones de integración.
+</Note>
+
+<Tip>
+Si notas que la IA da respuestas desactualizadas (por ejemplo, direcciones de contratos incorrectas o patrones obsoletos como `arbitrumGoerliToChiadoDevnet`), la causa más probable es que esté respondiendo a partir de sus datos de entrenamiento en lugar del servidor MCP. Verifica que MCP esté conectado y pide a la IA que vuelva a comprobarlo usando la documentación.
+</Tip>

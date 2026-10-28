@@ -1,0 +1,22 @@
+---
+title: "26 de octubre de 2026"
+description: "Enlaces específicos por cadena en Kleros Court, creación de escrows más fiable en Escrow V1 y una corrección en la búsqueda de tokens en Escrow V2."
+---
+
+## Nuevas funciones
+
+### Enlaces específicos por cadena en Court
+
+Cada página de [Kleros Court](/court/overview) incluye ahora el ID de la cadena al inicio de su URL, por ejemplo `/1/cases/1000` en Ethereum o `/100/courts` en Gnosis. Un enlace que copies ahora se abre en la cadena de la que proviene.
+
+- Los enlaces antiguos sin ID de cadena, incluidos los enlaces con `?requiredChainId=`, siguen funcionando. Court los reescribe al nuevo formato.
+- Si conectas una billetera en otra cadena, una página de caso permanece en su propia cadena. Las demás páginas siguen a tu billetera.
+- Los botones Atrás y Adelante siguen la cadena actual, excepto en las páginas de casos.
+
+## Corrección de errores
+
+**Creación de escrows en ETH en Escrow V1**: crear un escrow en ETH ya no falla cuando el escrow ya está on-chain, y ya no te pide que lo intentes de nuevo. Una vez que tu transacción tiene éxito, la app de [Escrow](/products/escrow) confirma el escrow, limpia el formulario y abre tus transacciones para que no puedas enviar el mismo escrow dos veces. Si cancelas o reemplazas la transacción en tu billetera, la app ya no afirma que el escrow se creó.
+
+**Campo de importe en Escrow V1**: el selector de importe en el flujo de creación ya no baja de 0.
+
+**Búsqueda de tokens en Escrow V2**: escribir una dirección parcial en la búsqueda de tokens ya no la añade como token.

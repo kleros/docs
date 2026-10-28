@@ -1,0 +1,42 @@
+---
+title: "Trivium"
+description: "Trivium es un prototipo de Kleros para la preselección de disputas con IA: tres modelos de IA y tres perspectivas jurídicas evalúan una disputa nueve veces, y los desacuerdos pasan a jurados humanos de Kleros."
+---
+
+[Trivium](https://trivium.eth.limo/) es un prototipo público de preselección de disputas impulsada por IA. Analiza una disputa nueve veces, usando tres modelos de IA y tres perspectivas analíticas. Cuando los nueve análisis coinciden, el caso es claro. Cuando divergen, el caso tiene una complejidad genuina y se deriva a jurados humanos de Kleros Court.
+
+<Note>
+Trivium es un **prototipo público**, no un servicio en producción.
+</Note>
+
+---
+
+## Por qué clasificar
+
+Los casos baratos y obvios no deberían esperar a un proceso costoso, mientras que los casos complejos, sensibles o de alto valor merecen agentes especializados y luego jurados humanos. La IA puede clasificar los casos antes de que lleguen a una corte y ayudar a los jurados a procesar las evidencias dentro de ella. Los humanos conservan la autoridad para revocar.
+
+---
+
+## La matriz 3 × 3
+
+Cada disputa se analiza nueve veces, para lograr diversidad de perspectivas y no redundancia:
+
+1. **Tres modelos.** La disputa se envía a tres modelos de lenguaje de distintos proveedores, cada uno con diferentes datos de entrenamiento, patrones de razonamiento y sesgos.
+2. **Tres perfiles analíticos.** Cada modelo evalúa la disputa desde tres perspectivas jurisprudenciales: **Interpretación estricta**, **Defensa orientada al consumidor** y **Razonamiento basado en precedentes**.
+3. **Consenso.** Cuando los modelos y las perspectivas coinciden, la señal es fuerte y el caso puede resolverse. Cuando discrepan, el caso pasa a jurados humanos de Kleros.
+
+Cada puntuación, cadena de razonamiento y umbral es visible. La desviación estándar y la dispersión entre modelos muestran dónde y por qué divergen los análisis: sesgo del perfil, sesgo del modelo o complejidad genuina.
+
+---
+
+## Privacidad
+
+Trivium no tiene backend para el análisis. Tú proporcionas tus propias claves de API de los modelos, que se almacenan localmente y nunca salen de tu navegador, y tus datos van directamente de tu navegador a los proveedores de IA.
+
+---
+
+## Pruébalo
+
+- [Abrir Trivium](https://trivium.eth.limo/)
+- [Ver un informe de ejemplo](https://trivium.eth.limo/sample/)
+- [Enviar una disputa](https://trivium.eth.limo/analyze/)

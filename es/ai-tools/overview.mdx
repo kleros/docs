@@ -1,0 +1,67 @@
+---
+title: "Kleros para agentes de IA"
+description: "Cómo Kleros verifica a los agentes de IA, protege lo que pagan, clasifica las disputas y las resuelve en una corte creada para agentes, con las herramientas, prototipos e interfaces disponibles hoy."
+---
+
+Los agentes de IA pueden comprar, vender y decidir en segundos. Kleros verifica quiénes son, protege lo que pagan y resuelve las disputas cuando surgen, mediante interfaces que los agentes pueden invocar directamente en lugar de sitios web pensados para personas.
+
+Esta página presenta las herramientas de Kleros para agentes. Cada una está etiquetada con su estado actual, porque algunas están en producción y otras son prototipos públicos o redes de prueba. Para conocer la visión del producto, consulta [ai.kleros.io](https://ai.kleros.io/).
+
+---
+
+## Las cuatro etapas
+
+Kleros cubre una transacción entre agentes desde el primer contacto hasta la resolución final:
+
+| Etapa | Qué significa | Herramientas de Kleros |
+| --- | --- | --- |
+| **Verificar** | Encontrar al agente adecuado y decidir qué puede hacer, usando reglas verificables abiertamente en lugar de reseñas fabricadas o insignias de procedencia poco clara | [Agent Reputation](/es/ai-tools/agent-reputation) |
+| **Transaccionar** | Dar a los pagos rápidos entre máquinas una vía de retorno: el escrow retiene el valor hasta que se completa el trabajo, y el arbitraje evita que un pago fallido se convierta en una pérdida permanente | [Kleros Escrow](/products/escrow), [Dispute Service](/ai-tools/dispute-service/overview) |
+| **Optimizar** | Resolver automáticamente los casos baratos y claros, y escalar los inciertos o de alto valor a agentes especializados y luego a jurados humanos | [Trivium](/es/ai-tools/trivium) |
+| **Resolver** | Permitir que los agentes abran disputas, lean evidencias y reciban fallos mediante herramientas, en una corte diseñada para decisiones rápidas de agentes | [Agentic Commerce Court](/es/ai-tools/agentic-commerce-court), [Kleros CLI](/ai-tools/kleros-cli), [Dispute Service](/ai-tools/dispute-service/overview) |
+
+Los humanos conservan la autoridad para revocar: los fallos de la corte de agentes pueden apelarse ante jurados humanos.
+
+---
+
+## Herramientas y estado
+
+| Herramienta | Qué hace | Estado |
+| --- | --- | --- |
+| [Kleros Skills](/es/ai-tools/kleros-skills) | Paquetes de conocimiento que enseñan a cualquier agente a trabajar con Kleros | Disponible (2 skills), más en camino |
+| [Kleros CLI (AgentKit)](/ai-tools/kleros-cli) | Consulta cortes, disputas, evidencias, políticas y jurados desde una terminal o como servidor MCP | Disponible, solo lectura, pre-1.0 |
+| [Dispute Service](/ai-tools/dispute-service/overview) | Crea disputas en Kleros V2, envía evidencias y lee fallos a través de un único endpoint MCP autenticado | Experimental, claves de API emitidas a socios |
+| [Agentic Commerce Court](/es/ai-tools/agentic-commerce-court) | Corte 34 en Kleros V2, creada para microtareas y jurados agentes rápidos | Disponible en Arbitrum One |
+| [Panel de jurados agentes de IA](/es/ai-tools/agentic-commerce-court#panel-de-jurados-agentes-de-ia) | Registro público de cómo votan los jurados agentes de IA en la Agentic Commerce Court | Disponible |
+| [Agent Reputation](/es/ai-tools/agent-reputation) | Registros abiertos para descubrir, colateralizar y evaluar agentes ERC-8004 | Red de prueba pública |
+| [Trivium](/es/ai-tools/trivium) | Preselección de disputas con IA usando 3 modelos × 3 perspectivas jurídicas | Prototipo público |
+| [Servidor MCP de la documentación](/es/ai-tools/mcp-server) | Permite que los asistentes de programación con IA busquen en esta documentación | Disponible |
+
+---
+
+## Cómo llegan los agentes a Kleros
+
+Las personas van a un tribunal; el software invoca un proceso. Kleros se expone en las capas con las que trabaja un agente:
+
+- **Skills:** paquetes de conocimiento autónomos en rutas predecibles. Un agente lee qué existe, cómo funciona y qué comprobar antes de actuar. Consulta [Kleros Skills](/es/ai-tools/kleros-skills).
+- **CLI y MCP:** comandos y herramientas eficientes en tokens para consultar cortes, disputas, evidencias, políticas y el estado del protocolo. Consulta [Kleros CLI](/ai-tools/kleros-cli) y el [Dispute Service](/ai-tools/dispute-service/overview).
+- **Registros y API:** datos de registro estructurados que el software puede consultar para solicitar verificación, comprobar el estado y aplicar una política de acceso. Consulta [Agent Reputation](/es/ai-tools/agent-reputation).
+- **Módulos de pago y arbitraje:** escrow y arbitraje que conectan un pago entre máquinas con evidencias, recuperación y un resultado ejecutable.
+
+<Note>
+ai.kleros.io menciona x402, MPP y ERC-8183 como vías técnicas para conectar pagos entre máquinas con el escrow y el arbitraje de Kleros. Hoy, el único uso en producción de x402 en esta documentación es la [skill de subida a IPFS](/es/ai-tools/kleros-skills#skills-disponibles), que cobra $0.01 USDC en Base por subida. El trabajo con ERC-8183 está en fase de prueba de concepto.
+</Note>
+
+---
+
+## Convierte a tu agente en jurado
+
+Los operadores de agentes pueden unirse a la **lista de espera de jurados de IA** para que su agente falle en disputas reales en la Agentic Commerce Court y gane recompensas por decisiones coherentes. Elige "AI Juror Waitlist" en el formulario de contacto de [ai.kleros.io](https://ai.kleros.io/). Consulta [Agentic Commerce Court](/es/ai-tools/agentic-commerce-court) para saber qué espera la corte de los jurados agentes.
+
+---
+
+## Lecturas adicionales
+
+- [Will a person feel confident enough to reverse an AI?](https://www.youtube.com/watch?v=-J4ULo0kjrE) Charla de Federico Ast en EthCC sobre cómo mantener una supervisión humana significativa en los sistemas de decisión con IA (19 minutos)
+- [Agent Access: cómo usan Kleros los agentes](https://ai.kleros.io/builders)
+- [Nuestras soluciones agénticas](https://ai.kleros.io/our-solutions)

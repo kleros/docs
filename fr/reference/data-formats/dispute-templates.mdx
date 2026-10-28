@@ -1,0 +1,483 @@
+---
+title: "Modèles de litige"
+description: "Spécification complète des modèles de litige et des data mappings : ce que voient les jurés et comment les variables du modèle sont renseignées à partir des données on-chain"
+---
+
+Les modèles de litige définissent la question, les options de réponse et les métadonnées présentées aux jurés. Ils sont enregistrés on-chain via le contrat `DisputeTemplateRegistry` et peuvent contenir des placeholders dynamiques renseignés au moment de la création du litige grâce au système de data mappings.
+
+
+
+## Structure d'un modèle
+
+Un modèle de litige complet est un objet JSON. Les champs notés `{{variable}}` sont des placeholders résolus par les data mappings au moment du litige. Les champs notés `{{{variable}}}` (triple accolade) sont traités comme des valeurs brutes, non échappées (par exemple des URI).
+
+```json
+{
+  "$schema": "../NewDisputeTemplate.schema.json",
+  "title": "Should this item be accepted into the registry?",
+  "description": "Evaluate whether {{itemName}} meets the registry criteria.",
+  "question": "Does this item comply with the registry requirements?",
+  "answers": [
+    {
+      "id": "0x00",
+      "title": "Refuse to Arbitrate / Invalid",
+      "description": "The dispute is invalid or the question cannot be answered."
+    },
+    {
+      "id": "0x01",
+      "title": "Accept",
+      "description": "The item meets all requirements and should be included."
+    },
+    {
+      "id": "0x02",
+      "title": "Reject",
+      "description": "The item does not meet the requirements."
+    }
+  ],
+  "policyURI": "/ipfs/QmPolicyHash...",
+  "attachment": {
+    "label": "Item Details",
+    "uri": "{{{itemUri}}}"
+  },
+  "frontendUrl": "https://your-app.com/disputes/{{externalDisputeID}}",
+  "arbitratorChainID": "42161",
+  "arbitratorAddress": "0x991d2df165670b9cac3B022f4B68D65b664222ea",
+  "metadata": {
+    "requester": "{{requester}}",
+    "challenger": "{{challenger}}"
+  },
+  "category": "Curation",
+  "lang": "en_US",
+  "specification": "KIP-99",
+  "aliases": {
+    "Requester": "{{requester}}",
+    "Challenger": "{{challenger}}"
+  },
+  "version": "1.0"
+}
+```
+
+## Référence des champs
+
+| Champ | Type | Obligatoire | Description |
+|---|---|---|---|
+| `$schema` | string | Non | Référence au schéma JSON pour la validation |
+| `title` | string | Oui | Titre court affiché aux jurés |
+| `description` | string | Oui | Contexte et informations de fond sur le litige |
+| `question` | string | Oui | La question précise à laquelle les jurés doivent répondre |
+| `answers` | array | Oui | Options de décision possibles (voir ci-dessous) |
+| `policyURI` | string | Non | URI IPFS vers le document complet de la politique du litige |
+| `attachment` | object | Non | Une pièce jointe sous forme d'URI avec libellé (par exemple les conditions de la transaction). Possède les clés `label` et `uri` |
+| `frontendUrl` | string | Non | URL du litige dans l'application intégratrice. Utilisez `{{externalDisputeID}}` comme placeholder |
+| `arbitratorChainID` | string | Oui | Chain ID (sous forme de chaîne) où KlerosCore est déployé |
+| `arbitratorAddress` | string | Oui | Adresse du contrat KlerosCore |
+| `metadata` | object | Non | Paires clé-valeur arbitraires propres au produit (acheteur, vendeur, montant, etc.) |
+| `category` | string | Non | Libellé de catégorie du litige (par exemple "Escrow", "Curation") |
+| `lang` | string | Non | Balise de langue BCP 47, par défaut `"en_US"` |
+| `specification` | string | Non | Référence au KIP ou à la spécification que suit ce modèle |
+| `extraEvidences` | array | Non | Preuves antérieures au litige fournies par les parties de l'arbitrable (demandeur/contestataire). Voir [Preuves antérieures au litige](#preuves-antérieures-au-litige-extraevidences) |
+| `aliases` | object | Non | Associe des noms de rôles lisibles à des placeholders d'adresses |
+| `version` | string | Non | Version sémantique de ce modèle, par exemple `"1.0"` |
+
+### Identifiants de réponse
+
+Les identifiants de réponse sont des valeurs de décision encodées en hexadécimal :
+
+| ID | Signification |
+|---|---|
+| `"0x00"` | **Toujours réservé à « Refus d'arbitrer / Invalide »** - les jurés l'utilisent lorsque le litige est mal formé ou impossible à trancher |
+| `"0x01"` | Première réponse sur le fond |
+| `"0x02"` | Deuxième réponse sur le fond |
+| `"0x03"`, ... | Réponses supplémentaires |
+
+La décision `0x00` est traitée de manière particulière par KlerosCore - si une majorité la choisit, aucune partie n'est considérée comme gagnante.
+
+---
+
+## Preuves antérieures au litige (`extraEvidences`)
+
+Le champ `extraEvidences` permet aux contrats arbitrables de faire apparaître des preuves soumises **avant la création du litige** - comme la demande d'enregistrement d'un demandeur ou l'objection d'un contestataire - directement dans l'interface de Kleros Court. Sans ce champ, les jurés devraient se rendre séparément sur l'application arbitrable pour trouver ces preuves.
+
+### Schéma
+
+```typescript
+// Zod schema (from @kleros/kleros-sdk)
+extraEvidences: z.array(EvidenceSchema).default([])
+
+// EvidenceSchema shape
+{
+  name: string,       // short label shown in Court UI
+  description: string, // explanation of what the evidence shows
+  fileURI: string,    // IPFS URI or data URI of the attached file (optional)
+  evidenceType: string // e.g. "Image", "Video", "Text", "Document"
+}
+```
+
+### Utilisation dans les modèles
+
+`extraEvidences` est un tableau renseigné par le système de data mappings. En pratique, Curate V2 utilise des conditions Handlebars pour inclure les preuves du demandeur et du contestataire uniquement lorsqu'elles existent, séparées par une virgule lorsque les deux sont présentes :
+
+```json
+{
+  "extraEvidences": [
+    {{#if requesterEvidence}}{{{requesterEvidence}}}{{/if}}{{#if requesterEvidence}}{{#if challengerEvidence}},{{/if}}{{/if}}{{#if challengerEvidence}}{{{challengerEvidence}}}{{/if}}
+  ]
+}
+```
+
+Les variables `requesterEvidence` et `challengerEvidence` sont renseignées par un mapping `fetch/ipfs/json` qui récupère le fichier de preuve de chaque partie depuis IPFS :
+
+```json
+[
+  {
+    "type": "graphql",
+    "endpoint": "https://gateway.thegraph.com/api/{{{graphApiKey}}}/subgraphs/id/<SUBGRAPH_ID>",
+    "query": "query GetRequest($id: ID!) { request(id: $id) { requester challenger evidenceGroup { evidences(first: 1, orderBy: creationTime, orderDirection: asc) { uri } } } }",
+    "variables": { "id": "{{requestId}}" },
+    "seek": ["request.requester", "request.challenger", "request.evidenceGroup.evidences.0.uri"],
+    "populate": ["requester", "challenger", "requesterEvidenceUri"]
+  },
+  {
+    "type": "fetch/ipfs/json",
+    "ipfsUri": "{{{requesterEvidenceUri}}}",
+    "seek": ["name", "description", "fileURI", "evidenceType"],
+    "populate": ["requesterEvidenceName", "requesterEvidenceDescription", "requesterEvidenceFileURI", "requesterEvidenceType"]
+  }
+]
+```
+
+<Note>
+`extraEvidences` est le mécanisme qui relie l'activité antérieure au litige (demandes d'enregistrement, objections des contestataires) à l'interface de litige de Kleros. Sans lui, les jurés doivent quitter Court pour trouver le contexte. Renseignez-le toujours lorsque votre arbitrable génère des preuves structurées au moment de la soumission.
+</Note>
+
+---
+
+## Data mappings
+
+Le paramètre `templateDataMappings` est un **tableau JSON** qui définit comment les placeholders `{{variable}}` du modèle sont renseignés à partir de sources de données externes au moment de la création du litige. Le système résout les mappings de manière séquentielle - les mappings suivants peuvent faire référence à des valeurs renseignées par les précédents.
+
+Chaque objet de mapping possède un champ `type` qui détermine sa structure, ainsi que `seek` (liste des chemins de données à extraire) et `populate` (liste des noms de variables du modèle à renseigner, dans le même ordre que `seek`).
+
+### Types de mappings
+
+#### 1. `graphql` - Requête de subgraph
+
+Récupère des données depuis un endpoint de subgraph TheGraph.
+
+```json
+{
+  "type": "graphql",
+  "endpoint": "https://gateway.thegraph.com/api/{{{graphApiKey}}}/subgraphs/id/<SUBGRAPH_ID>",
+  "query": "query GetTransaction($transactionId: ID!) { escrow(id: $transactionId) { buyer seller amount token deadline transactionUri } }",
+  "variables": {
+    "transactionId": "{{externalDisputeID}}"
+  },
+  "seek": [
+    "escrow.transactionUri",
+    "escrow.buyer",
+    "escrow.seller",
+    "escrow.amount",
+    "escrow.token",
+    "escrow.deadline"
+  ],
+  "populate": [
+    "transactionUri",
+    "buyer",
+    "seller",
+    "amount",
+    "token",
+    "deadline"
+  ]
+}
+```
+
+- `endpoint` : URL de la passerelle The Graph. `{{{graphApiKey}}}` est injecté à l'exécution par le SDK.
+- `query` : une chaîne de requête GraphQL standard.
+- `variables` : variables de la requête ; peuvent faire référence à des `{{template_vars}}` déjà renseignées.
+- `seek` : chemins en notation pointée dans les données de la réponse GraphQL.
+- `populate` : noms des variables du modèle à définir, correspondant positionnellement à `seek`.
+
+#### 2. `fetch/ipfs/json` - Récupération JSON sur IPFS
+
+Récupère un fichier JSON depuis IPFS et en extrait des champs.
+
+```json
+{
+  "type": "fetch/ipfs/json",
+  "ipfsUri": "{{{transactionUri}}}",
+  "seek": ["title", "description", "extraDescriptionUri"],
+  "populate": ["escrowTitle", "deliverableText", "extraDescriptionUri"]
+}
+```
+
+- `ipfsUri` : une URI IPFS, généralement renseignée par une étape de mapping précédente. La triple accolade `{{{...}}}` signifie que la valeur est utilisée comme URI brute, sans échappement HTML.
+- `seek` : chemins des champs JSON dans le document récupéré.
+- `populate` : noms des variables du modèle à renseigner.
+
+#### 3. `abi/call` - Appel de smart contract
+
+Appelle une fonction view d'un contrat et en extrait les valeurs de retour.
+
+```json
+{
+  "type": "abi/call",
+  "abi": "function getPayoutMessages(uint256) returns (string, string, string)",
+  "functionName": "getPayoutMessages",
+  "address": "0xViewContractAddress",
+  "args": ["0"],
+  "seek": ["0", "1", "2"],
+  "populate": ["noWinner", "buyerWins", "sellerWins"]
+}
+```
+
+- `abi` : chaîne ABI lisible décrivant la fonction.
+- `functionName` : la fonction à appeler.
+- `address` : adresse du contrat.
+- `args` : arguments à passer à la fonction. Peuvent faire référence à des `{{template_vars}}`.
+- `seek` : indices (sous forme de chaînes) dans le tuple retourné, ou noms des valeurs de retour.
+- `populate` : noms des variables du modèle à renseigner.
+
+#### 4. `abi/event` - Données d'événement on-chain
+
+Extrait des données d'un événement on-chain émis précédemment.
+
+```json
+{
+  "type": "abi/event",
+  "abi": "event Disputed(uint256 indexed disputeId, address indexed party, uint256 amount)",
+  "eventName": "Disputed",
+  "address": "0xContractAddress",
+  "seek": ["party", "amount"],
+  "populate": ["disputingParty", "disputedAmount"]
+}
+```
+
+- `abi` : chaîne ABI lisible décrivant l'événement.
+- `eventName` : l'événement à rechercher.
+- `address` : adresse du contrat ayant émis l'événement.
+- `seek` : noms des paramètres de l'événement à extraire.
+- `populate` : noms des variables du modèle à renseigner.
+
+#### 5. `json` - Valeurs codées en dur
+
+Injecte des valeurs codées en dur directement dans les variables du modèle.
+
+```json
+{
+  "type": "json",
+  "value": {
+    "registryName": "Kleros Token List",
+    "policyVersion": "v2"
+  },
+  "seek": ["registryName", "policyVersion"],
+  "populate": ["registryName", "policyVersion"]
+}
+```
+
+Utile pour injecter des valeurs de configuration statiques qui diffèrent selon le déploiement.
+
+---
+
+### Enchaînement des mappings
+
+Les mappings s'exécutent dans l'ordre du tableau. Une variable renseignée à l'étape 1 peut être utilisée à l'étape 2. Par exemple :
+
+```json
+[
+  {
+    "type": "graphql",
+    "endpoint": "https://gateway.thegraph.com/api/{{{graphApiKey}}}/subgraphs/id/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW",
+    "query": "query($id: ID!) { escrow(id: $id) { transactionUri buyer seller } }",
+    "variables": { "id": "{{externalDisputeID}}" },
+    "seek": ["escrow.transactionUri", "escrow.buyer", "escrow.seller"],
+    "populate": ["transactionUri", "buyer", "seller"]
+  },
+  {
+    "type": "fetch/ipfs/json",
+    "ipfsUri": "{{{transactionUri}}}",
+    "seek": ["title", "description"],
+    "populate": ["escrowTitle", "deliverableText"]
+  }
+]
+```
+
+Ici, `transactionUri` est renseignée à l'étape 1 et utilisée sous la forme `{{{transactionUri}}}` à l'étape 2.
+
+---
+
+## Exemples concrets
+
+### Escrow V2
+
+```json
+{
+  "$schema": "../NewDisputeTemplate.schema.json",
+  "title": "Escrow dispute: {{escrowTitle}}",
+  "description": "{{deliverableText}}",
+  "question": "Which party abided by the terms of the contract?",
+  "answers": [
+    { "id": "0x00", "title": "Refuse to Arbitrate / Invalid", "description": "{{noWinner}}" },
+    { "id": "0x01", "title": "Refund the Buyer", "description": "{{buyerWins}}" },
+    { "id": "0x02", "title": "Pay the Seller", "description": "{{sellerWins}}" }
+  ],
+  "policyURI": "/ipfs/QmTaZuQjJT9NZCYsqyRmEwLb1Vt3gme1a6BS4NQLiWXtH2",
+  "attachment": {
+    "label": "Transaction Terms",
+    "uri": "{{{extraDescriptionUri}}}"
+  },
+  "frontendUrl": "https://escrow-v2.kleros.builders/#/transactions/{{externalDisputeID}}",
+  "arbitratorChainID": "42161",
+  "arbitratorAddress": "0x991d2df165670b9cac3B022f4B68D65b664222ea",
+  "metadata": {
+    "buyer": "{{buyer}}",
+    "seller": "{{seller}}",
+    "amount": "{{amount}}",
+    "token": "{{token}}",
+    "deadline": "{{deadline}}",
+    "transactionUri": "{{{transactionUri}}}"
+  },
+  "category": "Escrow",
+  "aliases": {
+    "Buyer": "{{buyer}}",
+    "Seller": "{{seller}}"
+  },
+  "version": "1.0"
+}
+```
+
+Avec les mappings :
+
+```json
+[
+  {
+    "type": "graphql",
+    "endpoint": "https://gateway.thegraph.com/api/{{{graphApiKey}}}/subgraphs/id/96vpnRJbRVkzF6usMNYMMoziSZEfSwGEDpXNi2h9WBSW",
+    "query": "query GetTransaction($transactionId: ID!) { escrow(id: $transactionId) { transactionUri buyer seller amount token deadline } }",
+    "variables": { "transactionId": "{{externalDisputeID}}" },
+    "seek": ["escrow.transactionUri","escrow.buyer","escrow.seller","escrow.amount","escrow.token","escrow.deadline"],
+    "populate": ["transactionUri","buyer","seller","amount","token","deadline"]
+  },
+  {
+    "type": "fetch/ipfs/json",
+    "ipfsUri": "{{{transactionUri}}}",
+    "seek": ["title","description","extraDescriptionUri"],
+    "populate": ["escrowTitle","deliverableText","extraDescriptionUri"]
+  },
+  {
+    "type": "abi/call",
+    "abi": "function getPayoutMessages(uint256) returns (string, string, string)",
+    "functionName": "getPayoutMessages",
+    "address": "0xViewContractAddress",
+    "args": ["0"],
+    "seek": ["0","1","2"],
+    "populate": ["noWinner","buyerWins","sellerWins"]
+  }
+]
+```
+
+### Curate V2 - Enregistrement
+
+Les litiges d'enregistrement et de retrait utilisent des **modèles distincts** avec une logique de réponse inversée. Pour l'enregistrement, accepter signifie que l'élément doit être ajouté ; pour le retrait, accepter signifie que l'élément doit être retiré.
+
+```json
+{
+  "$schema": "../NewDisputeTemplate.schema.json",
+  "title": "Curate registration: {{itemName}}",
+  "description": "A request to add {{itemName}} to the {{registryTitle}} registry has been challenged.",
+  "question": "Does {{itemName}} comply with the required criteria?",
+  "answers": [
+    { "id": "0x00", "title": "Refuse to Arbitrate / Invalid", "description": "The dispute is invalid." },
+    { "id": "0x01", "title": "Yes, Add Item", "description": "The item meets the criteria and should be registered." },
+    { "id": "0x02", "title": "No, Reject Item", "description": "The item does not meet the criteria." }
+  ],
+  "policyURI": "/ipfs/QmRegistryPolicy...",
+  "frontendUrl": "https://curate.kleros.io/tcr/100/{{registryAddress}}/{{itemId}}",
+  "arbitratorChainID": "421614",
+  "arbitratorAddress": "0xD08Ab99480d02bf9C092828043f611BcDFEA917b",
+  "metadata": {
+    "item": "{{itemId}}",
+    "registry": "{{registryAddress}}"
+  },
+  "category": "Curated Lists",
+  "version": "1.0"
+}
+```
+
+Le **modèle de retrait** utilise une sémantique inversée - `0x01` signifie « oui, retirer » :
+
+```json
+{
+  "question": "Should {{itemName}} be removed from the {{registryTitle}} registry?",
+  "answers": [
+    { "id": "0x00", "title": "Refuse to Arbitrate / Invalid", "description": "The dispute is invalid." },
+    { "id": "0x01", "title": "Yes, Remove Item", "description": "The item no longer meets criteria and should be removed." },
+    { "id": "0x02", "title": "No, Keep Item", "description": "The item still meets the criteria." }
+  ]
+}
+```
+
+### Reality V2
+
+```json
+{
+  "$schema": "../NewDisputeTemplate.schema.json",
+  "title": "Reality.eth dispute: {{questionTitle}}",
+  "description": "A Reality.eth question has been escalated to Kleros for arbitration.",
+  "question": "{{questionTitle}}",
+  "type": "single-select",
+  "answers": [
+    { "id": "0x00", "title": "Answered Too Soon", "description": "The question was answered before sufficient information was available." },
+    { "id": "0x01", "title": "Yes", "description": "The answer to the question is Yes." },
+    { "id": "0x02", "title": "No", "description": "The answer to the question is No." }
+  ],
+  "policyURI": "/ipfs/QmZ5XaV2RVgBADq5qMpbuEwgCuPZdRgCeu8rhGtJWLV6yz",
+  "frontendUrl": "https://reality.eth.link/app/#!/question/{{questionId}}",
+  "arbitratorChainID": "42161",
+  "arbitratorAddress": "0x991d2df165670b9cac3B022f4B68D65b664222ea",
+  "category": "Oracle",
+  "specification": "KIP-99",
+  "lang": "en_US",
+  "version": "1.0"
+}
+```
+
+Remarque : Reality V2 inclut un champ `"type"` (`"single-select"`, `"multiple-select"`, `"uint"`, `"datetime"`, `"bool"`) correspondant au type de question Reality.eth. L'option **« Answered Too Soon »** (`0x00`) est toujours présente dans les litiges Reality.
+
+---
+
+## Enregistrement
+
+Les modèles sont enregistrés sur `DisputeTemplateRegistry` :
+
+```solidity
+// Register once; store the returned templateId
+uint256 templateId = templateRegistry.setDisputeTemplate(
+    "myTag",
+    templateJSON,       // the JSON string above
+    templateMappingsJSON // the mappings JSON array string
+);
+```
+
+Lors de l'ouverture d'un litige, émettez `DisputeRequest` avec le `templateId` que vous avez stocké :
+
+```solidity
+emit DisputeRequest(
+    arbitrator,
+    arbitratorDisputeID,
+    externalDisputeID,  // your app's internal dispute identifier
+    templateId,         // from setDisputeTemplate above
+    ""                  // or an IPFS URI if template is stored off-chain
+);
+```
+
+Si le modèle est volumineux, stockez-le sur IPFS et transmettez son URI via `_templateUri` au lieu de l'enregistrer en ligne.
+
+### Mise à jour des modèles
+
+Utilisez `changeDisputeTemplate()` (disponible sur les contrats arbitrables comme Escrow) pour mettre à jour le modèle après le déploiement - les nouveaux litiges utiliseront le modèle mis à jour, tandis que les anciens conservent l'instantané du `templateId` d'origine.
+
+```solidity
+escrow.changeDisputeTemplate(newTemplateJSON, newMappingsJSON);
+```
+
+Le `templateId` est émis dans l'événement `DisputeTemplate` sur `DisputeTemplateRegistry` et doit être stocké par votre contrat pour être utilisé dans `DisputeRequest`.

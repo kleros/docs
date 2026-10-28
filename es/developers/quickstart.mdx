@@ -1,0 +1,240 @@
+---
+title: "Inicio rápido"
+description: "Instala los contratos de Kleros, implementa la interfaz arbitrable y crea tu primera disputa con V2 IArbitratorV2 o V1 ERC-792 en Arbitrum o Ethereum."
+---
+
+El arbitraje de Kleros puede integrarse en cualquiera de las dos versiones del protocolo:
+
+- **V1** usa el estándar de arbitraje ERC-792 (`IArbitrable` / `IArbitrator`) en Ethereum Mainnet y Gnosis Chain. Consulta [ERC-792](/developers/arbitrable-apps/erc-792) y [ERC-1497](/developers/arbitrable-apps/erc-1497) para ver los estándares completos de V1.
+- **V2** usa `IArbitrableV2` / `IArbitratorV2` en Arbitrum, con plantillas de disputa y soporte cross-chain.
+
+Los pasos siguientes muestran ambas. Elige la versión que corresponda a la red en la que vas a desplegar. Para las direcciones de los contratos, consulta [Direcciones de despliegue V2](/reference/contracts/deployment-addresses) y [Direcciones de despliegue V1](/reference/contracts/deployment-addresses-v1).
+
+## Instalación
+
+<CodeGroup>
+```bash npm
+npm install @kleros/kleros-v2-contracts
+```
+
+```bash yarn
+yarn add @kleros/kleros-v2-contracts
+```
+
+```bash forge
+# Foundry: install the npm package, then map the import path
+npm install @kleros/kleros-v2-contracts
+echo "@kleros/kleros-v2-contracts/=node_modules/@kleros/kleros-v2-contracts/" >> remappings.txt
+```
+</CodeGroup>
+
+## Direcciones de los contratos (Arbitrum One)
+
+```solidity
+// Core contracts
+address constant KLEROS_CORE = 0x991d2df165670b9cac3B022f4B68D65b664222ea; // proxy
+address constant DISPUTE_KIT_CLASSIC = 0x70B464be85A547144C72485eBa2577E5D3A45421; // proxy
+
+// For cross-chain disputes, see the Gateways reference: /reference/contracts/gateways
+```
+
+<Warning>
+Verifica siempre las direcciones con [Direcciones de despliegue V2](/reference/contracts/deployment-addresses) y el [repositorio oficial](https://github.com/kleros/kleros-v2) antes de desplegar en producción.
+</Warning>
+
+## Integración mínima
+
+### Paso 1: Implementar la interfaz arbitrable
+
+<Tabs>
+  <Tab title="V2 (IArbitrableV2)">
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitrableV2.sol";
+import "@kleros/kleros-v2-contracts/arbitration/interfaces/IArbitratorV2.sol";
+
+contract MyArbitrable is IArbitrableV2 {
+    IArbitratorV2 public immutable arbitrator;
+    
+    mapping(uint256 => uint256) public externalIDtoLocalID;
+    mapping(uint256 => bool) public resolved;
+    
+    constructor(IArbitratorV2 _arbitrator) {
+        arbitrator = _arbitrator;
+    }
+    
+    function createDispute(
+        bytes calldata _extraData
+    ) external payable returns (uint256 disputeID) {
+        uint256 cost = arbitrator.arbitrationCost(_extraData);
+        require(msg.value >= cost, "Insufficient fee");
+        
+        disputeID = arbitrator.createDispute{value: cost}(
+            2,          // numberOfChoices (e.g., 2 for binary)
+            _extraData  // court parameters
+        );
+        
+        // Map arbitrator's ID to your local tracking
+        externalIDtoLocalID[disputeID] = /* your local ID */;
+        
+        emit DisputeRequest(arbitrator, disputeID, /* params */);
+    }
+    
+    function rule(uint256 _disputeID, uint256 _ruling) external override {
+        require(msg.sender == address(arbitrator), "Only arbitrator");
+        require(!resolved[_disputeID], "Already resolved");
+        
+        resolved[_disputeID] = true;
+        
+        // Execute your business logic based on _ruling
+        // 0 = refused to rule, 1+ = actual ruling choices
+        
+        emit Ruling(arbitrator, _disputeID, _ruling);
+    }
+}
+```
+
+  </Tab>
+  <Tab title="V1 (ERC-792)">
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.0;
+
+import "@kleros/erc-792/contracts/IArbitrable.sol";
+import "@kleros/erc-792/contracts/IArbitrator.sol";
+import "@kleros/erc-792/contracts/erc-1497/IEvidence.sol";
+
+contract MyArbitrable is IArbitrable, IEvidence {
+    IArbitrator public arbitrator;
+    
+    mapping(uint256 => bool) public resolved;
+    
+    constructor(IArbitrator _arbitrator) {
+        arbitrator = _arbitrator;
+    }
+    
+    function createDispute(
+        bytes memory _extraData,
+        string memory _metaEvidence
+    ) public payable returns (uint256 disputeID) {
+        uint256 cost = arbitrator.arbitrationCost(_extraData);
+        require(msg.value >= cost, "Insufficient fee");
+        
+        // numberOfChoices (e.g., 2 for binary) + court params in _extraData
+        disputeID = arbitrator.createDispute{value: cost}(2, _extraData);
+        
+        emit MetaEvidence(disputeID, _metaEvidence);
+        emit Dispute(arbitrator, disputeID, disputeID, disputeID);
+    }
+    
+    function rule(uint256 _disputeID, uint256 _ruling) external override {
+        require(msg.sender == address(arbitrator), "Only arbitrator");
+        require(!resolved[_disputeID], "Already resolved");
+        
+        resolved[_disputeID] = true;
+        
+        // Execute your business logic based on _ruling
+        // 0 = refused to rule, 1+ = actual ruling choices
+        
+        emit Ruling(arbitrator, _disputeID, _ruling);
+    }
+}
+```
+
+  </Tab>
+</Tabs>
+
+### Paso 2: Codificar los datos adicionales (extra data)
+
+El parámetro `extraData` especifica qué corte y cuántos jurados:
+
+```solidity
+function getExtraData(
+    uint96 courtID,
+    uint256 minJurors
+) public pure returns (bytes memory) {
+    return abi.encodePacked(courtID, minJurors);
+}
+
+// Example: General Court (ID 1) with 3 jurors
+bytes memory extraData = getExtraData(1, 3);
+```
+
+### Paso 3: Obtener el costo de arbitraje
+
+```solidity
+function getArbitrationCost(bytes calldata extraData) external view returns (uint256) {
+    return arbitrator.arbitrationCost(extraData);
+}
+```
+
+## IDs de las cortes
+
+| Corte | ID | Stake mínimo | Caso de uso |
+|-------|-----|-----------|----------|
+| General | 1 | 200 PNK | Predeterminada, disputas generales |
+| Técnica de Blockchain | Mayor | Disputas sobre smart contracts |
+| Curación  | Variable | Disputas de registros |
+
+<Tip>
+Comienza con la **Corte General (ID: 1)** para hacer pruebas. Usa `minJurors = 3` para la mayoría de los casos.
+</Tip>
+
+## Plantillas de disputa
+
+Los jurados necesitan contexto. Crea una plantilla que describa la disputa:
+
+```json
+{
+  "title": "Payment Dispute: Order #1234",
+  "description": "Buyer claims goods not delivered...",
+  "question": "Should the escrowed funds be released to the seller?",
+  "answers": [
+    { "id": "0x1", "title": "Yes", "description": "Release to seller" },
+    { "id": "0x2", "title": "No", "description": "Refund to buyer" }
+  ]
+}
+```
+
+Registra las plantillas on-chain o referéncialas mediante un URI de IPFS.
+
+## Pruebas
+
+<Steps>
+  <Step title="Usa Arbitrum Sepolia">
+    Despliega primero en testnet. Obtén ETH de Arbitrum Sepolia desde un faucet público, como los de la [lista de faucets de Arbitrum](https://docs.arbitrum.io/for-devs/dev-tools-and-resources/chain-info)
+  </Step>
+  <Step title="Obtén PNK de prueba">
+    El PNK de testnet está disponible en el faucet de Kleros
+  </Step>
+  <Step title="Crea una disputa de prueba">
+    Llama a `createDispute()` con ETH de prueba para las tarifas
+  </Step>
+</Steps>
+
+## SDK (opcional)
+
+Para la integración en el frontend, usa el SDK de Kleros (`npm install @kleros/kleros-sdk`):
+
+```typescript
+import { getDispute } from '@kleros/kleros-sdk';
+
+// Read a dispute's details, populated from its dispute template
+const dispute = await getDispute({
+  disputeId: 123n,
+  coreSubgraph: '<Kleros Core subgraph URL>',
+  dtrSubgraph: '<Dispute Template Registry subgraph URL>',
+});
+```
+
+Las URL de los subgraphs se encuentran en [Endpoints de subgraphs](/developers/subgraph/endpoints). La evidencia se envía on-chain a través del EvidenceModule; consulta [Direcciones de despliegue V2](/reference/contracts/deployment-addresses).
+
+## Próximos pasos
+
+<Card title="Análisis detallado de la arquitectura" icon="sitemap" href="/developers/architecture">
+  Comprende cómo funcionan en conjunto KlerosCore, los Dispute Kits y el Sortition Module
+</Card>

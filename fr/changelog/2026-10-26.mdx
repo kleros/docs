@@ -1,0 +1,22 @@
+---
+title: "26 octobre 2026"
+description: "Liens propres à chaque chaîne dans Kleros Court, création d'escrow plus fiable dans Escrow V1 et correction de la recherche de tokens dans Escrow V2."
+---
+
+## Nouvelles fonctionnalités
+
+### Liens propres à chaque chaîne dans Court
+
+Chaque page de [Kleros Court](/court/overview) inclut désormais le chain ID au début de son URL, par exemple `/1/cases/1000` sur Ethereum ou `/100/courts` sur Gnosis. Un lien que vous copiez s'ouvre désormais sur la chaîne d'où il provient.
+
+- Les anciens liens sans chain ID, y compris les liens `?requiredChainId=`, fonctionnent toujours. Court les réécrit au nouveau format.
+- Si vous connectez un wallet sur une autre chaîne, une page d'affaire reste sur sa propre chaîne. Les autres pages suivent votre wallet.
+- Les boutons Précédent et Suivant suivent la chaîne actuelle, sauf sur les pages d'affaires.
+
+## Corrections de bugs
+
+**Création d'escrows en ETH dans Escrow V1** — La création d'un escrow en ETH n'échoue plus alors que l'escrow est déjà on-chain, et ne vous demande plus de réessayer. Une fois votre transaction réussie, l'application [Escrow](/products/escrow) confirme l'escrow, vide le formulaire et ouvre vos transactions afin que vous ne puissiez pas soumettre deux fois le même escrow. Si vous annulez ou remplacez la transaction dans votre wallet, l'application n'affirme plus que l'escrow a été créé.
+
+**Champ de montant dans Escrow V1** — Le sélecteur de montant du parcours de création ne descend plus en dessous de 0.
+
+**Recherche de tokens dans Escrow V2** — Saisir une adresse partielle dans la recherche de tokens ne l'ajoute plus comme token.

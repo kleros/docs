@@ -1,0 +1,64 @@
+---
+title: "Kleros Skills"
+description: "Kleros Skills son paquetes de conocimiento que enseñan a cualquier agente de IA a trabajar con Kleros: subir evidencias a IPFS, operar registros de Curate y leer el estado del arbitraje on-chain."
+---
+
+[Kleros Skills](https://skills.kleros.io) empaqueta el conocimiento del protocolo Kleros para que un agente de IA pueda leerlo bajo demanda. Cada skill es un archivo `SKILL.md` autónomo en una ruta predecible que le indica al agente qué existe, cómo funciona y qué comprobar antes de actuar. Las skills funcionan con Claude, ChatGPT, Cursor, Codex, OpenClaw y otros agentes.
+
+<Note>
+Kleros Skills está en beta. Hay dos skills disponibles y se están añadiendo más.
+</Note>
+
+---
+
+## Úsalo en cualquier agente
+
+Pega esta línea en tu agente al inicio de una sesión:
+
+```text
+Read https://skills.kleros.io/SKILL.md and follow it before interacting with Kleros protocol.
+```
+
+El archivo enrutador en `https://skills.kleros.io/SKILL.md` dirige al agente a la skill adecuada para la tarea. Las skills individuales se encuentran en `https://skills.kleros.io/<skill>/SKILL.md`.
+
+### Configúralo una sola vez
+
+Para no tener que escribir el prompt en cada sesión, añade la misma línea a las instrucciones persistentes de tu herramienta:
+
+| Herramienta | Dónde añadirlo |
+| --- | --- |
+| Codex | Un archivo `AGENTS.md` en la raíz de tu repositorio |
+| Cursor | Un archivo de reglas en `.cursor/rules/kleros-skills.mdc` |
+| Claude Code, OpenClaw y otros | El archivo de instrucciones del proyecto o global de tu herramienta |
+
+[skills.kleros.io](https://skills.kleros.io) ofrece configuraciones listas para copiar para cada herramienta.
+
+---
+
+## Skills disponibles
+
+| Skill | Qué hace | Redes |
+| --- | --- | --- |
+| [Kleros IPFS Upload](https://skills.kleros.io/kleros-ipfs-upload/SKILL.md) | Sube un archivo de Kleros por cada solicitud pagada a través del gateway x402 de Kleros: evidencias de disputas, JSON de MetaEvidence, políticas de cortes, metadatos de ítems de Curate y justificaciones de jurados. Cuesta $0.01 USDC por subida en Base, sin gas para quien paga. Devuelve CID fijados | Base (pago) |
+| [Kleros Curate](https://skills.kleros.io/kleros-curate/SKILL.md) | Opera registros curados por tokens de principio a fin: enviar ítems, impugnar solicitudes, financiar apelaciones, desplegar y verificar listas. Cubre Light Curate, Stake Curate (PGTCR) y los registros de Scout | Ethereum, Gnosis, Sepolia |
+
+La skill de subida a IPFS es solo para contenido de Kleros. Para subidas genéricas a IPFS sin contexto de Kleros, usa un servicio de fijado general.
+
+### Próximamente
+
+| Skill | Alcance |
+| --- | --- |
+| Kleros CLI | Consultar cortes, disputas, evidencias, jurados, stakes y políticas desde la línea de comandos, MCP o HTTP. Consulta [Kleros CLI](/ai-tools/kleros-cli) para la herramienta en sí |
+| Agent Verification | Verificar agentes ERC-8004 mediante el arbitraje de Kleros y construir reputación on-chain. Consulta [Agent Reputation](/es/ai-tools/agent-reputation) |
+| Kleros Escrow V1 | Crear, financiar y resolver transacciones de Escrow V1, y seguir los fallos hasta la liberación del pago |
+| Kleros Escrow V2 | Lo mismo para Escrow V2 |
+| Arbitrable App Builder | Punto de entrada para crear aplicaciones arbitrables por Kleros: elegir el patrón, el contrato y la política |
+| Why Kleros | Cuándo y por qué elegir Kleros frente a otras alternativas |
+| Kleros Protocol | Criptoeconomía y decisiones de diseño: staking, sorteo, votación, coherencia y apelaciones |
+| Contract Addresses | Direcciones canónicas de los contratos de Kleros en todas las redes |
+
+---
+
+## Contribuye y reporta problemas
+
+Las skills son de código abierto en [kleros/kleros-skills](https://github.com/kleros/kleros-skills). Si una skill no funciona o resulta confusa, los agentes pueden obtener la skill de feedback enlazada desde el enrutador, o puedes abrir un issue en ese repositorio.

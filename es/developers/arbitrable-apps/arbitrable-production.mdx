@@ -1,0 +1,392 @@
+---
+title: "Lista de verificación para producción"
+description: "Lista de verificación previa al despliegue sobre seguridad, arbitraje y control de acceso para validar tu contrato arbitrable de Kleros antes de lanzarlo en mainnet."
+---
+
+## Antes de desplegar
+
+Usa esta lista de verificación antes de desplegar en mainnet. Cada punto ya le ha causado problemas a alguien.
+
+---
+
+## Seguridad del contrato inteligente
+
+### Control de acceso
+
+- [ ] `rule()` solo puede ser llamada por el árbitro
+  ```solidity
+  require(msg.sender == address(arbitrator), "Only arbitrator");
+  ```
+- [ ] La creación de disputas está restringida a las partes válidas
+- [ ] El envío de evidencia está restringido adecuadamente
+- [ ] Las funciones de administración están protegidas (si las hay)
+
+### Gestión del estado
+
+- [ ] Las disputas no pueden resolverse dos veces
+  ```solidity
+  require(status == Status.Disputed, "Invalid state");
+  status = Status.Resolved; // Update BEFORE external calls
+  ```
+- [ ] Se rechazan los valores de fallo no válidos
+  ```solidity
+  require(_ruling <= numberOfChoices, "Invalid ruling");
+  ```
+- [ ] El fallo `0` (negarse a arbitrar) se gestiona explícitamente
+- [ ] Todas las transiciones de estado son válidas (sin saltarse estados)
+
+### Protección contra reentrada
+
+- [ ] El estado se actualiza antes de las llamadas externas en `rule()`
+- [ ] Usa el patrón checks-effects-interactions
+- [ ] Considera `ReentrancyGuard` para lógica compleja
+  ```solidity
+  // BAD: external call before state update
+  payable(winner).transfer(amount);
+  status = Status.Resolved;
+  
+  // GOOD: state update before external call  
+  status = Status.Resolved;
+  payable(winner).transfer(amount);
+  ```
+
+### Seguridad de los fondos
+
+- [ ] Ningún fondo puede quedar bloqueado permanentemente
+- [ ] Las transferencias fallidas no inutilizan el contrato
+- [ ] Considera el patrón pull en lugar de push para los retiros
+- [ ] Prueba con contratos como destinatarios (no solo EOA)
+
+---
+
+## Configuración del arbitraje
+
+### Selección de la corte
+
+| Comprobación | Estado |
+|-------|--------|
+| El ID de la corte existe en la red de destino | ▢ |
+| La corte gestiona tu tipo de disputa | ▢ |
+| El stake mínimo es aceptable | ▢ |
+| Los tiempos de la corte se ajustan a tu caso de uso | ▢ |
+
+**IDs de cortes de Kleros V2 (Arbitrum One):**
+
+| ID de corte | Nombre | Uso típico |
+|----------|------|-------------|
+| 1 | General Court | Opción predeterminada para la mayoría de las disputas. Buen punto de partida. |
+| 2 | Blockchain | Disputas técnicas sobre blockchain/contratos inteligentes |
+| 3 | Non-Technical | Disputas de negocio, marketing y contenido |
+| 4 | Token Listing | Decisiones de curación y listado de tokens |
+| 5+ | Especializadas | Consulta [court.kleros.io](https://court.kleros.io) para ver el árbol actual |
+
+<Warning>
+Los IDs de cortes en Arbitrum Sepolia (testnet) difieren de los de Arbitrum One (mainnet). Verifica siempre los IDs en los [despliegues de kleros-v2](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) para tu red de destino.
+</Warning>
+
+Los parámetros de las cortes (minStake, feeForJuror, tiempos de las sesiones) están sujetos a gobernanza y pueden cambiar mediante propuestas de gobernanza. Consúltalos con el getter `courts(courtID)` de KlerosCore en lugar de codificarlos de forma fija.
+
+### Extra Data
+
+- [ ] `extraData` codifica correctamente el ID de la corte y el número de jurados
+  ```solidity
+  bytes memory extraData = abi.encodePacked(
+      uint96(1),   // courtID
+      uint256(3)   // minJurors
+  );
+  ```
+- [ ] El número de jurados es impar (evita empates)
+- [ ] El número de jurados es adecuado para el valor de la disputa
+
+### Gestión de tarifas
+
+- [ ] Obtén siempre un `arbitrationCost()` actualizado antes de crear la disputa
+- [ ] Gestiona los aumentos de tarifa entre la comprobación y la ejecución
+- [ ] Reembolsa el exceso de tarifas al remitente
+- [ ] Documenta quién paga las tarifas de arbitraje
+
+**Detalles de tarifas específicos de Kleros:**
+
+- [ ] Si pagas en ERC20: verifica que el token esté en `acceptedFeeTokens` de KlerosCore
+- [ ] Si pagas en ERC20: llama a `arbitrationCost(extraData, feeToken)` (no a la sobrecarga de ETH)
+- [ ] Si pagas en ERC20: aprueba a KlerosCore para gastar el importe de la tarifa antes de `createDispute()`
+- [ ] Ten en cuenta los costos de apelación: cada ronda de apelación aproximadamente duplica el número de jurados y el costo
+- [ ] Para disputas cross-chain: el Foreign Gateway replica `arbitrationCost()` localmente, pero la sincronización puede retrasarse tras cambios de gobernanza; añade un margen o un mecanismo de reintento
+
+---
+
+## Plantilla de disputa
+
+### Calidad del contenido
+
+- [ ] La pregunta es clara e inequívoca
+- [ ] Todas las opciones de fallo son mutuamente excluyentes
+- [ ] Las descripciones de los fallos explican sus consecuencias
+- [ ] Ninguna opción puede interpretarse de varias maneras
+- [ ] El escenario de "Negarse a arbitrar" está documentado
+
+### Aspectos técnicos
+
+- [ ] El JSON de la plantilla es válido
+- [ ] La plantilla está almacenada en almacenamiento permanente (IPFS anclado / Arweave)
+- [ ] La URI de la plantilla es accesible y se resuelve correctamente
+- [ ] `policyURI` apunta a un documento de política válido
+- [ ] `arbitratorAddress` coincide con el despliegue
+- [ ] `arbitratorChainID` coincide con el despliegue
+
+### Ejemplo de validación de plantilla
+
+```json
+{
+  "title": "Clear, specific title",           // ✓ Not generic
+  "description": "Full context...",           // ✓ Sufficient detail
+  "question": "Single, answerable question?", // ✓ Yes/no or clear options
+  "answers": [
+    {"id": "0x1", "title": "Option A", "description": "What happens if chosen"},
+    {"id": "0x2", "title": "Option B", "description": "What happens if chosen"}
+  ],
+  "policyURI": "/ipfs/Qm...",                // ✓ Accessible
+  "arbitratorChainID": "42161",              // ✓ Correct chain
+  "arbitratorAddress": "0x991d2df165670b9cac3B022f4B68D65b664222ea"  // ✓ KlerosCore on Arbitrum One
+}
+```
+
+### Documento de política
+
+Cada disputa debe hacer referencia a un documento de política que los jurados usan para tomar decisiones. Esto es distinto de la plantilla: la plantilla define la interfaz; la política define las reglas.
+
+- [ ] La política establece claramente los criterios para cada opción de fallo
+- [ ] La política cubre casos límite (cumplimiento parcial, evidencia ambigua)
+- [ ] La política indica qué ocurre en caso de "Negarse a arbitrar" (fallo 0)
+- [ ] La política está redactada para un público no técnico (los jurados son público general)
+- [ ] La política está alojada en IPFS anclado o Arweave (no en una URL que pueda cambiar)
+- [ ] La política ha sido revisada en busca de ambigüedades por alguien que no conoce tu protocolo
+
+<Tip>
+Estudia las políticas existentes de Kleros en productos en funcionamiento. Las políticas de Escrow V2 y Curate V2 son buenos modelos. Puedes encontrarlas en IPFS mediante el campo `policyURI` de la plantilla de disputa; inspecciona disputas activas en [court.kleros.io](https://court.kleros.io) para ver ejemplos.
+</Tip>
+
+### Tiempos del ciclo de vida de la disputa
+
+Las disputas de Kleros siguen una secuencia fija de fases. Comprende el impacto de los tiempos en tu aplicación:
+
+| Fase | Duración (General Court) | Notas |
+|-------|--------------------------|-------|
+| Evidencia | ~3 días | Cualquiera de las partes puede enviar evidencia |
+| Votación | ~3 días | Los jurados emiten votos cifrados (Shutter) |
+| Apelación | ~5 días | La parte perdedora puede financiar una apelación |
+| **Total (sin apelación)** | **~11 días** | Tiempo mínimo hasta el fallo |
+| **Por ronda de apelación** | **+~11 días** | Cada ronda añade aproximadamente lo mismo |
+
+- [ ] Tu aplicación tolera el plazo de resolución de disputas (normalmente de 1 a 4 semanas)
+- [ ] Los fondos o el estado permanecen bloqueados durante la disputa sin causar problemas
+- [ ] Los usuarios están informados en tu interfaz sobre los plazos esperados
+- [ ] Gestionas el caso en que las apelaciones extienden el plazo considerablemente
+
+---
+
+## Eventos e indexación
+
+- [ ] `DisputeRequest` se emite con los parámetros correctos
+- [ ] `Ruling` se emite tras ejecutar el fallo
+- [ ] Los eventos `Evidence` usan el `evidenceGroupID` correcto
+- [ ] Los eventos están indexados para consultas eficientes
+- [ ] El subgraph indexa tu contrato (si usas uno)
+
+---
+
+## Optimización de gas
+
+### Referencias
+
+| Función | Objetivo | Tu contrato |
+|----------|--------|---------------|
+| `createDispute()` | < 200k gas | ▢ |
+| `rule()` | < 100k gas | ▢ |
+| `submitEvidence()` | < 50k gas | ▢ |
+
+### Optimizaciones aplicadas
+
+- [ ] Usa `immutable` para la dirección del árbitro
+- [ ] Empaqueta los structs de forma eficiente
+- [ ] Evita lecturas redundantes del almacenamiento
+- [ ] Usa `calldata` en lugar de `memory` siempre que sea posible
+
+---
+
+## Despliegue
+
+### Verificación del contrato
+
+- [ ] Código fuente verificado en el explorador de bloques
+- [ ] Argumentos del constructor documentados
+- [ ] Todas las dependencias verificadas
+- [ ] Licencia especificada en el código fuente
+
+### Verificación de direcciones
+
+| Contrato | Esperada | Desplegada |
+|----------|----------|----------|
+| KlerosCore | `0x991d2df1...` | ▢ Coincide |
+| Tu Arbitrable | - | ▢ Verificado |
+| Plantilla de disputa | - | ▢ Accesible |
+
+### Inicialización
+
+- [ ] La dirección del árbitro es correcta para la red
+- [ ] Extra data codifica la corte correcta
+- [ ] La URI de la plantilla se resuelve correctamente
+- [ ] Los roles de administración están asignados correctamente
+- [ ] El contrato tiene fondos si es necesario
+
+---
+
+## Preparación operativa
+
+### Monitoreo
+
+- [ ] Alertas sobre eventos `DisputeRequest`
+- [ ] Alertas sobre eventos `Ruling`
+- [ ] Monitorear cambios en las tarifas de arbitraje
+- [ ] Hacer seguimiento de los tiempos de resolución de disputas
+- [ ] Panel para disputas activas
+
+**Monitoreo específico de Kleros:**
+
+- [ ] Monitorea los eventos `AppealDecision` de KlerosCore: las apelaciones cambian el plazo y el costo
+- [ ] Suscríbete a los cambios de parámetros de las cortes mediante eventos `CourtModified`: los cambios de tarifas afectan tus cálculos de costos
+- [ ] Haz seguimiento de tus disputas en [court.kleros.io](https://court.kleros.io) filtrando por la dirección de tu contrato
+- [ ] Si es cross-chain: monitorea el estado de reclamaciones/impugnaciones del puente Vea en [veascan.io](https://veascan.io)
+- [ ] Configura alertas para el evento `Paused` de KlerosCore: un árbitro en pausa bloquea nuevas disputas y fallos
+
+### Documentación
+
+- [ ] Guía de usuario para crear disputas
+- [ ] Instrucciones para el envío de evidencia
+- [ ] Explicación de los resultados de los fallos
+- [ ] Preguntas frecuentes
+- [ ] Contacto de soporte para incidencias
+
+### Respuesta a incidentes
+
+- [ ] Plan para el escenario de árbitro en pausa
+- [ ] Plan para un fallo inesperado
+- [ ] Contacto de emergencia en Kleros (si es necesario)
+- [ ] Ruta de actualización documentada (si es actualizable)
+
+**Escenarios de fallo específicos de Kleros:**
+
+- [ ] **Árbitro en pausa:** KlerosCore tiene un mecanismo de pausa de emergencia controlado por el rol Guardian. Si está en pausa, no se pueden crear nuevas disputas ni emitir fallos. Tu contrato debe gestionar correctamente una reversión de `createDispute()` e informar a los usuarios.
+- [ ] **Fallo 0 (Negarse a arbitrar):** Este fallo significa que los jurados consideraron la disputa inválida. Tu contrato debe gestionar este caso explícitamente; no lo trates igual que si alguna de las partes ganara.
+- [ ] **Empate en la votación:** En el DisputeKitClassic actual, un empate resulta por defecto en el fallo 0 (negarse a arbitrar), a menos que se anule mediante apelación. Diseña tu gestor del fallo 0 para producir una alternativa razonable (p. ej., reembolsar a ambas partes).
+- [ ] **Cambio de dirección del contrato:** Los contratos V2 son proxies actualizables. Tras auditorías de seguridad, las direcciones pueden conservarse aunque cambie la implementación. Si almacenas la dirección del árbitro como `immutable`, no podrás adaptarte; considera usar una dirección actualizable por un governor.
+- [ ] **Retraso del puente Vea (solo cross-chain):** En el camino no feliz, la entrega del fallo puede tardar ~7 días a través del puente nativo de Arbitrum. Asegúrate de que tu estado bloqueado pueda persistir al menos 2 semanas sin causar problemas a los usuarios.
+
+---
+
+## Kleros V2 en mainnet
+
+Kleros V2 (Neo) está activo en la mainnet de **Arbitrum One**. El acceso a la corte está abierto a todos: los usuarios pueden hacer stake de PNK y participar como jurados. Estos puntos siguen siendo relevantes para los integradores:
+
+- [ ] **Actualizaciones de contratos:** Los contratos V2 usan patrones de proxy UUPS y pueden actualizarse mediante gobernanza. Suscríbete al [blog de Kleros](https://blog.kleros.io) y a [Discord](https://discord.gg/MhXQGCyHd9) para recibir anuncios.
+- [ ] **Estabilidad del subgraph:** Fija una versión específica del despliegue del subgraph en producción. Consulta el [README del subgraph de kleros-v2](https://github.com/kleros/kleros-v2/tree/dev/subgraph) para ver los IDs de despliegue estables más recientes.
+- [ ] **Estado del SDK:** `@kleros/kleros-sdk` está en desarrollo activo. Para máxima estabilidad, puedes interactuar con los contratos directamente mediante los ABI de `@kleros/kleros-v2-contracts`.
+
+- [ ] **Primero testnet:** Despliega y prueba siempre un ciclo de vida completo de disputa en Arbitrum Sepolia antes de mainnet. Las disputas en testnet pueden tardar más en resolverse debido a la participación limitada de jurados.
+
+<Note>
+Contacta al equipo de Kleros a través de [Discord](https://discord.gg/MhXQGCyHd9) o `integrations@kleros.io` antes de tu primer despliegue en producción. El equipo puede revisar tu plantilla de disputa y asesorarte sobre la selección de la corte.
+</Note>
+
+---
+
+## Aprobación final
+
+| Revisión | Completada por | Fecha |
+|--------|--------------|------|
+| Revisión de código | ▢ | |
+| Auditoría de seguridad | ▢ | |
+| Despliegue en testnet | ▢ | |
+| Prueba de disputa en testnet | ▢ | |
+| Referencias de gas | ▢ | |
+| Documentación | ▢ | |
+
+---
+
+## Referencia rápida
+
+### Direcciones de contratos en mainnet (Arbitrum One)
+
+| Contrato | Dirección |
+|----------|---------|
+| KlerosCore (proxy) | `0x991d2df165670b9cac3B022f4B68D65b664222ea` |
+| SortitionModule | Verificar en los [despliegues](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments/arbitrum) |
+| DisputeKitClassic | Verificar en los despliegues |
+| DisputeTemplateRegistry | Verificar en los despliegues |
+| HomeGateway | Verificar en los despliegues |
+
+```solidity
+// Querying court parameters on-chain
+IKlerosCore core = IKlerosCore(0x991d2df165670b9cac3B022f4B68D65b664222ea);
+
+// Get arbitration cost for General Court (ID 1) with 3 jurors
+bytes memory extraData = abi.encodePacked(uint96(1), uint256(3));
+uint256 cost = core.arbitrationCost(extraData);
+
+// Get court parameters
+(
+    uint96 parent,
+    bool hiddenVotes,
+    uint256 minStake,
+    uint256 alpha,
+    uint256 feeForJuror,
+    uint256 jurorsForCourtJump,
+    uint256[4] memory timesPerPeriod,
+    ,
+    ,
+) = core.courts(1); // courtID = 1
+```
+
+<Warning>
+Verifica siempre las direcciones en el [repositorio oficial](https://github.com/kleros/kleros-v2/tree/dev/contracts/deployments) antes de desplegar en mainnet. Durante la beta, las direcciones pueden actualizarse mediante actualizaciones de proxy.
+</Warning>
+
+### Enlaces útiles
+
+- [Interfaz de Kleros Court](https://court.kleros.io): monitorear disputas
+- [Despliegues en GitHub](https://github.com/kleros/kleros-v2): direcciones de contratos
+- [Discord de Kleros](https://discord.gg/MhXQGCyHd9): soporte para desarrolladores
+
+---
+
+## Problemas comunes de última hora
+
+<AccordionGroup>
+  <Accordion title="Direcciones de red incorrectas">
+    Comprueba que no estés usando direcciones de testnet en mainnet o viceversa. KlerosCore en Arbitrum Sepolia tiene una dirección distinta a la de Arbitrum One.
+  </Accordion>
+
+  <Accordion title="Plantilla no anclada">
+    El contenido de IPFS desaparece si no está anclado. Usa Pinata, Infura o Arweave para garantizar su permanencia. Kleros ofrece un servicio de anclaje en `cdn.kleros.link`, pero también deberías anclar de forma independiente.
+  </Accordion>
+
+  <Accordion title="Tarifas codificadas de forma fija">
+    Nunca codifiques de forma fija las tarifas de arbitraje. Obtenlas siempre de forma dinámica. Las tarifas cambian mediante gobernanza y varían según la corte.
+  </Accordion>
+
+  <Accordion title="Falta lógica de reembolso">
+    Si el usuario paga de más la tarifa de arbitraje, reembolsa el exceso.
+  </Accordion>
+
+  <Accordion title="Codificación incorrecta de extraData">
+    V2 usa `abi.encodePacked(uint96(courtID), uint256(jurorCount))`; observa el `uint96` para el ID de la corte, no `uint256` como en V1. Usar `uint256` codificará una corte distinta de la prevista.
+  </Accordion>
+
+  <Accordion title="Número de jurados impar o par">
+    Usa siempre un número impar de jurados (3, 5, 7) para evitar empates. Los empates en DisputeKitClassic resultan por defecto en el fallo 0 (negarse a arbitrar), lo cual puede no ser lo que tus usuarios esperan.
+  </Accordion>
+
+  <Accordion title="Plantilla de disputa no registrada">
+    Si usas `templateId`, asegúrate de haber llamado a `setDisputeTemplate()` en el `DisputeTemplateRegistry` y de haber guardado el `templateId` devuelto. Si el ID es incorrecto, la interfaz de la corte no mostrará tu disputa correctamente y los jurados verán que falta contexto.
+  </Accordion>
+  </AccordionGroup>

@@ -1,0 +1,84 @@
+---
+title: "Agent Reputation"
+description: "Agent Reputation de Kleros: registros abiertos de Stake Curate donde los agentes de IA ERC-8004 se verifican frente a una política publicada, respaldados por colateral y abiertos a impugnación."
+---
+
+[Agent Reputation de Kleros](https://agent-reputation.kleros.io/) es una infraestructura de registros abiertos para descubrir, colateralizar y evaluar agentes de IA **ERC-8004**. Un agente se incluye en una lista según una política publicada, respalda su declaración con colateral y puede ser impugnado por cualquiera que demuestre que incumple la política. Las disputas las resuelve Kleros.
+
+<Note>
+Agent Reputation es un producto en **red de prueba pública**. La moderación comunitaria todavía es una versión preliminar.
+</Note>
+
+---
+
+## Por qué existe
+
+Con millones de agentes, el descubrimiento se convierte en un problema de confianza. Los agentes actúan demasiado rápido para comprobaciones manuales, y necesitan una forma de encontrarse y filtrarse entre sí que no dependa de reseñas fabricadas, estafas o insignias de procedencia poco clara. Antes de que un agente obtenga una tarjeta, una clave de API, datos privados o autorización para una tarea sensible, puede demostrar experiencia, identidad, idioma o jurisdicción frente a reglas verificables abiertamente, y conservar el acceso solo mientras las cumpla.
+
+También puedes crear tu propio estándar: un registro con tus propias reglas.
+
+---
+
+## Cómo funciona
+
+Cada registro de Verified Agents es un registro de **Stake Curate** (un registro curado por tokens generalizado y sin permisos, o pGTCR): una lista abierta regida por una política pública, colateral, impugnaciones y resolución de disputas. Ningún operador central aprueba previamente las inclusiones. Consulta [Stake Curate](/products/stake-curate) para conocer el mecanismo subyacente.
+
+| Acción | Qué sucede |
+| --- | --- |
+| **Enviar** | El propietario incluye un agente con colateral. Esto requiere dos transacciones: una autoriza al registro a mover el stake ERC-20 y la segunda envía el ítem y adjunta la tarifa de arbitraje en token nativo |
+| **Aumentar el stake** | Más colateral puede situar a un agente que cumple más arriba en las vistas ordenadas por stake. No compra el cumplimiento, y el importe total sigue expuesto a impugnaciones |
+| **Impugnar** | Cualquiera puede impugnar una inclusión demostrando que viola la política. Una impugnación requiere su propio colateral y tarifa de arbitraje. Un impugnador exitoso puede recibir la recompensa definida por el contrato a partir del colateral en disputa |
+| **Retirar** | El propietario puede salir mediante un retiro en dos pasos. Un retiro sin impugnación devuelve el stake y el depósito de arbitraje no utilizado; el gas no se reembolsa. El ítem sigue pudiendo impugnarse durante el periodo de espera |
+
+### Estado de la inclusión
+
+| Estado | Significado |
+| --- | --- |
+| **Active** | El agente tiene colateral activo y actualmente cumple la política del registro |
+| **Challenged** | El cumplimiento está en revisión |
+| **Removed** | Una impugnación y disputa exitosas determinaron que la inclusión no cumple |
+| **Withdrawn** | El propietario salió voluntariamente, sin una impugnación exitosa. No se trata de un fallo de incumplimiento |
+
+<Warning>
+**Un certificado tiene un propósito específico, no es un aval general.** Solo acredita que el agente cumplió las habilidades, capacidades, evidencias y criterios enumerados en la política de ese registro, publicada por su emisor. No establece la fiabilidad general del agente, su seguridad, la calidad de su operador ni su comportamiento futuro. Lee siempre la política vigente, comprueba el estado y las evidencias actuales, y confirma la identidad y la cadena del agente. Describe a un agente incluido como verificado *para el alcance definido por la política*, nunca simplemente como "verificado".
+</Warning>
+
+Una buena impugnación utiliza evidencias duraderas y verificables vinculadas a una cláusula específica de la política: marcas de tiempo, pruebas reproducibles, los identificadores del agente y archivos direccionados por contenido.
+
+---
+
+## Identidad de los agentes entre cadenas
+
+Los números de agente ERC-8004 están limitados al registro donde se creó la identidad, por lo que el mismo número puede aparecer en varias cadenas. Agent Reputation hace coincidir tanto el número de agente como su contexto de cadena y cuenta CAIP-10, de modo que una identidad en una cadena no se confunde con otra.
+
+El selector Testnet/Mainnet del sitio elige el **registro de verificación**. Esto es independiente de la cadena de origen donde reside la identidad ERC-8004 del agente. Puedes buscar cualquier agente por número y red de origen, aunque no esté colateralizado ni certificado.
+
+---
+
+## Registros
+
+| Entorno de verificación | Cadena | Chain ID | Registro |
+| --- | --- | --- | --- |
+| Testnet | Ethereum Sepolia | `11155111` | `0x3162df9669affa8b6b6ff2147afa052249f00447` |
+| Mainnet | Ethereum | `1` | `0x118155741eea23f56b3bd59b0c1342d5daaa6d07` |
+
+Confirma las direcciones con el [`llms.txt`](https://agent-reputation.kleros.io/llms.txt) en vivo antes de cualquier transacción.
+
+---
+
+## Para agentes de IA
+
+Agent Reputation publica archivos de enrutamiento legibles por agentes:
+
+- [`/llms.txt`](https://agent-reputation.kleros.io/llms.txt) y [`/llms-full.txt`](https://agent-reputation.kleros.io/llms-full.txt)
+- [`/SKILL.md`](https://agent-reputation.kleros.io/SKILL.md), que dirige a una capa específica del registro para Sepolia o mainnet
+
+Estas capas solo proporcionan las constantes del registro, el explorador, el indexador y el contrato ERC-8004. Para la mecánica de los contratos (envíos, impugnaciones, evidencias, apelaciones, retiros), el agente debe cargar el paquete completo de [Kleros Skills](/es/ai-tools/kleros-skills) y seguir sus instrucciones de Stake Curate de `kleros-curate`, leer cada valor en vivo, simular cada escritura y obtener la aprobación del usuario antes de firmar.
+
+---
+
+## Enlaces
+
+- [App de Agent Reputation](https://agent-reputation.kleros.io/)
+- [Preguntas frecuentes](https://agent-reputation.kleros.io/faq)
+- [Kleros Skills](/es/ai-tools/kleros-skills)

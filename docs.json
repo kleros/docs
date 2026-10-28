@@ -59,277 +59,450 @@
         }
       ]
     },
-    "dropdowns": [
+    "languages": [
       {
-        "dropdown": "Documentation",
-        "icon": "book",
-        "groups": [
+        "language": "en",
+        "dropdowns": [
           {
-            "group": "Welcome",
-            "pages": [
-              "welcome/introduction",
-              "welcome/faq"
-            ]
-          },
-          {
-            "group": "Kleros Court",
-            "pages": [
-              "court/overview",
-              "court/how-it-works",
-              "court/court-hierarchy",
-              "court/appeals",
-              "court/architecture"
-            ]
-          },
-          {
-            "group": "Products",
-            "pages": [
-              "products/overview",
-              "products/curate",
-              "products/stake-curate",
-              "products/escrow",
-              "products/governor",
+            "dropdown": "Documentation",
+            "icon": "book",
+            "groups": [
               {
-                "group": "Scout",
+                "group": "Welcome",
                 "pages": [
-                  "products/scout",
-                  "products/scout-earn",
-                  "products/scout-partnerships",
-                  "products/scout-snap",
-                  "products/scout-faq"
+                  "welcome/introduction",
+                  "welcome/faq"
                 ]
               },
-              "products/reality",
-              "products/safesnap",
-              "products/proof-of-humanity",
-              "products/foresight",
               {
-                "group": "Retired Products",
+                "group": "Kleros Court",
                 "pages": [
-                  "legacy/retired/moderate",
-                  "legacy/retired/linguo",
-                  "legacy/retired/tokens"
+                  "court/overview",
+                  "court/how-it-works",
+                  "court/court-hierarchy",
+                  "court/appeals",
+                  "court/architecture"
+                ]
+              },
+              {
+                "group": "Products",
+                "pages": [
+                  "products/overview",
+                  "products/curate",
+                  "products/stake-curate",
+                  "products/escrow",
+                  "products/governor",
+                  {
+                    "group": "Scout",
+                    "pages": [
+                      "products/scout",
+                      "products/scout-earn",
+                      "products/scout-partnerships",
+                      "products/scout-snap",
+                      "products/scout-faq"
+                    ]
+                  },
+                  "products/reality",
+                  "products/safesnap",
+                  "products/proof-of-humanity",
+                  "products/foresight",
+                  {
+                    "group": "Retired Products",
+                    "pages": [
+                      "legacy/retired/moderate",
+                      "legacy/retired/linguo",
+                      "legacy/retired/tokens"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Tutorials",
+                "pages": [
+                  {
+                    "group": "Juror Guide",
+                    "pages": [
+                      "tutorials/juror-tutorial-v1",
+                      "tutorials/juror-tutorial-v2"
+                    ]
+                  },
+                  "tutorials/escrow-tutorial",
+                  "tutorials/curate-tutorial",
+                  "tutorials/scout-tutorial",
+                  {
+                    "group": "Proof of Humanity",
+                    "pages": [
+                      "tutorials/poh-register-and-vouch",
+                      "tutorials/poh-remove-and-challenge",
+                      "tutorials/poh-transferring-a-profile"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Concepts",
+                "pages": [
+                  "concepts/dispute-resolution",
+                  "concepts/game-theory",
+                  "concepts/sortition",
+                  "concepts/tokenomics",
+                  "concepts/pnk-token",
+                  "concepts/credible-neutrality"
+                ]
+              },
+              {
+                "group": "Research",
+                "pages": [
+                  "research/overview",
+                  "research/papers",
+                  "research/case-studies",
+                  "research/partnerships"
+                ]
+              },
+              {
+                "group": "Governance",
+                "pages": [
+                  "governance/overview",
+                  "governance/kips",
+                  "governance/snapshot"
+                ]
+              },
+              {
+                "group": "Enterprise",
+                "pages": [
+                  "enterprise/enterprise",
+                  "enterprise/how-it-works",
+                  "enterprise/comparison",
+                  "enterprise/legal",
+                  "enterprise/use-cases",
+                  "enterprise/case-studies",
+                  "enterprise/getting-started",
+                  "enterprise/ecosystem",
+                  "enterprise/famous-cases"
+                ]
+              },
+              {
+                "group": "Community & Ecosystem",
+                "pages": [
+                  "Community & Ecosystem/overview",
+                  "Community & Ecosystem/escrowly",
+                  "Community & Ecosystem/lockler",
+                  "Community & Ecosystem/klerosboard"
+                ]
+              },
+              {
+                "group": "Contributing",
+                "pages": [
+                  "contributing/overview",
+                  "contributing/dev-workflow",
+                  "contributing/smart-contract-workflow",
+                  "contributing/code-style",
+                  "contributing/license"
                 ]
               }
             ]
           },
           {
-            "group": "Tutorials",
-            "pages": [
+            "dropdown": "Developers",
+            "icon": "code",
+            "groups": [
               {
-                "group": "Juror Guide",
+                "group": "Getting Started",
                 "pages": [
-                  "tutorials/juror-tutorial-v1",
-                  "tutorials/juror-tutorial-v2"
+                  "developers/overview",
+                  "developers/quickstart",
+                  "developers/architecture"
                 ]
               },
-              "tutorials/escrow-tutorial",
-              "tutorials/curate-tutorial",
-              "tutorials/scout-tutorial",
               {
-                "group": "Proof of Humanity",
+                "group": "V2 Architecture",
                 "pages": [
-                  "tutorials/poh-register-and-vouch",
-                  "tutorials/poh-remove-and-challenge",
-                  "tutorials/poh-transferring-a-profile"
+                  "reference/architecture/v2-architecture",
+                  "reference/architecture/arbitrator-v2",
+                  "reference/architecture/sortition-module-spec",
+                  "reference/architecture/vea-overview"
+                ]
+              },
+              {
+                "group": "Arbitrable Apps",
+                "pages": [
+                  "developers/arbitrable-apps/arbitrable-overview",
+                  {
+                    "group": "Building on V2",
+                    "pages": [
+                      "developers/arbitrable-apps/arbitrable-guide",
+                      "developers/arbitrable-apps/arbitrable-testing",
+                      "developers/arbitrable-apps/arbitrable-production"
+                    ]
+                  },
+                  {
+                    "group": "Building on V1",
+                    "pages": [
+                      "developers/arbitrable-apps/erc-792",
+                      "developers/arbitrable-apps/erc-1497",
+                      "developers/arbitrable-apps/v1-arbitrable-apps",
+                      "developers/arbitrable-apps/centralized-arbitrator",
+                      "developers/arbitrable-apps/arbitrable-proxy"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Products",
+                "pages": [
+                  "developers/products/overview",
+                  "developers/products/court/overview",
+                  {
+                    "group": "Curate",
+                    "pages": [
+                      "developers/products/curate/overview",
+                      "developers/products/curate/smart-contracts",
+                      "developers/products/curate/curate-classic",
+                      "developers/products/curate/light-curate",
+                      "developers/products/curate/registries"
+                    ]
+                  },
+                  {
+                    "group": "Escrow",
+                    "pages": [
+                      "developers/products/escrow/overview",
+                      "developers/products/escrow/smart-contracts"
+                    ]
+                  },
+                  {
+                    "group": "Proof of Humanity",
+                    "pages": [
+                      "developers/products/poh/overview",
+                      "developers/products/poh/smart-contracts",
+                      "developers/products/poh/integration"
+                    ]
+                  },
+                  {
+                    "group": "Reality",
+                    "pages": [
+                      "developers/products/reality/overview",
+                      "developers/products/reality/smart-contracts",
+                      "developers/products/reality/integration"
+                    ]
+                  },
+                  "developers/products/foresight/overview",
+                  "developers/products/governor/overview",
+                  "developers/products/scout/overview",
+                  "developers/products/dispute-resolver/overview"
+                ]
+              },
+              {
+                "group": "Cross-chain",
+                "pages": [
+                  "developers/crosschain/vea-bridge",
+                  "developers/crosschain/vea-getting-started",
+                  "developers/crosschain/vea-deployment-addresses",
+                  "developers/crosschain/l2-integration"
+                ]
+              },
+              {
+                "group": "Examples",
+                "pages": [
+                  "developers/examples/escrow-contract",
+                  "developers/examples/insurance-claim",
+                  "developers/examples/dao-governance"
+                ]
+              },
+              {
+                "group": "Subgraph & Data",
+                "pages": [
+                  "developers/subgraph/overview",
+                  "developers/subgraph/endpoints",
+                  "developers/subgraph/queries"
+                ]
+              },
+              {
+                "group": "AI Tools",
+                "pages": [
+                  "ai-tools/overview",
+                  "ai-tools/kleros-skills",
+                  "ai-tools/kleros-cli",
+                  "ai-tools/agentic-commerce-court",
+                  "ai-tools/agent-reputation",
+                  "ai-tools/trivium",
+                  "ai-tools/mcp-server",
+                  {
+                    "group": "Dispute Service",
+                    "pages": [
+                      "ai-tools/dispute-service/overview",
+                      "ai-tools/dispute-service/http-json-rpc",
+                      "ai-tools/dispute-service/dispute-flow",
+                      "ai-tools/dispute-service/dispute-templates"
+                    ]
+                  }
                 ]
               }
             ]
           },
           {
-            "group": "Concepts",
-            "pages": [
-              "concepts/dispute-resolution",
-              "concepts/game-theory",
-              "concepts/sortition",
-              "concepts/tokenomics",
-              "concepts/pnk-token",
-              "concepts/credible-neutrality"
+            "dropdown": "Reference",
+            "icon": "book-bookmark",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "reference/overview"
+                ]
+              },
+              {
+                "group": "Architecture",
+                "pages": [
+                  "reference/architecture/v2-architecture",
+                  "reference/architecture/arbitrator-v2",
+                  "reference/architecture/sortition-module-spec",
+                  "reference/architecture/vea-overview"
+                ]
+              },
+              {
+                "group": "Contracts (V2)",
+                "pages": [
+                  "reference/contracts/deployment-addresses",
+                  "reference/contracts/kleros-core",
+                  "reference/contracts/dispute-kit-classic",
+                  "reference/contracts/sortition-module",
+                  "reference/contracts/gateways",
+                  "reference/contracts/kleros-governor",
+                  "reference/contracts/policy-registry",
+                  "reference/contracts/dispute-template-registry",
+                  "reference/contracts/moderated-evidence-module"
+                ]
+              },
+              {
+                "group": "Contracts (V1)",
+                "pages": [
+                  "reference/contracts/deployment-addresses-v1"
+                ]
+              },
+              {
+                "group": "Data Formats (V2)",
+                "pages": [
+                  "reference/data-formats/dispute-templates",
+                  "reference/data-formats/evidence-format",
+                  "reference/data-formats/policy-format",
+                  "reference/data-formats/court-specification",
+                  "reference/data-formats/cross-chain-evidence"
+                ]
+              },
+              {
+                "group": "SDK (V2)",
+                "pages": [
+                  "reference/sdk/kleros-sdk"
+                ]
+              }
             ]
           },
           {
-            "group": "Research",
-            "pages": [
-              "research/overview",
-              "research/papers",
-              "research/case-studies",
-              "research/partnerships"
-            ]
-          },
-          {
-            "group": "Governance",
-            "pages": [
-              "governance/overview",
-              "governance/kips",
-              "governance/snapshot"
-            ]
-          },
-          {
-            "group": "Enterprise",
-            "pages": [
-              "enterprise/enterprise",
-              "enterprise/how-it-works",
-              "enterprise/comparison",
-              "enterprise/legal",
-              "enterprise/use-cases",
-              "enterprise/case-studies",
-              "enterprise/getting-started",
-              "enterprise/ecosystem",
-              "enterprise/famous-cases"
-            ]
-          },
-          {
-            "group": "Community & Ecosystem",
-            "pages": [
-              "Community & Ecosystem/overview",
-              "Community & Ecosystem/escrowly",
-              "Community & Ecosystem/lockler",
-              "Community & Ecosystem/klerosboard"
-            ]
-          },
-          {
-            "group": "Contributing",
-            "pages": [
-              "contributing/overview",
-              "contributing/dev-workflow",
-              "contributing/smart-contract-workflow",
-              "contributing/code-style",
-              "contributing/license"
+            "dropdown": "Changelog",
+            "icon": "clock-rotate-left",
+            "groups": [
+              {
+                "group": "Changelog",
+                "pages": [
+                  "changelog/2026-10-26",
+                  "changelog/2026-10-12",
+                  "changelog/2026-10-05",
+                  "changelog/2026-09-28",
+                  "changelog/2026-09-21",
+                  "changelog/2026-09-14",
+                  "changelog/2026-09-07",
+                  "changelog/2026-08-31",
+                  "changelog/2026-08-24",
+                  "changelog/2026-08-17",
+                  "changelog/2026-08-10",
+                  "changelog/2026-08-03",
+                  "changelog/2026-07-27",
+                  "changelog/2026-07-13",
+                  "changelog/2026-07-06",
+                  "changelog/2026-06-29",
+                  "changelog/2026-06-15",
+                  "changelog/2026-05-25",
+                  "changelog/2026-05-19",
+                  "changelog/2026-05-12",
+                  "changelog/2026-05-05",
+                  "changelog/2026-04-28",
+                  "changelog/2026-04-21",
+                  "changelog/2026-04-14"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "dropdown": "Developers",
-        "icon": "code",
-        "groups": [
+        "language": "es",
+        "dropdowns": [
           {
-            "group": "Getting Started",
-            "pages": [
-              "developers/overview",
-              "developers/quickstart",
-              "developers/architecture"
-            ]
-          },
-          {
-            "group": "V2 Architecture",
-            "pages": [
-              "reference/architecture/v2-architecture",
-              "reference/architecture/arbitrator-v2",
-              "reference/architecture/sortition-module-spec",
-              "reference/architecture/vea-overview"
-            ]
-          },
-          {
-            "group": "Arbitrable Apps",
-            "pages": [
-              "developers/arbitrable-apps/arbitrable-overview",
+            "dropdown": "Documentación",
+            "icon": "book",
+            "groups": [
               {
-                "group": "Building on V2",
+                "group": "Bienvenida",
                 "pages": [
-                  "developers/arbitrable-apps/arbitrable-guide",
-                  "developers/arbitrable-apps/arbitrable-testing",
-                  "developers/arbitrable-apps/arbitrable-production"
-                ]
-              },
-              {
-                "group": "Building on V1",
-                "pages": [
-                  "developers/arbitrable-apps/erc-792",
-                  "developers/arbitrable-apps/erc-1497",
-                  "developers/arbitrable-apps/v1-arbitrable-apps",
-                  "developers/arbitrable-apps/centralized-arbitrator",
-                  "developers/arbitrable-apps/arbitrable-proxy"
+                  "es/index"
                 ]
               }
             ]
           },
           {
-            "group": "Products",
-            "pages": [
-              "developers/products/overview",
-              "developers/products/court/overview",
+            "dropdown": "Desarrolladores",
+            "icon": "code",
+            "groups": [
               {
-                "group": "Curate",
+                "group": "Primeros pasos",
                 "pages": [
-                  "developers/products/curate/overview",
-                  "developers/products/curate/smart-contracts",
-                  "developers/products/curate/curate-classic",
-                  "developers/products/curate/light-curate",
-                  "developers/products/curate/registries"
+                  "es/developers/quickstart"
                 ]
               },
               {
-                "group": "Escrow",
+                "group": "Aplicaciones arbitrables",
                 "pages": [
-                  "developers/products/escrow/overview",
-                  "developers/products/escrow/smart-contracts"
+                  {
+                    "group": "Construir sobre V2",
+                    "pages": [
+                      "es/developers/arbitrable-apps/arbitrable-testing",
+                      "es/developers/arbitrable-apps/arbitrable-production"
+                    ]
+                  }
                 ]
               },
               {
-                "group": "Proof of Humanity",
+                "group": "Herramientas de IA",
                 "pages": [
-                  "developers/products/poh/overview",
-                  "developers/products/poh/smart-contracts",
-                  "developers/products/poh/integration"
+                  "es/ai-tools/overview",
+                  "es/ai-tools/kleros-skills",
+                  "es/ai-tools/agentic-commerce-court",
+                  "es/ai-tools/agent-reputation",
+                  "es/ai-tools/trivium",
+                  "es/ai-tools/mcp-server"
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "dropdown": "Referencia",
+            "icon": "book-bookmark",
+            "groups": [
               {
-                "group": "Reality",
+                "group": "Formatos de datos (V2)",
                 "pages": [
-                  "developers/products/reality/overview",
-                  "developers/products/reality/smart-contracts",
-                  "developers/products/reality/integration"
+                  "es/reference/data-formats/dispute-templates"
                 ]
-              },
-              "developers/products/foresight/overview",
-              "developers/products/governor/overview",
-              "developers/products/scout/overview",
-              "developers/products/dispute-resolver/overview"
+              }
             ]
           },
           {
-            "group": "Cross-chain",
-            "pages": [
-              "developers/crosschain/vea-bridge",
-              "developers/crosschain/vea-getting-started",
-              "developers/crosschain/vea-deployment-addresses",
-              "developers/crosschain/l2-integration"
-            ]
-          },
-          {
-            "group": "Examples",
-            "pages": [
-              "developers/examples/escrow-contract",
-              "developers/examples/insurance-claim",
-              "developers/examples/dao-governance"
-            ]
-          },
-          {
-            "group": "Subgraph & Data",
-            "pages": [
-              "developers/subgraph/overview",
-              "developers/subgraph/endpoints",
-              "developers/subgraph/queries"
-            ]
-          },
-          {
-            "group": "AI Tools",
-            "pages": [
-              "ai-tools/overview",
-              "ai-tools/kleros-skills",
-              "ai-tools/kleros-cli",
-              "ai-tools/agentic-commerce-court",
-              "ai-tools/agent-reputation",
-              "ai-tools/trivium",
-              "ai-tools/mcp-server",
+            "dropdown": "Registro de cambios",
+            "icon": "clock-rotate-left",
+            "groups": [
               {
-                "group": "Dispute Service",
+                "group": "Registro de cambios",
                 "pages": [
-                  "ai-tools/dispute-service/overview",
-                  "ai-tools/dispute-service/http-json-rpc",
-                  "ai-tools/dispute-service/dispute-flow",
-                  "ai-tools/dispute-service/dispute-templates"
+                  "es/changelog/2026-10-26"
                 ]
               }
             ]
@@ -337,93 +510,77 @@
         ]
       },
       {
-        "dropdown": "Reference",
-        "icon": "book-bookmark",
-        "groups": [
+        "language": "fr",
+        "dropdowns": [
           {
-            "group": "Overview",
-            "pages": [
-              "reference/overview"
+            "dropdown": "Documentation",
+            "icon": "book",
+            "groups": [
+              {
+                "group": "Bienvenue",
+                "pages": [
+                  "fr/index"
+                ]
+              }
             ]
           },
           {
-            "group": "Architecture",
-            "pages": [
-              "reference/architecture/v2-architecture",
-              "reference/architecture/arbitrator-v2",
-              "reference/architecture/sortition-module-spec",
-              "reference/architecture/vea-overview"
+            "dropdown": "Développeurs",
+            "icon": "code",
+            "groups": [
+              {
+                "group": "Premiers pas",
+                "pages": [
+                  "fr/developers/quickstart"
+                ]
+              },
+              {
+                "group": "Applications arbitrables",
+                "pages": [
+                  {
+                    "group": "Construire sur V2",
+                    "pages": [
+                      "fr/developers/arbitrable-apps/arbitrable-testing",
+                      "fr/developers/arbitrable-apps/arbitrable-production"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Outils d'IA",
+                "pages": [
+                  "fr/ai-tools/overview",
+                  "fr/ai-tools/kleros-skills",
+                  "fr/ai-tools/agentic-commerce-court",
+                  "fr/ai-tools/agent-reputation",
+                  "fr/ai-tools/trivium",
+                  "fr/ai-tools/mcp-server"
+                ]
+              }
             ]
           },
           {
-            "group": "Contracts (V2)",
-            "pages": [
-              "reference/contracts/deployment-addresses",
-              "reference/contracts/kleros-core",
-              "reference/contracts/dispute-kit-classic",
-              "reference/contracts/sortition-module",
-              "reference/contracts/gateways",
-              "reference/contracts/kleros-governor",
-              "reference/contracts/policy-registry",
-              "reference/contracts/dispute-template-registry",
-              "reference/contracts/moderated-evidence-module"
+            "dropdown": "Référence",
+            "icon": "book-bookmark",
+            "groups": [
+              {
+                "group": "Formats de données (V2)",
+                "pages": [
+                  "fr/reference/data-formats/dispute-templates"
+                ]
+              }
             ]
           },
           {
-            "group": "Contracts (V1)",
-            "pages": [
-              "reference/contracts/deployment-addresses-v1"
-            ]
-          },
-          {
-            "group": "Data Formats (V2)",
-            "pages": [
-              "reference/data-formats/dispute-templates",
-              "reference/data-formats/evidence-format",
-              "reference/data-formats/policy-format",
-              "reference/data-formats/court-specification",
-              "reference/data-formats/cross-chain-evidence"
-            ]
-          },
-          {
-            "group": "SDK (V2)",
-            "pages": [
-              "reference/sdk/kleros-sdk"
-            ]
-          }
-        ]
-      },
-      {
-        "dropdown": "Changelog",
-        "icon": "clock-rotate-left",
-        "groups": [
-          {
-            "group": "Changelog",
-            "pages": [
-              "changelog/2026-10-26",
-              "changelog/2026-10-12",
-              "changelog/2026-10-05",
-              "changelog/2026-09-28",
-              "changelog/2026-09-21",
-              "changelog/2026-09-14",
-              "changelog/2026-09-07",
-              "changelog/2026-08-31",
-              "changelog/2026-08-24",
-              "changelog/2026-08-17",
-              "changelog/2026-08-10",
-              "changelog/2026-08-03",
-              "changelog/2026-07-27",
-              "changelog/2026-07-13",
-              "changelog/2026-07-06",
-              "changelog/2026-06-29",
-              "changelog/2026-06-15",
-              "changelog/2026-05-25",
-              "changelog/2026-05-19",
-              "changelog/2026-05-12",
-              "changelog/2026-05-05",
-              "changelog/2026-04-28",
-              "changelog/2026-04-21",
-              "changelog/2026-04-14"
+            "dropdown": "Journal des modifications",
+            "icon": "clock-rotate-left",
+            "groups": [
+              {
+                "group": "Journal des modifications",
+                "pages": [
+                  "fr/changelog/2026-10-26"
+                ]
+              }
             ]
           }
         ]

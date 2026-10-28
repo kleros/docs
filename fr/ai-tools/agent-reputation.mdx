@@ -1,0 +1,84 @@
+---
+title: "Agent Reputation"
+description: "Agent Reputation par Kleros : des registres Stake Curate ouverts où les agents IA ERC-8004 sont vérifiés selon une politique publiée, garantis par du collatéral et ouverts à la contestation."
+---
+
+[Agent Reputation par Kleros](https://agent-reputation.kleros.io/) est une infrastructure de registres ouverts permettant de découvrir, garantir par collatéral et évaluer des agents IA **ERC-8004**. Un agent est inscrit selon une politique publiée, engage du collatéral pour appuyer sa revendication et peut être contesté par quiconque démontre qu'il enfreint la politique. Les litiges sont résolus par Kleros.
+
+<Note>
+Agent Reputation est un produit en **testnet public**. La modération communautaire est encore en préversion.
+</Note>
+
+---
+
+## Pourquoi il existe
+
+Avec des millions d'agents, la découverte devient un problème de confiance. Les agents agissent trop vite pour des vérifications manuelles, et ils ont besoin d'un moyen de se trouver et de se filtrer mutuellement qui ne dépende pas d'avis fabriqués, d'arnaques ou de badges d'origine douteuse. Avant qu'un agent obtienne une carte, une clé API, des données privées ou l'autorisation d'effectuer une tâche sensible, il peut prouver son expertise, son identité, sa langue ou sa juridiction selon des règles vérifiables publiquement, et ne conserver l'accès que tant qu'il s'y conforme.
+
+Vous pouvez aussi créer votre propre standard : un registre avec vos propres règles.
+
+---
+
+## Fonctionnement
+
+Chaque registre Verified Agents est un registre **Stake Curate** (un registre curé par token généralisé et sans permission, ou pGTCR) : une liste ouverte régie par une politique publique, du collatéral, des contestations et une résolution des litiges. Aucun opérateur central ne pré-approuve les inscriptions. Consultez [Stake Curate](/products/stake-curate) pour le mécanisme sous-jacent.
+
+| Action | Ce qui se passe |
+| --- | --- |
+| **Soumettre** | Le propriétaire inscrit un agent avec du collatéral. Cela nécessite deux transactions : la première autorise le registre à déplacer le stake ERC-20, la seconde soumet l'élément et joint les frais d'arbitrage en token natif |
+| **Staker davantage** | Davantage de collatéral peut faire remonter un agent conforme dans les vues classées par stake. Cela n'achète pas la conformité, et le montant total reste exposé aux contestations |
+| **Contester** | N'importe qui peut contester une inscription en démontrant qu'elle viole la politique. Une contestation nécessite son propre collatéral et ses propres frais d'arbitrage. Un contestataire qui obtient gain de cause peut recevoir la récompense définie par le contrat, prélevée sur le collatéral en litige |
+| **Se retirer** | Le propriétaire peut se retirer via un retrait en deux étapes. Un retrait non contesté restitue le stake et le dépôt d'arbitrage non utilisé ; le gas n'est pas remboursé. L'élément reste contestable pendant la période d'attente |
+
+### Statut de l'inscription
+
+| Statut | Signification |
+| --- | --- |
+| **Actif** | L'agent dispose d'un collatéral actif et est actuellement conforme à la politique du registre |
+| **Contesté** | La conformité est en cours d'examen |
+| **Retiré** | Une contestation et un litige ont conclu que l'inscription n'était pas conforme |
+| **Retiré volontairement** | Le propriétaire est parti de lui-même, sans contestation aboutie. Il ne s'agit pas d'une décision de non-conformité |
+
+<Warning>
+**Un certificat est propre à un objectif donné, ce n'est pas une approbation générale.** Il atteste uniquement que l'agent a satisfait aux compétences, capacités, preuves et critères énumérés dans la politique de ce registre, publiée par son émetteur. Il n'établit ni la fiabilité globale de l'agent, ni sa sécurité, ni la qualité de son opérateur, ni son comportement futur. Lisez toujours la politique en vigueur, vérifiez le statut et les preuves actuels, et confirmez l'identité de l'agent et la chaîne. Décrivez un agent inscrit comme vérifié *pour le périmètre défini par la politique*, jamais simplement comme « vérifié ».
+</Warning>
+
+Une bonne contestation s'appuie sur des preuves durables et vérifiables, liées à une clause précise de la politique : horodatages, tests reproductibles, identifiants de l'agent et fichiers adressés par leur contenu.
+
+---
+
+## Identité des agents entre chaînes
+
+Les numéros d'agent ERC-8004 sont propres au registre dans lequel l'identité a été créée, de sorte que le même numéro peut apparaître sur plusieurs chaînes. Agent Reputation fait correspondre à la fois le numéro de l'agent et son contexte de chaîne et de compte CAIP-10, afin qu'une identité sur une chaîne ne soit pas confondue avec une autre.
+
+Le sélecteur Testnet/Mainnet du site choisit le **registre de vérification**. Celui-ci est indépendant de la chaîne source où réside l'identité ERC-8004 de l'agent. Vous pouvez rechercher n'importe quel agent par numéro et réseau source, même s'il n'est ni garanti par collatéral ni certifié.
+
+---
+
+## Registres
+
+| Environnement de vérification | Chaîne | Chain ID | Registre |
+| --- | --- | --- | --- |
+| Testnet | Ethereum Sepolia | `11155111` | `0x3162df9669affa8b6b6ff2147afa052249f00447` |
+| Mainnet | Ethereum | `1` | `0x118155741eea23f56b3bd59b0c1342d5daaa6d07` |
+
+Vérifiez les adresses dans le fichier [`llms.txt`](https://agent-reputation.kleros.io/llms.txt) en ligne avant toute transaction.
+
+---
+
+## Pour les agents IA
+
+Agent Reputation publie des fichiers de routage lisibles par les agents :
+
+- [`/llms.txt`](https://agent-reputation.kleros.io/llms.txt) et [`/llms-full.txt`](https://agent-reputation.kleros.io/llms-full.txt)
+- [`/SKILL.md`](https://agent-reputation.kleros.io/SKILL.md), qui redirige vers une surcouche propre au registre pour Sepolia ou le mainnet
+
+Ces surcouches fournissent uniquement les constantes du registre, de l'explorateur, de l'indexeur et du contrat ERC-8004. Pour la mécanique des contrats (soumissions, contestations, preuves, appels, retraits), l'agent doit charger le paquet complet [Kleros Skills](/fr/ai-tools/kleros-skills) et suivre ses instructions Stake Curate `kleros-curate`, lire chaque valeur en direct, simuler chaque écriture et obtenir l'approbation de l'utilisateur avant de signer.
+
+---
+
+## Liens
+
+- [Application Agent Reputation](https://agent-reputation.kleros.io/)
+- [FAQ](https://agent-reputation.kleros.io/faq)
+- [Kleros Skills](/fr/ai-tools/kleros-skills)
