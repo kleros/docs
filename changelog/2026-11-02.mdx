@@ -1,0 +1,35 @@
+---
+title: "November 2, 2026"
+description: "Court shows the ruling a contract applied and the losing side's appeal deadline, Vea validator and relayer images on GHCR, and a tied-vote fix in Court V2."
+---
+
+## New features
+
+### Applied ruling and losing side's deadline in Court
+
+Case pages in [Kleros Court](/court/overview) now give you a clearer picture of how a case ended and how much time is left to appeal.
+
+- **Applied ruling**: After execution, the decision box shows the ruling the arbitrable contract applied when it differs from the court's ruling. If only one side was fully funded for an appeal, Court explains that this side won without a new round.
+- **Not yet executed**: Before execution, the decision box shows the court's ruling and notes that it has not been executed yet.
+- **Losing side's deadline**: During the appeal period, the Appeal step shows a countdown for the losing side to fund an appeal. For contracts Court can't recognize, it notes that the losing side may have less time than the main countdown. See [Appeals](/court/appeals).
+
+### Vea validator and relayer images on GHCR
+
+The Vea validator and relayer are now published as Docker images at `ghcr.io/kleros/vea/validator-cli` and `ghcr.io/kleros/vea/relayer-cli`. You can run a bot from the published image instead of building it from source. See [Run a validator](https://docs.vea.ninja/run-a-validator/getting-started).
+
+## Updates
+
+### More reliable Vea validator and relayer
+
+The [Vea](/developers/crosschain/vea-bridge) bots are more robust:
+
+- **Relayer**: No longer skips or loses messages. A failing batch is retried one message at a time, so one bad message doesn't block the rest of the route.
+- **Validator**: Fails over from a rate-limited RPC in seconds instead of minutes. It also handles claims, challenges, and disputes more reliably.
+
+## Bug fixes
+
+**Tied votes in Court V2**: When a round ends in a tie, [Court V2](/court/overview) now treats it as Refuse to Arbitrate, as the contract does. Before, the Appeal tab and the timeline showed the first option to reach the top vote count as the winner. That produced wrong winner and loser labels, appeal costs, and funding deadlines. Tied rounds now show "(tied vote)" on the overview, the timeline, and the Appeal tab.
+
+**Current round in Court V2**: The case overview now reads vote counts from the correct round for cases with more than 10 rounds or more than 100 draws.
+
+**Case data that fails to load in Court**: When a case's data fails to load, the decision box now shows only the court's ruling. It no longer claims that the contract applied a ruling outside the case's options.
