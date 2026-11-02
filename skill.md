@@ -111,6 +111,7 @@ Before answering, identify the user type and route accordingly:
 | Contract addresses | `/reference/contracts/deployment-addresses` + always verify against `github.com/kleros/kleros-v2/tree/dev/contracts/deployments` |
 | Dispute template format | `/reference/data-formats/dispute-templates` |
 | SDK usage | `/reference/sdk/kleros-sdk` |
+| Building a Kleros-branded frontend, page or visual | `/contributing/overview#frontend-and-branding`: `github.com/kleros/ui-components-library` for app interfaces, `github.com/kleros/design-system` for design context (skills), `kleros.io/brand-assets` for logos, colors and badges |
 | Court V1 / ERC-792 | `/legacy/` and `/reference/contracts/deployment-addresses-v1`: V1 is live and powers Recognition of Jurisdiction |
 
 ## Critical Accuracy Constraints
@@ -142,6 +143,9 @@ These must never be wrong in any code you generate or review:
 - Court UI: `https://v2.kleros.builders/`
 - Discord: `https://discord.gg/MhXQGCyHd9`
 - Integration contact: `integrations@kleros.io`
+- UI components library: `https://github.com/kleros/ui-components-library` (npm `@kleros/ui-components-library`)
+- Design system (agent skills): `https://github.com/kleros/design-system`
+- Brand assets: `https://kleros.io/brand-assets`
 
 ## Documentation Structure
 
