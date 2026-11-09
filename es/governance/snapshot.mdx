@@ -1,0 +1,76 @@
+---
+title: "Snapshot"
+description: "Kleros utiliza Snapshot para la votación de gobernanza fuera de la cadena y sin gas. Los poseedores de PNK firman mensajes para votar, con un poder de voto basado en su saldo en un bloque concreto."
+---
+
+# Votación en Snapshot {#snapshot-voting}
+
+Kleros utiliza [Snapshot](https://snapshot.box/#/s:kleros.eth) para la votación de gobernanza fuera de la cadena. Snapshot permite a los poseedores de PNK votar propuestas mediante mensajes firmados: no se requieren tasas de gas.
+
+---
+
+## Cómo funciona la votación {#how-voting-works}
+
+La votación en Snapshot utiliza tu saldo de PNK en una altura de bloque concreta para determinar tu poder de voto. Esto significa que:
+
+- **No** necesitas bloquear ni transferir tokens para votar
+- El PNK que tienes en tu billetera en el bloque del snapshot determina el peso de tu voto
+- La votación no requiere gas: solo firmas un mensaje con tu billetera
+- Los resultados se pueden verificar públicamente mediante las firmas
+
+<Warning>
+Si tu PNK está en una billetera de contrato inteligente (por ejemplo, una multifirma como Gnosis Safe), debes **delegar** tu poder de voto en otra dirección para poder votar en Snapshot.
+</Warning>
+
+---
+
+## Cómo votar {#how-to-vote}
+
+<Steps>
+  <Step title="Ve a Snapshot">
+    Visita [snapshot.box/#/s:kleros.eth](https://snapshot.box/#/s:kleros.eth)
+  </Step>
+  <Step title="Conecta tu billetera">
+    Conecta la billetera que contiene tus tokens PNK
+  </Step>
+  <Step title="Selecciona una propuesta">
+    Explora las propuestas activas y haz clic en una para revisarla
+  </Step>
+  <Step title="Emite tu voto">
+    Elige tu opción preferida y firma el mensaje: no se requiere ninguna tasa de gas
+  </Step>
+</Steps>
+
+---
+
+## Espacio de Kleros en Snapshot {#kleros-snapshot-space}
+
+El espacio de gobernanza de Kleros en Snapshot es **kleros.eth**. Es el espacio oficial para todas las votaciones de gobernanza del protocolo.
+
+Las propuestas de este espacio pueden tratar cualquier tema de gobernanza: cambios de parámetros, asignaciones de la tesorería, creación de nuevos tribunales, programas de incentivos, actualizaciones del protocolo y más.
+
+---
+
+## Después de aprobarse una votación {#after-a-vote-passes}
+
+Cuando una votación en Snapshot concluye con aprobación, la decisión se ejecuta mediante [Kleros Governor](/products/governor):
+
+1. Cualquiera puede enviar a Governor una lista de transacciones que implemente los cambios aprobados
+2. Un periodo de envío permite a los miembros de la comunidad verificar que la lista coincide con la votación
+3. Si solo se envía una lista correcta, se ejecuta automáticamente
+4. Si se envían listas contradictorias, Kleros Court arbitra
+
+Esto crea un flujo de gobernanza totalmente descentralizado: se propone en el foro, se vota en Snapshot y se ejecuta mediante Governor, todo ello sin intermediarios centralizados.
+
+---
+
+## Enlaces {#links}
+
+<CardGroup cols={2}>
+  <Card title="Vota en Snapshot" icon="check-to-slot" href="https://snapshot.box/#/s:kleros.eth">
+    Explora y vota las propuestas activas de Kleros
+  </Card>
+  <Card title="Foro de Kleros" icon="comments" href="https://forum.kleros.io">
+    Debate las propuestas antes de que pasen a votación
+  </Card>
+</CardGroup>
