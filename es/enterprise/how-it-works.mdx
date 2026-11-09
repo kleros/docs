@@ -1,0 +1,137 @@
+---
+title: "Cómo funciona"
+description: "Cómo se desarrolla una disputa en Kleros Enterprise, desde la reclamación hasta el fallo: el proceso y sus plazos, la Política de Disputas, cómo se seleccionan y retribuyen los evaluadores y las garantías del debido proceso."
+---
+
+# Cómo funciona Kleros Enterprise {#how-kleros-enterprise-works}
+
+Esta página trata el proceso estándar de las implementaciones en el sector privado, el conjunto de reglas que aplican los evaluadores, quiénes son los evaluadores y las garantías procesales integradas en cada caso.
+
+---
+
+## El proceso de resolución de disputas {#the-dispute-resolution-process}
+
+| Paso | Acción |
+| --- | --- |
+| 1 | Se produce un incidente y el cliente presenta una reclamación al equipo de soporte de la empresa |
+| 2 | El equipo de soporte evalúa el caso y da una respuesta |
+| 3 | Si la respuesta es desfavorable, se ofrece al cliente escalar el caso a Kleros |
+| 4 | El cliente rellena un formulario en línea sencillo en unos 5 minutos y presenta su reclamación y sus evidencias |
+| 5 | Kleros utiliza IA para ayudar a mejorar la claridad de la presentación del cliente, sin alterar los hechos |
+| 6 | La empresa presenta su respuesta y su documentación |
+| 7 | Ambas presentaciones se comparten con el cliente, que dispone de 24 horas para revisarlas y modificar la suya |
+| 8 | Transcurridas 24 horas, el caso se abre en el tribunal de Kleros |
+| 9 | Evaluadores independientes, seleccionados al azar, revisan ambas partes y votan con una justificación escrita |
+| 10 | Se llega a una resolución en un plazo de 3 días |
+| 11 | Ambas partes reciben el resultado por correo electrónico |
+
+### Resultado {#outcome}
+
+| Resultado | Qué ocurre |
+| --- | --- |
+| Gana el reclamante | La organización cumple el fallo según las condiciones acordadas en la Política de Disputas |
+| Gana la organización | El reclamante no recibe ningún pago, pero conserva el derecho a acudir a las vías legales tradicionales |
+
+### Plazos {#timing}
+
+| Fase | Duración |
+| --- | --- |
+| Presentación de la reclamación | Unos 5 minutos |
+| Ventana de revisión y modificación | 24 horas |
+| Deliberación de los evaluadores | Hasta 3 días |
+| Total desde la presentación hasta la decisión | Normalmente menos de 5 días |
+
+Todos los casos, su progreso y los votos individuales de los evaluadores, con su razonamiento, son públicos en la plataforma de Kleros.
+
+---
+
+## La Política de Disputas {#the-dispute-policy}
+
+**La Política de Disputas es el conjunto de reglas que la organización y Kleros acuerdan antes de que se presente ningún caso.** Define cómo debe resolverse cada tipo de caso e incorpora la ley aplicable según la jurisdicción y el tipo de disputa. Por ejemplo, en las disputas de consumo entre una empresa argentina y sus usuarios argentinos, la Política de Disputas indica a los evaluadores que apliquen la ley de defensa del consumidor y la demás normativa aplicable. En las disputas de seguros, hace referencia a las condiciones de la póliza y a las normas regulatorias pertinentes.
+
+Gracias a la Política de Disputas, los evaluadores no toman decisiones subjetivas ni arbitrarias: cada fallo se basa en reglas acordadas de antemano y auditables.
+
+### Cómo se crea {#how-it-is-created}
+
+| Paso | Acción |
+| --- | --- |
+| 1 | La organización describe los tipos de disputas que necesita resolver y las reglas que quiere que se apliquen |
+| 2 | Kleros y la organización acuerdan la redacción de la política, incorporando el marco jurídico aplicable |
+| 3 | Se revisa y se finaliza la Política de Disputas |
+| 4 | La política queda fijada durante el piloto o el periodo de integración |
+
+### Cómo la usan los evaluadores {#how-evaluators-use-it}
+
+Los evaluadores reciben tres elementos para cada caso y aplican la Política de Disputas a los argumentos y evidencias de ambas partes:
+
+| Elemento | Origen |
+| --- | --- |
+| Presentación del reclamante | Evidencias y argumentos presentados mediante el formulario |
+| Respuesta de la organización | Documentación y contraargumentos presentados por la organización |
+| Política de Disputas | El conjunto de reglas acordado, que incorpora la ley aplicable |
+
+### Ejemplos por sector {#examples-by-sector}
+
+- **Fintech y disputas de consumo:** la política hace referencia a la ley argentina de defensa del consumidor y a los términos de servicio de la empresa. Los evaluadores valoran si la empresa actuó conforme a sus términos publicados y si se respetaron los derechos legales del consumidor.
+- **Seguros:** la política hace referencia a los términos y condiciones de la póliza. La pregunta para los evaluadores es: según las evidencias y las condiciones de la póliza, ¿debe pagarse la reclamación?
+- **Municipios y sector público:** la política hace referencia a la legislación de protección del consumidor aplicable (por ejemplo, la Ley de Defensa del Consumidor de Argentina) y a cualquier normativa local.
+
+---
+
+## Quién evalúa los casos {#who-evaluates-the-cases}
+
+Los evaluadores son independientes. No representan a Kleros, a la organización ni al reclamante. Se seleccionan y verifican antes de poder participar, y su compensación está ligada a desempeñar correctamente su función.
+
+<Note>
+En otros materiales de Kleros, a los evaluadores se les llama **jurados**. Es la misma función.
+</Note>
+
+### Criterios de selección {#selection-criteria}
+
+Los criterios se definen junto con la organización durante la incorporación y pueden incluir:
+
+| Tipo de criterio | Ejemplo |
+| --- | --- |
+| Cualificación profesional | Abogados colegiados en una jurisdicción concreta (por ejemplo, abogados argentinos para disputas de consumo) |
+| Requisitos de edad | Ciudadanos mayores de 18 años |
+| Conocimientos especializados | Conocimiento de la ley de defensa del consumidor, de las condiciones de las pólizas de seguros o de la propiedad intelectual |
+| Requisitos geográficos | Residentes de un país o región concretos |
+
+La plataforma verifica a los evaluadores conforme a estos criterios antes de que puedan aceptar cualquier caso. La organización no interactúa directamente con los evaluadores: el protocolo de Kleros gestiona el grupo de evaluadores.
+
+### Cómo se eligen para cada caso {#how-they-are-chosen-for-each-case}
+
+Para cada caso, los evaluadores se seleccionan al azar del grupo cualificado. El número de evaluadores por caso (1, 3, 5, 7 o más) se acuerda de antemano con la organización. La selección aleatoria evita sesgos sistemáticos hacia cualquiera de las partes y garantiza que ningún evaluador pueda influir repetidamente en los resultados.
+
+### Incentivos {#incentives}
+
+Los evaluadores que desempeñan correctamente su función reciben una compensación; los que no la cumplen se enfrentan a penalizaciones. Desempeñar correctamente la función significa:
+
+- Leer con atención las evidencias presentadas por ambas partes
+- Aplicar la Política de Disputas tal como se acordó con la organización, en lugar de su opinión personal
+- Tomar una decisión acorde con la que tomaría un evaluador razonable y bien informado ante el mismo caso
+- Cumplir los plazos fijados para el caso
+
+Las decisiones descuidadas o sesgadas les cuestan dinero a los evaluadores; las decisiones cuidadosas y bien razonadas les hacen ganarlo. Consulta [Teoría de juegos](/es/concepts/game-theory) para conocer el mecanismo que hay detrás.
+
+### Independencia {#independence}
+
+- **Sin vínculo con Kleros:** los evaluadores son ciudadanos o profesionales independientes, no empleados ni contratistas de Kleros.
+- **Sin vínculo con la organización:** los evaluadores no se seleccionan dentro de la organización ni de ninguna parte vinculada.
+- **Sin vínculo con el reclamante:** los evaluadores no tienen ninguna relación previa con el reclamante.
+
+---
+
+## Garantías del debido proceso {#due-process-guarantees}
+
+Kleros está construido con garantías procesales que cumplen los estándares que esperan los equipos de cumplimiento normativo de las empresas y los organismos reguladores.
+
+| Garantía | Cómo se implementa |
+| --- | --- |
+| Derecho de defensa | Ambas partes reciben notificación electrónica y pueden presentar argumentos y evidencias antes de que se tome ninguna decisión |
+| Imparcialidad | Los evaluadores se seleccionan de forma independiente y aleatoria de un grupo verificado y no representan a ninguna de las partes |
+| Derecho de apelación | Un sistema de apelación de doble instancia: un panel nuevo y más amplio vuelve a examinar el caso de forma independiente |
+| Rapidez procesal | Unos plazos fijos e inamovibles para los evaluadores garantizan una resolución puntual |
+| Transparencia | Todos los casos, los votos y las justificaciones individuales de los evaluadores son públicos en la plataforma |
+
+Si cualquiera de las partes cree que el fallo inicial fue erróneo, puede iniciar una apelación y un panel más amplio revisa el caso. Las organizaciones que usan Kleros pueden demostrar que su proceso de resolución de disputas cumple los estándares fundamentales de equidad, transparencia e independencia. Para conocer la base jurídica de estas garantías, consulta [Marco legal](/es/enterprise/legal).

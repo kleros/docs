@@ -1,0 +1,70 @@
+---
+title: "Descripción general"
+description: "Integra el arbitraje descentralizado en tus contratos inteligentes con Kleros V1 en Ethereum y Gnosis, o con Kleros V2 en Arbitrum y compatibilidad entre cadenas."
+---
+
+## ¿Qué es Kleros? {#what-is-kleros}
+
+Kleros es un protocolo descentralizado de resolución de disputas. Piensa en él como un **sistema judicial para contratos inteligentes**: cuando las partes no están de acuerdo, Kleros ofrece una forma sin necesidad de confianza de llegar a un fallo ejecutable.
+
+Kleros está implementado en Ethereum (V1) y en Arbitrum (V2):
+
+- **V1** es infraestructura en producción que funciona en la red principal de Ethereum y en Gnosis Chain. Está en producción desde 2018 y sigue recibiendo desarrollo activo.
+- **V2** funciona en Arbitrum, con compatibilidad entre cadenas mediante el [puente Vea](/developers/crosschain/vea-bridge), resolución de disputas modular mediante dispute kits y una escalabilidad mejorada.
+
+<Note>
+Cada sección de producto cubre tanto V1 como V2. Las guías de integración y los ejemplos de V1 se incluyen directamente. Las páginas de V2 documentan las especificaciones técnicas y las referencias de los contratos.
+</Note>
+
+## ¿Por qué integrarlo? {#why-integrate}
+
+<CardGroup cols={2}>
+  <Card title="Ejecución sin confianza" icon="gavel">
+    Sin autoridad central. Los fallos están protegidos criptoeconómicamente por jurados que hacen staking.
+  </Card>
+  <Card title="Resolución flexible" icon="puzzle-piece">
+    Sí/no binario, opción múltiple o fallos con matices: tu contrato define las opciones.
+  </Card>
+  <Card title="Preparado para varias cadenas" icon="link">
+    Las disputas pueden originarse en la red principal de Ethereum o en otras cadenas mediante el sistema de gateways.
+  </Card>
+  <Card title="Probado en producción" icon="shield-check">
+    Más de 50 millones de USD en valor protegidos mediante el arbitraje de Kleros desde 2018, con más de 100 casos resueltos en la beta de Court V2 (septiembre de 2025).
+  </Card>
+</CardGroup>
+
+## Casos de uso {#use-cases}
+
+| Aplicación | Ejemplo |
+|-------------|---------|
+| **Escrow** | Liberar fondos solo cuando ambas partes están de acuerdo, o dejar que decidan los jurados |
+| **Seguros** | Tramitación descentralizada de reclamaciones |
+| **Curación** | Registros curados mediante tokens con resolución de disputas |
+| **Oráculos** | Verificación humana de datos subjetivos |
+| **DAO** | Resolución de disputas de gobernanza |
+
+## Cómo funciona (versión de 30 segundos) {#how-it-works-30-second-version}
+
+```
+Your Contract → Creates Dispute → Jurors Vote → Ruling Returned → Your Contract Enforces
+```
+
+1. Tu contrato implementa la interfaz `IArbitrableV2`
+2. Cuando surge una disputa, llama a `createDispute()` con las tasas de arbitraje
+3. Se sortean jurados al azar (ponderados por el PNK en staking)
+4. Los jurados votan, con posibilidad de apelación
+5. El fallo final se devuelve a tu contrato mediante `rule()`
+
+## Próximos pasos {#next-steps}
+
+<CardGroup cols={2}>
+  <Card title="Inicio rápido" icon="rocket" href="/es/developers/quickstart">
+    Pon en marcha tu primera integración en minutos
+  </Card>
+  <Card title="Arquitectura" icon="sitemap" href="/es/developers/architecture">
+    Comprende los componentes del protocolo
+  </Card>
+  <Card title="Productos (V1 + V2)" icon="grid-2" href="/developers/products/overview">
+    Referencia de todos los productos de Kleros
+  </Card>
+</CardGroup>

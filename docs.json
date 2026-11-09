@@ -541,6 +541,62 @@
                   "es/governance/kips",
                   "es/governance/snapshot"
                 ]
+              },
+              {
+                "group": "Enterprise",
+                "pages": [
+                  "es/enterprise/enterprise",
+                  "es/enterprise/how-it-works",
+                  "es/enterprise/comparison",
+                  "es/enterprise/legal",
+                  "es/enterprise/use-cases",
+                  "es/enterprise/case-studies",
+                  "es/enterprise/getting-started",
+                  "es/enterprise/ecosystem",
+                  "es/enterprise/famous-cases"
+                ]
+              },
+              {
+                "group": "Comunidad y ecosistema",
+                "pages": [
+                  "es/Community & Ecosystem/overview",
+                  "es/Community & Ecosystem/escrowly",
+                  "es/Community & Ecosystem/lockler",
+                  "es/Community & Ecosystem/klerosboard"
+                ]
+              },
+              {
+                "group": "Contribuir",
+                "pages": [
+                  "es/contributing/overview",
+                  "es/contributing/dev-workflow",
+                  "es/contributing/smart-contract-workflow",
+                  "es/contributing/code-style",
+                  "es/contributing/license"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Desarrolladores",
+            "icon": "code",
+            "groups": [
+              {
+                "group": "Primeros pasos",
+                "pages": [
+                  "es/developers/overview",
+                  "es/developers/quickstart",
+                  "es/developers/architecture"
+                ]
+              },
+              {
+                "group": "Arquitectura de V2",
+                "pages": [
+                  "es/reference/architecture/v2-architecture",
+                  "es/reference/architecture/arbitrator-v2",
+                  "es/reference/architecture/sortition-module-spec",
+                  "es/reference/architecture/vea-overview"
+                ]
               }
             ]
           }
