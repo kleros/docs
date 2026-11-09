@@ -10,11 +10,11 @@ Kleros Oracle combina [Reality.eth](https://reality.eth.limo/), un mecanismo de 
 Tu aplicación solo interactúa con Reality.eth. Kleros se invoca automáticamente cuando una disputa sobre una respuesta escala al arbitraje.
 
 <CardGroup cols={2}>
-  <Card title="Contratos inteligentes" icon="file-contract" href="/developers/products/reality/smart-contracts">
+  <Card title="Contratos inteligentes" icon="file-contract" href="/es/developers/products/reality/smart-contracts">
     Interfaces de los contratos, direcciones de los proxies de árbitro y referencia de las funciones
   </Card>
 
-  <Card title="Guía de integración" icon="code" href="/developers/products/reality/integration">
+  <Card title="Guía de integración" icon="code" href="/es/developers/products/reality/integration">
     Guía paso a paso para formular preguntas y obtener respuestas desde tu contrato
   </Card>
 </CardGroup>
@@ -33,7 +33,7 @@ Notas técnicas para integradores:
 - **Opciones de respuesta verificadas**: Court V1 (desde octubre de 2026) y Dispute Resolver construyen las opciones de respuesta de los casos de Reality.eth a partir de la pregunta en la cadena y de su plantilla, no del script de visualización del contrato arbitrable, de modo que unos parámetros de pregunta manipulados no pueden cambiar las opciones que ven los jurados. Ambos muestran un aviso en la página del caso cuando otras interfaces muestran opciones distintas, o cuando los parámetros están mal formados o las opciones no se pueden verificar.
 - **Redes**: la integración de Realitio se extiende a la testnet Base Sepolia, y el proxy de Realitio entre cadenas se mantiene activamente.
 
-Para ver el recorrido completo de la integración de SafeSnap, consulta la [guía de integración](/developers/products/reality/integration).
+Para ver el recorrido completo de la integración de SafeSnap, consulta la [guía de integración](/es/developers/products/reality/integration).
 
 ***
 
@@ -94,7 +94,7 @@ Reality.eth está desplegado en varias cadenas. Hay proxies de árbitro de Klero
 | Polygon          | Activo (Court V1)      |
 
 <Note>
-  Consulta el [repositorio de despliegues de Reality.eth](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments) para ver la lista completa de despliegues por cadena y las direcciones de los contratos. Para las direcciones de los proxies de árbitro de Kleros, consulta la página [Contratos inteligentes](/developers/products/reality/smart-contracts).
+  Consulta el [repositorio de despliegues de Reality.eth](https://github.com/RealityETH/reality-eth-monorepo/tree/main/packages/contracts/chains/deployments) para ver la lista completa de despliegues por cadena y las direcciones de los contratos. Para las direcciones de los proxies de árbitro de Kleros, consulta la página [Contratos inteligentes](/es/developers/products/reality/smart-contracts).
 </Note>
 
 ***
@@ -112,7 +112,7 @@ Reality.eth admite varias plantillas de pregunta. Cada plantilla define el forma
 | 4           | `datetime`        | Marca de tiempo Unix      | "¿Cuándo ocurrió el evento X?"                |
 | 5           | `hash`            | Hash bytes32        | "¿Corresponde el hash X al documento Y?" |
 
-Se pueden registrar plantillas personalizadas para casos de uso específicos de una aplicación mediante `createTemplate()` o el [generador de plantillas de Reality.eth](https://reality.eth.link/app/template-generator). Para conocer todos los detalles sobre la codificación de los resultados, consulta [Contratos inteligentes → Interpretación de los resultados](/developers/products/reality/smart-contracts#result-interpretation).
+Se pueden registrar plantillas personalizadas para casos de uso específicos de una aplicación mediante `createTemplate()` o el [generador de plantillas de Reality.eth](https://reality.eth.link/app/template-generator). Para conocer todos los detalles sobre la codificación de los resultados, consulta [Contratos inteligentes → Interpretación de los resultados](/es/developers/products/reality/smart-contracts#result-interpretation).
 
 ***
 
@@ -157,7 +157,7 @@ Todas las interacciones se realizan mediante la interfaz de Reality.eth. Tu dApp
   </Accordion>
 
   <Accordion title="Presentación de evidencias">
-    Las evidencias se envían a través del contrato Kleros Arbitrator Proxy, no de Reality.eth. El proxy gestiona el grupo de evidencias y reenvía los envíos a Kleros Court. Consulta la [guía de integración](/developers/products/reality/integration#evidence-submission) para ver el flujo de envío y el formato de evidencias de ERC-1497.
+    Las evidencias se envían a través del contrato Kleros Arbitrator Proxy, no de Reality.eth. El proxy gestiona el grupo de evidencias y reenvía los envíos a Kleros Court. Consulta la [guía de integración](/es/developers/products/reality/integration#evidence-submission) para ver el flujo de envío y el formato de evidencias de ERC-1497.
   </Accordion>
 
   <Accordion title="Parámetros configurables">
@@ -177,7 +177,7 @@ El oráculo Reality.eth + Kleros impulsa sistemas en producción de varias categ
 
 - **Mercados de predicción**: [Seer](https://seer.pm), Polkamarkets/Foreland y [Omen](https://omen.eth.limo) lo usan para verificar los resultados de eventos del mundo real
 - **Gobernanza optimista**: el [módulo Zodiac SafeSnap](https://kleros.io/web3) lo implementa para una ejecución segura de las propuestas de las DAO
-- **Moderación de contenidos**: [Moderate / Susie bot](/legacy/retired/moderate) lo aprovecha para aplicar de forma descentralizada las políticas de contenido
+- **Moderación de contenidos**: [Moderate / Susie bot](/es/legacy/retired/moderate) lo aprovecha para aplicar de forma descentralizada las políticas de contenido
 
 ***
 

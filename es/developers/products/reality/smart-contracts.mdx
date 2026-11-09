@@ -79,7 +79,7 @@ function getFinalizeTS(bytes32 _questionID) external view returns (uint32);
 ```
 
 <Warning>
-  `resultFor()` se revierte cuando la pregunta todavía no está finalizada. Comprueba siempre primero `isFinalized()`, usa un envoltorio try/catch o usa el patrón de callback que se muestra en la [guía de integración](/developers/products/reality/integration#step-3-handle-the-callback-optional).
+  `resultFor()` se revierte cuando la pregunta todavía no está finalizada. Comprueba siempre primero `isFinalized()`, usa un envoltorio try/catch o usa el patrón de callback que se muestra en la [guía de integración](/es/developers/products/reality/integration#step-3-handle-the-callback-optional).
 </Warning>
 
 ### Enviar respuestas {#submitting-answers}
@@ -262,7 +262,7 @@ El JSON de las evidencias sigue el formato estándar de [ERC-1497](https://githu
 }
 ```
 
-Cualquiera puede presentar evidencias durante el periodo de evidencias, y se admiten varios envíos. Para ver el flujo completo de presentación de evidencias, las pautas de formato y los patrones de supervisión de eventos, consulta [Guía de integración → Presentación de evidencias](/developers/products/reality/integration#evidence-submission).
+Cualquiera puede presentar evidencias durante el periodo de evidencias, y se admiten varios envíos. Para ver el flujo completo de presentación de evidencias, las pautas de formato y los patrones de supervisión de eventos, consulta [Guía de integración → Presentación de evidencias](/es/developers/products/reality/integration#evidence-submission).
 
 ***
 
@@ -280,4 +280,4 @@ El sistema Reality.eth + Kleros implica varios tipos de tasas, cada uno con una 
 
 \*Cuando se resuelve por arbitraje, el árbitro especifica quién recibe la recompensa.
 
-Para conocer todos los detalles de cada tasa (incluido que la tasa de sustitución es igual a la fianza de quien respondió antes y cuándo se aplica la quema del 2,5% de la tasa de reclamación en Reality.eth v2.1+), consulta [Guía de integración → Tasas y pagos](/developers/products/reality/integration#fees-and-payments).
+Para conocer todos los detalles de cada tasa (incluido que la tasa de sustitución es igual a la fianza de quien respondió antes y cuándo se aplica la quema del 2,5% de la tasa de reclamación en Reality.eth v2.1+), consulta [Guía de integración → Tasas y pagos](/es/developers/products/reality/integration#fees-and-payments).

@@ -603,6 +603,14 @@
                 "pages": [
                   "es/developers/arbitrable-apps/arbitrable-overview",
                   {
+                    "group": "Construir sobre V2",
+                    "pages": [
+                      "es/developers/arbitrable-apps/arbitrable-guide",
+                      "es/developers/arbitrable-apps/arbitrable-testing",
+                      "es/developers/arbitrable-apps/arbitrable-production"
+                    ]
+                  },
+                  {
                     "group": "Construir sobre V1",
                     "pages": [
                       "es/developers/arbitrable-apps/erc-792",
@@ -619,6 +627,39 @@
                 "pages": [
                   "es/developers/products/overview",
                   "es/developers/products/court/overview",
+                  {
+                    "group": "Curate",
+                    "pages": [
+                      "es/developers/products/curate/overview",
+                      "es/developers/products/curate/smart-contracts",
+                      "es/developers/products/curate/curate-classic",
+                      "es/developers/products/curate/light-curate",
+                      "es/developers/products/curate/registries"
+                    ]
+                  },
+                  {
+                    "group": "Escrow",
+                    "pages": [
+                      "es/developers/products/escrow/overview",
+                      "es/developers/products/escrow/smart-contracts"
+                    ]
+                  },
+                  {
+                    "group": "Proof of Humanity",
+                    "pages": [
+                      "es/developers/products/poh/overview",
+                      "es/developers/products/poh/smart-contracts",
+                      "es/developers/products/poh/integration"
+                    ]
+                  },
+                  {
+                    "group": "Reality",
+                    "pages": [
+                      "es/developers/products/reality/overview",
+                      "es/developers/products/reality/smart-contracts",
+                      "es/developers/products/reality/integration"
+                    ]
+                  },
                   "es/developers/products/foresight/overview",
                   "es/developers/products/governor/overview",
                   "es/developers/products/scout/overview",
@@ -626,9 +667,49 @@
                 ]
               },
               {
+                "group": "Entre cadenas",
+                "pages": [
+                  "es/developers/crosschain/vea-bridge",
+                  "es/developers/crosschain/vea-getting-started",
+                  "es/developers/crosschain/vea-deployment-addresses",
+                  "es/developers/crosschain/l2-integration"
+                ]
+              },
+              {
+                "group": "Ejemplos",
+                "pages": [
+                  "es/developers/examples/escrow-contract",
+                  "es/developers/examples/insurance-claim",
+                  "es/developers/examples/dao-governance"
+                ]
+              },
+              {
                 "group": "Subgraph y datos",
                 "pages": [
-                  "es/developers/subgraph/overview"
+                  "es/developers/subgraph/overview",
+                  "es/developers/subgraph/endpoints",
+                  "es/developers/subgraph/queries"
+                ]
+              },
+              {
+                "group": "Herramientas de IA",
+                "pages": [
+                  "es/ai-tools/overview",
+                  "es/ai-tools/kleros-skills",
+                  "es/ai-tools/kleros-cli",
+                  "es/ai-tools/agentic-commerce-court",
+                  "es/ai-tools/agent-reputation",
+                  "es/ai-tools/trivium",
+                  "es/ai-tools/mcp-server",
+                  {
+                    "group": "Dispute Service",
+                    "pages": [
+                      "es/ai-tools/dispute-service/overview",
+                      "es/ai-tools/dispute-service/http-json-rpc",
+                      "es/ai-tools/dispute-service/dispute-flow",
+                      "es/ai-tools/dispute-service/dispute-templates"
+                    ]
+                  }
                 ]
               }
             ]

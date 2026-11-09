@@ -17,7 +17,7 @@ Usa Kleros Court para resolver las disputas de tu aplicación. Hay dos enfoques:
 
 Tu contrato implementa la interfaz `IArbitrableV2`, llama a `createDispute()` en KlerosCore y recibe los fallos mediante `rule()`. La creación de disputas y la ejecución se realizan íntegramente en la cadena.
 
-<Card title="Construye una aplicación arbitrable" icon="code" href="/developers/arbitrable-apps/arbitrable-overview">
+<Card title="Construye una aplicación arbitrable" icon="code" href="/es/developers/arbitrable-apps/arbitrable-overview">
   Guía completa en la pestaña Desarrolladores: interfaces, ejemplos, pruebas y lista de verificación para producción.
 </Card>
 
@@ -25,7 +25,7 @@ Tu contrato implementa la interfaz `IArbitrableV2`, llama a `createDispute()` en
 
 Las disputas se crean de forma independiente en [resolve.kleros.io](https://resolve.kleros.io) y tu plataforma se compromete a ejecutar el fallo. Es adecuado para disputas fuera de la cadena, para probar antes de invertir en desarrollo o para los casos en los que Kleros no está en tu cadena.
 
-<Card title="Dispute Resolver" icon="gavel" href="/legacy/integrate/dispute-resolver">
+<Card title="Dispute Resolver" icon="gavel" href="/es/legacy/integrate/dispute-resolver">
   Crea disputas independientes desde una interfaz web.
 </Card>
 
@@ -33,11 +33,11 @@ Las disputas se crean de forma independiente en [resolve.kleros.io](https://reso
 
 Antes de integrarte, decide:
 
-- **Selección del tribunal**: qué tribunal de Kleros resuelve tus disputas. La selección del tribunal afecta a los conocimientos de los jurados, al coste y al tiempo de resolución. Consulta [Jerarquía de tribunales](/court/court-hierarchy) para ver los tribunales disponibles.
+- **Selección del tribunal**: qué tribunal de Kleros resuelve tus disputas. La selección del tribunal afecta a los conocimientos de los jurados, al coste y al tiempo de resolución. Consulta [Jerarquía de tribunales](/es/court/court-hierarchy) para ver los tribunales disponibles.
 - **Número de jurados**: el número de jurados de la primera ronda. Más jurados = mayor coste, pero un arbitraje más sólido.
 - **Criterios de escalada**: cuándo permite tu plataforma escalar a Kleros (por ejemplo, cuando falla la resolución interna de disputas o por encima de un determinado valor de transacción).
 - **Criterios de ejecución**: cómo se compromete tu plataforma a ejecutar el fallo.
-- **Política de disputa**: el documento que usan los jurados para decidir. Consulta la [guía de redacción de políticas](/legacy/integrate/policy-guide).
+- **Política de disputa**: el documento que usan los jurados para decidir. Consulta la [guía de redacción de políticas](/es/legacy/integrate/policy-guide).
 
 ---
 
@@ -48,10 +48,10 @@ Usa Kleros Curate para crear o consumir registros curados por la comunidad. Cual
 Las aplicaciones incluyen listas de tokens, registros de etiquetas de direcciones, verificación de contratos y cualquier conjunto de datos que se beneficie de la curación descentralizada por la comunidad.
 
 <CardGroup cols={2}>
-  <Card title="Producto Curate" icon="list-check" href="/products/curate">
+  <Card title="Producto Curate" icon="list-check" href="/es/products/curate">
     Descripción general y capacidades del producto Curate
   </Card>
-  <Card title="Documentación para desarrolladores de Curate" icon="code" href="/developers/products/curate/overview">
+  <Card title="Documentación para desarrolladores de Curate" icon="code" href="/es/developers/products/curate/overview">
     Integración técnica para desarrolladores
   </Card>
 </CardGroup>
@@ -70,7 +70,7 @@ La arquitectura tiene cuatro componentes:
 
 Para usar este servicio, tu contrato debe ser compatible con la interfaz de Reality.eth, y debes indicar la dirección del proxy de árbitro Reality.eth-Kleros al formular una pregunta.
 
-<Card title="Producto oráculo" icon="crystal-ball" href="/products/reality">
+<Card title="Producto oráculo" icon="crystal-ball" href="/es/products/reality">
   Descripción general del producto oráculo (Reality.eth + Kleros)
 </Card>
 
@@ -86,7 +86,7 @@ Las DAO que usan Gnosis Safe pueden lograr una gobernanza totalmente descentrali
 
 La configuración ofrece una separación de poderes: los poseedores de tokens votan (legislativo), la multifirma ejecuta (ejecutivo) y Kleros arbitra las propuestas impugnadas (judicial).
 
-<Card title="Guía de integración de Safe Zodiac" icon="shield-check" href="/legacy/integrate/zodiac-integration">
+<Card title="Guía de integración de Safe Zodiac" icon="shield-check" href="/es/legacy/integrate/zodiac-integration">
   Guía paso a paso para integrar Kleros con la gobernanza de Gnosis Safe
 </Card>
 
@@ -96,18 +96,18 @@ La configuración ofrece una separación de poderes: los poseedores de tokens vo
 
 | Herramienta | Propósito | Enlace |
 | --- | --- | --- |
-| [Dispute Resolver](/legacy/integrate/dispute-resolver) | Crea disputas, gestiónalas e interactúa con ellas desde una interfaz web. No requiere desarrollar contratos inteligentes. | [resolve.kleros.io](https://resolve.kleros.io) |
-| [Árbitro centralizado](/legacy/integrate/centralized-arbitrator) | Despliega un árbitro de prueba que controlas para depurar tu aplicación arbitrable antes de conectarla a Kleros Court. | [centralizedarbitrator.kleros.io](https://centralizedarbitrator.kleros.io) |
+| [Dispute Resolver](/es/legacy/integrate/dispute-resolver) | Crea disputas, gestiónalas e interactúa con ellas desde una interfaz web. No requiere desarrollar contratos inteligentes. | [resolve.kleros.io](https://resolve.kleros.io) |
+| [Árbitro centralizado](/es/legacy/integrate/centralized-arbitrator) | Despliega un árbitro de prueba que controlas para depurar tu aplicación arbitrable antes de conectarla a Kleros Court. | [centralizedarbitrator.kleros.io](https://centralizedarbitrator.kleros.io) |
 
 ---
 
 ## Lecturas adicionales {#further-reading}
 
 <CardGroup cols={2}>
-  <Card title="Guía de redacción de políticas" icon="file-pen" href="/legacy/integrate/policy-guide">
+  <Card title="Guía de redacción de políticas" icon="file-pen" href="/es/legacy/integrate/policy-guide">
     Redacta políticas de disputa que lleven a resultados justos
   </Card>
-  <Card title="Preguntas frecuentes sobre la integración" icon="circle-question" href="/welcome/faq">
+  <Card title="Preguntas frecuentes sobre la integración" icon="circle-question" href="/es/welcome/faq">
     Preguntas habituales sobre la integración con Kleros
   </Card>
 </CardGroup>

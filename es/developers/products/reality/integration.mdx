@@ -88,7 +88,7 @@ Cualquier ETH enviado con `askQuestion` se convierte en la recompensa de la preg
   - Bool: `"Did event X happen?␟category␟en"`
   - Uint: `"What was the price of ETH on April 16, 2025?␟crypto␟en"`
   - Single-select: `"Which team won?␟\"Lakers\",\"Celtics\",\"Bucks\"␟sports␟en"`
-- **`arbitrator`**: dirección del Kleros Arbitrator Proxy. Consulta [Contratos inteligentes](/developers/products/reality/smart-contracts#kleros-arbitrator-proxy-addresses) para ver los proxies disponibles.
+- **`arbitrator`**: dirección del Kleros Arbitrator Proxy. Consulta [Contratos inteligentes](/es/developers/products/reality/smart-contracts#kleros-arbitrator-proxy-addresses) para ver los proxies disponibles.
 - **`timeout`**: segundos antes de que se finalice una respuesta no impugnada. Normalmente 86400 (24 horas). El contrato impone un máximo de 365 días.
 - **`openingTimestamp`**: momento más temprano en el que se pueden enviar respuestas. Usa `0` para que sea inmediato.
 - **`nonce`**: diferenciador para preguntas idénticas con los mismos parámetros. Usa `0` si no necesitas formular la misma pregunta más de una vez.
@@ -109,7 +109,7 @@ function getAnswerAsBool(bytes32 _questionID) external view returns (bool) {
 ```
 
 <Warning>
-  `resultFor()` se revierte si la pregunta todavía no está finalizada. Comprueba siempre primero `isFinalized()` o usa un patrón de callback. Para la decodificación completa de los resultados por tipo de plantilla y cómo gestionar valores especiales como `INVALID` y `ANSWERED_TOO_EARLY`, consulta [Contratos inteligentes → Interpretación de los resultados](/developers/products/reality/smart-contracts#result-interpretation).
+  `resultFor()` se revierte si la pregunta todavía no está finalizada. Comprueba siempre primero `isFinalized()` o usa un patrón de callback. Para la decodificación completa de los resultados por tipo de plantilla y cómo gestionar valores especiales como `INVALID` y `ANSWERED_TOO_EARLY`, consulta [Contratos inteligentes → Interpretación de los resultados](/es/developers/products/reality/smart-contracts#result-interpretation).
 </Warning>
 
 ### Paso 3: gestiona el callback (opcional) {#step-3-handle-the-callback-optional}
@@ -136,7 +136,7 @@ Cada Kleros Arbitrator Proxy se configura con:
 | **Número de jurados** | Número inicial de jurados de la primera ronda   |
 | **Tasa de arbitraje**  | Coste de escalar una pregunta a Kleros |
 
-Usa un proxy existente de la página [Contratos inteligentes](/developers/products/reality/smart-contracts) o escribe a `integrations@kleros.io` para desplegar uno configurado para tu caso de uso.
+Usa un proxy existente de la página [Contratos inteligentes](/es/developers/products/reality/smart-contracts) o escribe a `integrations@kleros.io` para desplegar uno configurado para tu caso de uso.
 
 Para las aplicaciones que abarcan varias cadenas (por ejemplo, la pregunta en Polygon y el arbitraje en Ethereum), usa un [proxy entre cadenas](https://github.com/kleros/cross-chain-realitio-proxy/tree/master/contracts#deployments).
 
@@ -324,7 +324,7 @@ Si tu aplicación puede necesitar este nivel de personalización, escribe a `int
 
 El oráculo Reality.eth + Kleros impulsa **SafeSnap**, que convierte las votaciones de Snapshot fuera de la cadena en ejecución en la cadena mediante un Gnosis Safe, con Kleros Court como respaldo de arbitraje.
 
-Consulta la **[página del producto SafeSnap](/products/safesnap)** para saber qué es y cómo funciona el flujo, y el **[ejemplo de gobernanza de DAO](/developers/examples/dao-governance)** para la instalación y la configuración.
+Consulta la **[página del producto SafeSnap](/es/products/safesnap)** para saber qué es y cómo funciona el flujo, y el **[ejemplo de gobernanza de DAO](/es/developers/examples/dao-governance)** para la instalación y la configuración.
 
 ***
 
@@ -349,7 +349,7 @@ El oráculo Reality.eth + Kleros se usa en producción en:
 
 - **Mercados de predicción**: [Seer](https://seer.pm), Polkamarkets/Foreland y [Omen](https://omen.eth.limo) lo usan para verificar los resultados de eventos del mundo real
 - **Gobernanza optimista**: el módulo Zodiac SafeSnap lo usa para una ejecución segura de las propuestas de las DAO
-- **Moderación de contenidos**: [Moderate / Susie bot](/legacy/retired/moderate) lo usa para aplicar de forma descentralizada las políticas de contenido
+- **Moderación de contenidos**: [Moderate / Susie bot](/es/legacy/retired/moderate) lo usa para aplicar de forma descentralizada las políticas de contenido
 
 ***
 
