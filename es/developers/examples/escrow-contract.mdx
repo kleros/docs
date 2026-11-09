@@ -1,0 +1,153 @@
+---
+title: "Contrato de escrow"
+description: "Contrato SimpleEscrow de ejemplo que usa el arbitraje de Kleros V1, ERC-792 y ERC-1497 para retener los fondos hasta su liberación o hasta el pago resuelto por los jurados en una disputa."
+---
+
+## Descripción general {#overview}
+
+Este ejemplo muestra cómo construir un contrato de escrow que usa Kleros Court V1 como árbitro externo, siguiendo el estándar de arbitraje ERC-792 y el estándar de evidencias ERC-1497. El contrato retiene los fondos en depósito hasta que el pagador los libera, o hasta que se abre una disputa y la resuelven los jurados de Kleros.
+
+Se basa en el tutorial SimpleEscrow de [docs.kleros.io](https://docs.kleros.io/) e ilustra el patrón de integración principal de V1.
+
+---
+
+## Contrato {#contract}
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
+
+import "@kleros/erc-792/contracts/IArbitrable.sol";
+import "@kleros/erc-792/contracts/IArbitrator.sol";
+import "@kleros/erc-792/contracts/erc-1497/IEvidence.sol";
+
+contract SimpleEscrow is IArbitrable, IEvidence {
+    address payable public payer = msg.sender;
+    address payable public payee;
+    uint256 public value;
+    IArbitrator public arbitrator;
+    string public agreement;
+    uint256 public createdAt;
+    uint256 public constant reclamationPeriod = 3 days;
+    uint256 public constant arbitrationFeeDepositPeriod = 3 days;
+
+    uint256 public reclaimedAt;
+
+    enum Status { Initial, Reclaimed, Disputed, Resolved }
+    Status public status;
+
+    uint256 public disputeID;
+    uint256 constant numberOfRulingOptions = 2;
+    enum RulingOptions { RefusedToArbitrate, PayerWins, PayeeWins }
+
+    constructor(
+        address payable _payee,
+        IArbitrator _arbitrator,
+        string memory _agreement
+    ) payable {
+        value = msg.value;
+        payee = _payee;
+        arbitrator = _arbitrator;
+        agreement = _agreement;
+        createdAt = block.timestamp;
+
+        // ERC-1497: announce the agreement (MetaEvidence) at deployment.
+        emit MetaEvidence(0, _agreement);
+    }
+
+    /// @dev Payer releases the funds to the payee.
+    function releaseFunds() public {
+        require(status == Status.Initial, "Transaction is not in Initial state.");
+        if (msg.sender != payer)
+            require(block.timestamp - createdAt > reclamationPeriod, "Payer still has time to reclaim.");
+        status = Status.Resolved;
+        payee.transfer(value);
+    }
+
+    /// @dev Payer reclaims the funds, opening a window for the payee to dispute.
+    function reclaimFunds() public payable {
+        require(status == Status.Initial || status == Status.Reclaimed, "Cannot reclaim in this state.");
+        require(msg.sender == payer, "Only the payer can reclaim.");
+
+        if (status == Status.Reclaimed) {
+            require(block.timestamp - reclaimedAt > arbitrationFeeDepositPeriod, "Payee still has time to deposit.");
+            payer.transfer(address(this).balance);
+            status = Status.Resolved;
+        } else {
+            require(msg.value == arbitrator.arbitrationCost(""), "Must deposit the arbitration cost.");
+            reclaimedAt = block.timestamp;
+            status = Status.Reclaimed;
+        }
+    }
+
+    /// @dev Payee deposits the arbitration fee, creating a dispute in Kleros Court.
+    function depositArbitrationFeeForPayee() public payable {
+        require(status == Status.Reclaimed, "Transaction is not in Reclaimed state.");
+        disputeID = arbitrator.createDispute{value: msg.value}(numberOfRulingOptions, "");
+        status = Status.Disputed;
+        // ERC-1497: link the dispute to metaEvidence 0 and evidence group 0.
+        emit Dispute(arbitrator, disputeID, 0, 0);
+    }
+
+    /// @dev Called by the arbitrator to enforce the ruling.
+    function rule(uint256 _disputeID, uint256 _ruling) public override {
+        require(msg.sender == address(arbitrator), "Only the arbitrator can rule.");
+        require(status == Status.Disputed, "There must be a dispute to execute a ruling.");
+        require(_ruling <= numberOfRulingOptions, "Ruling out of bounds.");
+
+        status = Status.Resolved;
+        if (_ruling == uint256(RulingOptions.PayerWins)) payer.transfer(address(this).balance);
+        else payee.transfer(address(this).balance);
+
+        emit Ruling(arbitrator, _disputeID, _ruling);
+    }
+
+    /// @dev Submit evidence for the dispute (ERC-1497).
+    function submitEvidence(string memory _evidence) public {
+        require(status != Status.Resolved, "The dispute is already resolved.");
+        emit Evidence(arbitrator, 0, msg.sender, _evidence);
+    }
+}
+```
+
+---
+
+## Puntos clave de la integración {#key-integration-points}
+
+**`createDispute()`**: envía la tasa de arbitraje al árbitro de V1 (KlerosLiquid) y recibe un `disputeID`. El argumento `_extraData` (aquí, una cadena vacía) puede codificar el ID del subtribunal y el número de jurados.
+
+**`rule()`**: el árbitro lo llama cuando se resuelve la disputa. El fallo se ejecuta de inmediato transfiriendo los fondos depositados.
+
+**Eventos de ERC-1497**: `MetaEvidence` anuncia el acuerdo en el despliegue, `Dispute` vincula la disputa con ese metaEvidence y con un grupo de evidencias, y `Evidence` registra cada envío. Son los eventos del estándar de evidencias de V1 que consumen las interfaces de Court V1 y de Dispute Resolver.
+
+---
+
+## Acuerdo (MetaEvidence) {#agreement-metaevidence}
+
+En V1, el acuerdo se describe con un documento JSON de MetaEvidence de ERC-1497, que se sube a IPFS y se pasa al constructor:
+
+```json
+{
+  "title": "Escrow Payment Dispute",
+  "description": "Should the escrowed funds be released to the payee or returned to the payer?",
+  "question": "Which party should receive the escrowed funds?",
+  "rulingOptions": {
+    "titles": ["Refuse to Arbitrate", "Payer Wins", "Payee Wins"],
+    "descriptions": [
+      "The arbitrator refuses to rule.",
+      "Return the funds to the payer.",
+      "Release the funds to the payee."
+    ]
+  },
+  "category": "Escrow",
+  "fileURI": "/ipfs/QmEscrowAgreement..."
+}
+```
+
+---
+
+## Próximos pasos {#next-steps}
+
+- Añade compatibilidad con las apelaciones para que una parte perdedora pueda financiar rondas adicionales
+- Añade compatibilidad con tokens ERC20 junto al ETH nativo (consulta las notas de compatibilidad de tokens de [Escrow V1](/products/escrow))
+- Revisa por completo los estándares [ERC-792](/developers/arbitrable-apps/erc-792) y [ERC-1497](/developers/arbitrable-apps/erc-1497)
