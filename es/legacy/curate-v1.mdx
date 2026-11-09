@@ -1,0 +1,44 @@
+---
+title: "Curate V1"
+description: "Documentación de Kleros Curate V1: registros Classic Curate y Light Curate en la red principal de Ethereum, con incentivos criptoeconómicos y arbitraje de Court."
+---
+
+# Curate V1 {#curate-v1}
+
+<Warning>
+**Classic Curate está en proceso de retirada.** Los contratos de Classic Curate siguen desplegados y sin cambios, por lo que las listas Classic existentes siguen funcionando: todavía se pueden enviar, impugnar y consultar elementos. Kleros no lanzará nuevos registros en Classic Curate, y se está desactivando la creación de listas Classic desde los frontends de Kleros. **Light Curate y Stake Curate no se ven afectados** y siguen siendo totalmente compatibles; las nuevas listas, incluidos los registros Kleros Verified que aparecen en la página de inicio de la [aplicación Curate](https://curate.kleros.io), se crean en Light Curate.
+</Warning>
+
+<Note>
+Hay una versión V2 disponible: [Curate V2](/products/curate) en Arbitrum.
+</Note>
+
+Curate V1 es la aplicación de registros descentralizados original, desplegada en la red principal de Ethereum. Permitía a cualquiera crear y mantener registros curados por la comunidad (Token Curated Registries, TCR) con incentivos criptoeconómicos y resolución de disputas de Kleros Court.
+
+---
+
+## Arquitectura de V1 {#v1-architecture}
+
+Curate V1 tenía dos variantes:
+
+**Classic Curate**: almacenaba todos los datos de los elementos directamente en el almacenamiento del contrato. Ofrecía la máxima flexibilidad y capacidad de consulta en la cadena, pero con costes de gas más altos (los costes de almacenamiento crecían con el número de elementos).
+
+**Light Curate**: almacenaba en el contrato solo el multihash de IPFS del elemento, y los datos completos se indexaban mediante el subgraph de The Graph. Era mucho más barato de desplegar y usar (~700k de gas para desplegar un nuevo TCR frente a ~7 millones con Classic, gracias a los proxies mínimos EIP-1167).
+
+La mayoría de los registros en producción usaban Light Curate por su eficiencia en costes. V2 mantiene este enfoque.
+
+---
+
+## Registros clave (V1) {#key-registries-v1}
+
+- **Token Registry (T2CR)**: envíos de tokens verificados que usan billeteras y exchanges
+- **Address Tags Registry**: etiquetas legibles para direcciones de Ethereum, que usan los exploradores de bloques
+- **CDN Registry**: logotipos y metadatos de tokens que se sirven a las dApps
+
+Estos registros eran la capa de datos de [Kleros Scout](/products/scout).
+
+---
+
+## Migración {#migration}
+
+Curate V2 está desplegado en Arbitrum, con menores costes de gas y la misma mecánica de TCR. Los registros V1 existentes siguen siendo accesibles porque los contratos V1 siguen desplegados, pero Kleros no lanzará nuevos registros en V1 y ya no se pueden crear nuevas listas desde los frontends de Kleros.

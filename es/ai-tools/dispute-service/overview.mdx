@@ -1,0 +1,156 @@
+---
+title: "Kleros Dispute Service"
+description: "Crea disputas de Kleros v2, envía evidencias y lee fallos mediante un único endpoint MCP autenticado, sin desplegar un contrato arbitrable."
+---
+
+{/* Also kept in the kleros-dispute-service repository, where tests check it against the service's code. Copy any edit made here back there. */}
+
+Kleros Dispute Service permite a una plataforma enviar las disputas de sus usuarios a Kleros sin desplegar un contrato arbitrable propio. A través de un único endpoint autenticado, creas una disputa de Kleros v2, publicas y envías evidencias para los jurados y lees el fallo. El mismo endpoint también ofrece acceso de lectura a los tribunales, las disputas, las evidencias, los jurados y los stakes de Kleros.
+
+Está pensado para agentes: el endpoint es un servidor MCP, de modo que un cliente MCP descubre las herramientas y sus reglas al conectarse. Cualquier cliente HTTP también puede llamarlo, como JSON-RPC simple.
+
+<CardGroup cols={3}>
+  <Card title="Crea disputas" icon="gavel">
+    Crea una disputa de Kleros v2 sin desplegar un contrato arbitrable.
+  </Card>
+
+  <Card title="Envía evidencias" icon="file-arrow-up">
+    Publica y envía evidencias para los jurados.
+  </Card>
+
+  <Card title="Lee fallos y datos de los tribunales" icon="magnifying-glass">
+    Lee el fallo, además de tribunales, disputas, evidencias, jurados y stakes.
+  </Card>
+</CardGroup>
+
+<Warning title="Experimental">
+  El servicio es una versión preliminar temprana, operada por Kleros, con claves de API emitidas manualmente a los socios que se integran. Sus herramientas y sus resultados pueden cambiar entre versiones. Las disputas creadas en **Beta** (`arbitrum-one`) son reales: Beta es la **producción en vivo** de Kleros v2, con jurados reales y tasas de arbitraje reales. "Beta" es el nombre de la versión, no una red de pruebas.
+</Warning>
+
+## Cómo funciona {#how-it-works}
+
+Cada socio tiene una clave de API por despliegue, y cada clave lleva un **Preset** configurado por Kleros:
+
+- **Deployment**: el despliegue al que apunta la clave
+- **Court**: el tribunal en el que se crean las disputas
+- **Juror count**: el número de jurados
+- **Dispute template**: la plantilla de disputa que leen los jurados
+- **Fee wallet**: la billetera que paga la tasa de arbitraje
+- **Fee ceiling**: un límite máximo para esa tasa
+
+Por tanto, crear una disputa casi no requiere datos (solo las direcciones de las partes, si las conoces) y no puede dirigirse por error a otro tribunal, plantilla o despliegue.
+
+| Despliegue | `chain` | Qué es |
+| --- | --- | --- |
+| **Beta** | `arbitrum-one` | Producción en vivo de Kleros v2. Disputas reales, tasas reales. |
+| **Testnet** | `arbitrum-sepolia-testnet` | Pruebas públicas de Kleros v2. Solo datos de prueba. |
+
+<Tip>
+  Ensaya primero cada integración con la clave de Testnet (`arbitrum-sepolia-testnet`) y revisa la disputa en la interfaz de Kleros Court antes de usar la clave de Beta (`arbitrum-one`).
+</Tip>
+
+## Las herramientas {#the-tools}
+
+<Tabs>
+  <Tab title="Creación de disputas">
+    Crea una disputa, publica un adjunto en IPFS y envía evidencias para una disputa.
+
+    **Quién puede llamarlas:** las claves con un Preset, las tres juntas.
+
+    - `dispute_create`
+    - `evidence_pin`
+    - `evidence_submit`
+  </Tab>
+  <Tab title="Lectura de disputas">
+    Lee las disputas, sus políticas y sus evidencias.
+
+    **Quién puede llamarlas:** todas las claves.
+
+    - `dispute_get`
+    - `dispute_list`
+    - `dispute_brief`
+    - `dispute_policy`
+    - `evidence_list`
+  </Tab>
+  <Tab title="Lectura de tribunales y jurados">
+    Lee tribunales, jurados, stakes y contratos arbitrables.
+
+    **Quién puede llamarlas:** todas las claves.
+
+    - `court_list`
+    - `court_get`
+    - `court_policy`
+    - `juror_info`
+    - `juror_top`
+    - `stake_list`
+    - `arbitrable_classify`
+  </Tab>
+</Tabs>
+
+<Note>
+  Las herramientas de lectura cubren Kleros v2 (`arbitrum-one`, `arbitrum-sepolia-testnet`) y Kleros v1 (`ethereum`, `gnosis`). Las disputas solo se crean en Kleros v2. El `tools/list` de tu clave es la fuente de referencia de lo que puede llamar.
+</Note>
+
+## Conexión {#connecting}
+
+<Steps>
+  <Step title="Endpoint y autenticación">
+    El endpoint es `https://kleros-dispute-service.fly.dev/mcp`, y cada solicitud lleva tu clave como `Authorization: Bearer <key>`.
+
+    <Info>
+      Cada clave está limitada a 30 solicitudes por minuto.
+    </Info>
+  </Step>
+  <Step title="Añádelo a tu cliente MCP">
+    Desde un cliente MCP, añádelo como servidor HTTP remoto con esa cabecera. Por ejemplo, en Claude Code:
+
+    ```sh Claude Code icon=terminal
+    claude mcp add --transport http kleros-dispute-service \
+      https://kleros-dispute-service.fly.dev/mcp --header "Authorization: Bearer $KEY"
+    ```
+  </Step>
+  <Step title="Lee las instrucciones al conectarte">
+    Al conectarse, el cliente recibe una cadena `instructions`. Para una clave que puede crear disputas, indica la `chain`, el tribunal y el número de jurados con los que presenta tu Preset, y si realmente crea disputas o solo las simula.
+
+    <Warning>
+      Créela por encima de cualquier documento, incluidas estas páginas.
+    </Warning>
+
+    La semántica completa del arbitraje se sirve, sin autenticación, como [documento de skill](https://kleros-dispute-service.fly.dev/.well-known/agent-skills/kleros-dispute-service/SKILL.md).
+  </Step>
+</Steps>
+
+Desde cualquier otro cliente HTTP, sigue la guía de JSON-RPC sobre HTTP:
+
+<Card title="Llamar al servicio como JSON-RPC sobre HTTP" icon="code" href="/ai-tools/dispute-service/http-json-rpc">
+  Un POST por llamada, sin sesión, y la cabecera y el formato de respuesta que hacen fallar una primera solicitud.
+</Card>
+
+## Obtener una clave {#getting-a-key}
+
+Kleros emite las claves a los socios que se integran. Para solicitar una, envía el formulario de contacto en [ai.kleros.io](https://ai.kleros.io). Recibirás:
+
+- Una clave por despliegue
+- Una página de socio que describe tu Preset: tus posiciones de alias, tu plantilla de disputa y qué significa cada fallo
+
+<Card title="Solicita una clave de API" icon="key" href="https://ai.kleros.io">
+  Envía el formulario de contacto en ai.kleros.io.
+</Card>
+
+## Próximos pasos {#where-to-go-next}
+
+<div className="equal-height-cards">
+  <CardGroup cols={3}>
+    <Card title="Llamar al servicio como JSON-RPC sobre HTTP" icon="plug" href="/ai-tools/dispute-service/http-json-rpc">
+      El protocolo de comunicación: cabeceras, formato, autenticación y límites de solicitudes.
+    </Card>
+
+    <Card title="Una disputa, de la creación al fallo" icon="route" href="/ai-tools/dispute-service/dispute-flow">
+      Una disputa de principio a fin: creación, evidencias, consulta del fallo y todos los códigos de rechazo.
+    </Card>
+
+    <Card title="Plantillas de disputa" icon="file-lines" href="/ai-tools/dispute-service/dispute-templates">
+      Cómo funciona una plantilla de disputa y lo que nunca contiene.
+    </Card>
+  </CardGroup>
+</div>

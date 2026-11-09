@@ -1,0 +1,106 @@
+---
+title: "Kleros CLI (AgentKit)"
+description: "Consulta los tribunales, disputas, evidencias, políticas y jurados de Kleros desde la terminal o como servidor MCP para agentes de IA con la CLI @kleros/agentkit."
+---
+
+`@kleros/agentkit` es una herramienta de línea de comandos y un servidor MCP para leer datos de Kleros. Pueden usarla tanto agentes de IA como personas. Una sola interfaz cubre los tribunales, las disputas, las evidencias, las políticas de tribunales y de disputas y los stakes de los jurados en Kleros V1 y V2.
+
+<Note>
+**Versión actual: v0.3.0 (septiembre de 2026).** La CLI es de solo lectura y anterior a la 1.0, por lo que sus comandos pueden cambiar entre versiones menores. Las operaciones de escritura (staking, votación, creación de disputas, envío de evidencias, apelaciones) todavía no están disponibles.
+</Note>
+
+---
+
+## Qué puede hacer {#what-it-can-do}
+
+- Explorar tribunales, disputas y la actividad de los jurados
+- Resolver las políticas de los tribunales y de las disputas: las reglas que se pide aplicar a los jurados
+- Recorrer los envíos de evidencias, incluidos los adjuntos alojados en IPFS
+- Clasificar contratos arbitrables y obtener un resumen combinado de la disputa en una sola llamada
+- Clasificar a los jurados por PNK en staking
+
+La salida usa por defecto [TOON](https://github.com/toon-format/toon), un formato compacto que usa menos tokens que JSON. También hay salida en tabla y en JSON. Cada respuesta incluye un bloque `cta` que sugiere el siguiente comando lógico.
+
+---
+
+## Cadenas compatibles {#supported-chains}
+
+| Cadena | Versión de Kleros | Slug |
+|---|---|---|
+| Ethereum | V1 | `ethereum` |
+| Gnosis | V1 | `gnosis` |
+| Arbitrum One | V2 (beta) | `arbitrum-one` |
+| Arbitrum Sepolia | Testnet de V2 | `arbitrum-sepolia-testnet` |
+
+Un comando de listado ejecutado sin `--chain` recorre Ethereum, Gnosis y, después, Arbitrum One. V1 y V2 no entienden lo mismo por `ruled`, así que cada fila de `dispute list` incluye un marcador `ruledSemantics`. Usa `dispute get` cuando necesites un fallo leído en directo del contrato árbitro.
+
+<Warning>
+**Actualización desde 0.2.x:** la v0.3.0 introduce cambios incompatibles. Se retira el slug `arbitrum-sepolia` sin más: usa `arbitrum-sepolia-testnet` en su lugar. La variable de entorno correspondiente `KLEROS_RPC_URL_ARBITRUM_SEPOLIA` también cambia de nombre y falla sin avisar si se deja con el nombre antiguo.
+</Warning>
+
+---
+
+## Inicio rápido {#quickstart}
+
+Requiere Node.js 22 o posterior. Ejecútalo sin instalarlo:
+
+```bash
+npx -y @kleros/agentkit court list --chain ethereum
+npx -y @kleros/agentkit dispute get 797 --chain gnosis --format json
+```
+
+O instálalo globalmente y usa el comando `kleros`:
+
+```bash
+npm i -g @kleros/agentkit
+kleros court list --chain ethereum
+```
+
+Guarda una cadena predeterminada para no tener que pasar `--chain` cada vez:
+
+```bash
+kleros config set chain gnosis
+```
+
+---
+
+## Úsalo como servidor MCP {#use-it-as-an-mcp-server}
+
+Registra la CLI como servidor de herramientas MCP para que los agentes de Claude Code, Cursor y otros clientes MCP puedan llamar directamente a las consultas de disputas:
+
+```bash
+claude mcp add kleros -- npx -y @kleros/agentkit --mcp
+```
+
+Si la CLI está instalada globalmente, `kleros mcp add` la registra para Claude Code y Cursor. Los nombres de las herramientas siguen el patrón `group_command`, por ejemplo `dispute_list`, `court_get` y `juror_info`. Pasa un argumento `chain` en cualquier llamada a una herramienta para elegir la cadena de esa llamada.
+
+Para el descubrimiento por parte de los agentes, `kleros --llms` imprime un manifiesto compacto de los comandos y `kleros --llms-full` imprime los argumentos completos y los esquemas de salida. `kleros skills add` instala la skill de agente incluida.
+
+<Tip>
+Es una herramienta distinta del [servidor MCP de la documentación](/ai-tools/mcp-server). Ese servidor permite a un asistente buscar en esta documentación, mientras que la Kleros CLI lee datos del protocolo en directo.
+</Tip>
+
+---
+
+## Uso en producción {#production-use}
+
+Los endpoints RPC predeterminados son públicos y gratuitos, y pueden limitar las solicitudes con tráfico real. Para un uso fiable, apunta las variables `KLEROS_RPC_URL_<CHAIN>` (por ejemplo, `KLEROS_RPC_URL_ARBITRUM_ONE`) a un proveedor de confianza. En Ethereum, usa un endpoint con capacidad de archivo, porque resolver las políticas antiguas requiere registros históricos.
+
+---
+
+## Recursos {#resources}
+
+<CardGroup cols={2}>
+  <Card title="Paquete de npm" icon="npm" href="https://www.npmjs.com/package/@kleros/agentkit">
+    Versiones y README de `@kleros/agentkit`
+  </Card>
+  <Card title="Kleros Skills" icon="robot" href="https://skills.kleros.io">
+    Paquetes de conocimiento sobre Kleros legibles por agentes
+  </Card>
+  <Card title="Notifica un problema" icon="github" href="https://github.com/kleros/kleros-skills/issues">
+    Los comentarios van al repositorio público kleros-skills
+  </Card>
+  <Card title="Endpoints del subgraph" icon="database" href="/developers/subgraph/endpoints">
+    Las fuentes de datos que lee la CLI
+  </Card>
+</CardGroup>
