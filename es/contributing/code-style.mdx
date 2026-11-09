@@ -1,0 +1,140 @@
+---
+title: "Estilo de código"
+description: "Convenciones de commits de Git, reglas de estilo de Solidity y pautas para lenguajes web dirigidas a quienes contribuyen en los repositorios de protocolo, frontend y subgraph de Kleros."
+---
+
+# Estilo de código y pautas {#code-style-&-guidelines}
+
+Convenciones de código para contribuir a los repositorios de Kleros.
+
+---
+
+## Git {#git}
+
+### Mensajes de commit {#commit-messages}
+
+Sigue [Conventional Commits](https://conventionalcommits.org/):
+
+```
+<type>(<scope>): <description>
+
+feat(contracts): add DisputeKitShutter
+fix(web): correct appeal cost calculation
+docs(reference): update sortition module spec
+chore(deps): bump ethers to v6
+test(contracts): add edge case for court jump
+```
+
+Tipos: `feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `style`, `perf`, `ci`, `build`
+
+El monorepo kleros-v2 lo aplica con [commitlint](https://commitlint.js.org/) y [Commitizen](http://commitizen.github.io/cz-cli/).
+
+### Nombres de ramas {#branch-naming}
+
+Usa nombres de rama descriptivos con el tipo como prefijo:
+
+```
+feat/appeal-crowdfunding
+fix/sortition-drawing-timeout
+docs/vea-bridge-routes
+```
+
+---
+
+## Solidity {#solidity}
+
+### Versión {#version}
+
+Los contratos de Kleros V2 usan Solidity `0.8.24`. Fija la versión en el pragma:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.24;
+```
+
+### Formato {#formatting}
+
+Los repositorios de Kleros usan [Prettier](https://prettier.io/) con el plugin de Solidity. La configuración está en la raíz del repositorio.
+
+```bash
+# Format all files
+yarn prettier --write .
+```
+
+### Convenciones {#conventions}
+
+- Usa comentarios NatSpec (`///` o `/** */`) en todas las funciones públicas y externas
+- Agrupa las secciones del contrato con encabezados de comentario:
+
+```solidity
+// ************************************* //
+// *             Storage               * //
+// ************************************* //
+
+// ************************************* //
+// *        Function Modifiers         * //
+// ************************************* //
+
+// ************************************* //
+// *            Constructor            * //
+// ************************************* //
+
+// ************************************* //
+// *         State Modifiers           * //
+// ************************************* //
+
+// ************************************* //
+// *           Public Views            * //
+// ************************************* //
+```
+
+- Usa la anotación `custom:oz-upgrades-unsafe-allow constructor` en los contratos proxiables UUPS
+- Usa el patrón `reinitializer(n)` para inicializar los contratos actualizables
+- Prefiere la visibilidad explícita (`public`, `external`, `internal`, `private`)
+- Usa `require` con mensajes de error o errores personalizados
+
+### Patrón de proxy {#proxy-pattern}
+
+Los contratos de V2 usan el patrón de proxy UUPS. Los contratos de implementación heredan de `UUPSProxiable` e `Initializable`:
+
+```solidity
+contract KlerosCore is IArbitratorV2, UUPSProxiable, Initializable {
+    function _authorizeUpgrade(address) internal view override onlyByGovernor {
+        // NOP
+    }
+}
+```
+
+---
+
+## Lenguajes web (TypeScript/React) {#web-languages-typescript/react}
+
+### Formato {#formatting}
+
+- Prettier para el formato (configuración en la raíz del repositorio)
+- ESLint para el linting (configuración en `.eslintrc` o en el paquete `eslint-config/`)
+
+### Convenciones {#conventions}
+
+- Modo estricto de TypeScript
+- Componentes funcionales de React con hooks
+- Nombres de archivo: `kebab-case` para los archivos, `PascalCase` para los componentes
+- Usa la biblioteca compartida `kleros-app` para los hooks y utilidades comunes de React
+- El código generado (por ejemplo, los bindings de tipos de los contratos) va en `src/hooks/contracts/generated.ts`
+
+---
+
+## Ejecutar los linters {#running-linters}
+
+```bash
+# Lint all packages in the monorepo
+yarn lint
+
+# Fix auto-fixable issues
+yarn lint --fix
+
+# Format with Prettier
+yarn prettier --write .
+```
+
+La CI ejecuta el linting en todas las pull requests. Las PR con errores de linting no superan las comprobaciones.

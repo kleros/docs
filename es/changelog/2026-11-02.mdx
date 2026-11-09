@@ -1,0 +1,35 @@
+---
+title: "2 de noviembre de 2026"
+description: "Court muestra el fallo que aplicó un contrato y el plazo de apelación de la parte perdedora, las imágenes del validador y el relayer de Vea están en GHCR y se corrigen los empates en Court V2."
+---
+
+## Nuevas funciones {#new-features}
+
+### Fallo aplicado y plazo de la parte perdedora en Court {#applied-ruling-and-losing-side’s-deadline-in-court}
+
+Las páginas de casos de [Kleros Court](/es/court/overview) te dan ahora una imagen más clara de cómo terminó un caso y de cuánto tiempo queda para apelar.
+
+- **Fallo aplicado**: tras la ejecución, el cuadro de decisión muestra el fallo que aplicó el contrato arbitrable cuando difiere del fallo del tribunal. Si solo una de las partes estaba totalmente financiada para una apelación, Court explica que esa parte ganó sin una nueva ronda.
+- **Aún no ejecutado**: antes de la ejecución, el cuadro de decisión muestra el fallo del tribunal e indica que todavía no se ha ejecutado.
+- **Plazo de la parte perdedora**: durante el periodo de apelación, el paso Appeal muestra una cuenta atrás para que la parte perdedora financie una apelación. En los contratos que Court no puede reconocer, indica que la parte perdedora puede disponer de menos tiempo que la cuenta atrás principal. Consulta [Apelaciones](/es/court/appeals).
+
+### Imágenes del validador y del relayer de Vea en GHCR {#vea-validator-and-relayer-images-on-ghcr}
+
+El validador y el relayer de Vea se publican ahora como imágenes de Docker en `ghcr.io/kleros/vea/validator-cli` y `ghcr.io/kleros/vea/relayer-cli`. Puedes ejecutar un bot a partir de la imagen publicada en lugar de compilarlo desde el código fuente. Consulta [Run a validator](https://docs.vea.ninja/run-a-validator/getting-started).
+
+## Actualizaciones {#updates}
+
+### Validador y relayer de Vea más fiables {#more-reliable-vea-validator-and-relayer}
+
+Los bots de [Vea](/es/developers/crosschain/vea-bridge) son más robustos:
+
+- **Relayer**: ya no omite ni pierde mensajes. Un lote que falla se reintenta mensaje a mensaje, de modo que un mensaje defectuoso no bloquea el resto de la ruta.
+- **Validador**: cambia de un RPC con límite de solicitudes a otro en segundos en lugar de minutos. También gestiona las afirmaciones, las impugnaciones y las disputas de forma más fiable.
+
+## Corrección de errores {#bug-fixes}
+
+**Empates en Court V2**: cuando una ronda termina en empate, [Court V2](/es/court/overview) lo trata ahora como Negarse a arbitrar, igual que el contrato. Antes, la pestaña Appeal y la cronología mostraban como ganadora la primera opción que alcanzaba el máximo de votos. Esto producía etiquetas de ganador y perdedor, costes de apelación y plazos de financiación erróneos. Las rondas empatadas muestran ahora "(tied vote)" en la vista general, la cronología y la pestaña Appeal.
+
+**Ronda actual en Court V2**: la vista general del caso lee ahora el recuento de votos de la ronda correcta en los casos con más de 10 rondas o más de 100 sorteos.
+
+**Datos del caso que no se cargan en Court**: cuando los datos de un caso no se cargan, el cuadro de decisión muestra ahora solo el fallo del tribunal. Ya no afirma que el contrato aplicó un fallo fuera de las opciones del caso.

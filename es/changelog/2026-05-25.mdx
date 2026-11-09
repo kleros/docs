@@ -1,0 +1,26 @@
+---
+title: "25 de mayo de 2026"
+description: "Scout añade la detección de duplicados en ATQ y el enrutamiento al JavaScript Court, Curate distingue los elementos retirados, y se corrigen la billetera Rabby y la interfaz de Foresight."
+---
+
+## Nuevas funciones {#new-features}
+
+### Detección de duplicados en Address Tags Queries {#duplicate-detection-for-address-tags-queries}
+
+[Scout](/es/products/scout) marca ahora los envíos duplicados de Address Tags Queries (ATQ) antes de que firmes. Si ya existe en el registro una entrada con el mismo repositorio de GitHub, el mismo hash de commit y el mismo ID de cadena EVM, verás un error claro para que puedas revisar el envío existente en lugar de crear un duplicado.
+
+### Enrutamiento al JavaScript Court {#javascript-court-routing}
+
+Las disputas relacionadas con envíos de JavaScript en [Scout](/es/products/scout) se envían ahora al JavaScript Court específico, para que cada caso lo revise el grupo de jurados adecuado.
+
+## Actualizaciones {#updates}
+
+### Ciclo de vida de los elementos más claro en Curate {#clearer-item-lifecycle-in-curate}
+
+Los registros Permanent de [Curate](/es/products/curate) distinguen ahora los elementos que quien los envió **retiró** voluntariamente de los que se **retiraron o rechazaron** mediante una impugnación. La cronología del elemento muestra cuándo se inició y cuándo se completó la retirada, lo que facilita auditar el historial de cada entrada.
+
+## Corrección de errores {#bug-fixes}
+
+**Billetera Rabby en mainnet**: [Kleros Court](/es/court/overview) ya no se bloquea al conectarse con Rabby (u otras billeteras que no exponen la llamada heredada del ID de cadena) en mainnet. Los bindings de los contratos se resuelven ahora de forma fiable con todos los proveedores.
+
+**Icono de la ventana de éxito en Foresight**: el icono de confirmación que aparece tras enviar predicciones en [Foresight](/es/products/foresight) se muestra ahora con el tamaño correcto.

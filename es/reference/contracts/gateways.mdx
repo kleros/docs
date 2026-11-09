@@ -1,0 +1,71 @@
+---
+title: "Contratos de gateway"
+description: "Referencia de los contratos Home Gateway y Foreign Gateway para el arbitraje entre cadenas de Kleros V2 entre KlerosCore en Arbitrum y los contratos arbitrables en cadenas externas."
+hidden: true
+---
+
+Los gateways permiten el arbitraje entre cadenas entre Kleros Court en Arbitrum y los contratos arbitrables en cadenas externas.
+
+## Home Gateway (Arbitrum) {#home-gateway-arbitrum}
+
+El Home Gateway, situado en Arbitrum:
+
+- Recibe los mensajes de creación de disputas del puente Vea
+- Crea disputas en KlerosCore
+- Devuelve los fallos a través del puente
+
+Desde el punto de vista de KlerosCore, el Home Gateway se comporta como un contrato arbitrable.
+
+## Foreign Gateway (cadena externa) {#foreign-gateway-foreign-chain}
+
+El Foreign Gateway, situado en la red principal de Ethereum, Gnosis Chain, etc.:
+
+- Acepta llamadas a `createDispute()` de los contratos arbitrables
+- Transmite la creación de disputas a través del puente Vea al Home Gateway
+- Recibe los fallos del puente y llama a `rule()` en el contrato arbitrable
+
+Desde el punto de vista del contrato arbitrable, el Foreign Gateway se comporta como un árbitro.
+
+### Métodos clave {#key-methods}
+
+#### `createDispute(uint256 _choices, bytes _extraData) payable → uint256` {#createdisputeuint256-_choices-bytes-_extradata-payable-→-uint256}
+
+Crea una disputa entre cadenas. Quien llama debe enviar un importe en ETH igual al coste del arbitraje.
+
+#### `arbitrationCost(bytes _extraData) view → uint256` {#arbitrationcostbytes-_extradata-view-→-uint256}
+
+Devuelve `feeForJuror[courtID] × minJurors` en ETH.
+
+#### `relayRule(address _messageSender, bytes32 _disputeHash, uint256 _ruling, address _relayer)` {#relayruleaddress-_messagesender-bytes32-_disputehash-uint256-_ruling-address-_relayer}
+
+Lo llama el outbox de Vea cuando se transmite un fallo desde Arbitrum. Reenvía el fallo al contrato arbitrable.
+
+#### `withdrawFees(bytes32 _disputeHash)` {#withdrawfeesbytes32-_disputehash}
+
+Paga la tasa del relayer una vez entregado el fallo.
+
+### Métodos de gobernanza (solo Governor) {#governance-methods-governor-only}
+
+#### `changeCourtJurorFee(uint96 _courtID, uint256 _feeForJuror)` {#changecourtjurorfeeuint96-_courtid-uint256-_feeforjuror}
+
+Actualiza la tasa por jurado almacenada en el ForeignGateway para un tribunal concreto. Debe llamarse para mantener sincronizadas las tasas del gateway cuando cambian las tasas de los tribunales de KlerosCore en Arbitrum. **El desfase de tasas es un riesgo operativo conocido**: si no se actualiza tras un cambio de gobernanza de `feeForJuror` en Arbitrum, el coste del arbitraje en la cadena externa será incorrecto.
+
+#### `changeVea(address _veaOutbox, uint256 _gracePeriod)` {#changeveaaddress-_veaoutbox-uint256-_graceperiod}
+
+Actualiza la dirección del outbox de Vea. Admite un periodo de gracia para las transiciones de puentes obsoletos.
+
+## Limitación de las tasas en ERC-20 {#erc-20-fee-limitation}
+
+<Warning>
+  El `ForeignGateway` **no** admite tasas de arbitraje en ERC-20. Llamar a la sobrecarga ERC-20 de `createDispute` en el ForeignGateway se revierte con `"Not supported"`.
+
+  El pago de tasas en ERC-20 (WETH, DAI, etc.) solo está disponible cuando se integra **directamente con KlerosCore** en Arbitrum. Los contratos arbitrables entre cadenas que usan el gateway siempre deben pagar las tasas en ETH.
+</Warning>
+
+## Vea Bridge {#vea-bridge}
+
+El transporte de mensajes subyacente. Utiliza una verificación optimista con una mecánica de afirmación e impugnación para la seguridad.
+
+Consulta [Arquitectura de Vea Bridge](/es/reference/architecture/vea-overview) para más detalles.
+
+[Código fuente del Foreign Gateway](https://github.com/kleros/kleros-v2/blob/master/contracts/src/gateway/ForeignGateway.sol) | [Código fuente del Home Gateway](https://github.com/kleros/kleros-v2/blob/master/contracts/src/gateway/HomeGateway.sol)

@@ -1,0 +1,52 @@
+---
+title: "27 de julio de 2026"
+description: "Votación oculta y recompensas en Scout, la cadena Robinhood en Scout y Curate clásico, la ruta Arbitrum–Base de Vea en el SDK y correcciones de fallos en Court."
+---
+
+## Nuevas funciones {#new-features}
+
+### Votación oculta en Scout {#hidden-voting-in-scout}
+
+[Kleros Scout](/es/products/scout) admite ahora el flujo de votación oculta de Kleros: los votos de los jurados permanecen ocultos durante la fase de votación y se revelan después, como en el tipo de disputa de tribunal oculto que se usa para los registros sensibles.
+
+### Visibilidad de las recompensas en los perfiles y envíos de Scout {#rewards-visibility-on-scout-profiles-and-submissions}
+
+Las cabeceras de los perfiles de [Scout](/es/products/scout) muestran ahora estadísticas de recompensas, y las tarjetas de los envíos muestran una etiqueta "rewarded" para que quienes contribuyen vean de un vistazo qué envíos obtuvieron recompensas. Las páginas de perfil también incluyen el total de recompensas por impugnaciones.
+
+### Compatibilidad con la cadena Robinhood en Scout y Curate clásico {#robinhood-chain-support-in-scout-and-curate-classic}
+
+[Kleros Scout](/es/products/scout) y Kleros Curate clásico añaden compatibilidad con la cadena Robinhood, incluido el logotipo de su red, para que los usuarios puedan explorar los registros de esa red e interactuar con ellos.
+
+### Ruta Arbitrum ↔ Base en el SDK de VeaShi {#arbitrum-↔-base-route-in-the-veashi-sdk}
+
+El [puente Vea](/es/developers/crosschain/vea-bridge) incluye su ruta Arbitrum ↔ Base en `veashi-sdk` (v0.0.3): se exportan las direcciones y los tipos de la nueva ruta, se carga la dirección de Yaho para CCIP y se corrigen los despliegues de Lightbulb y Yaru. Los integradores pueden ahora construir sobre la nueva ruta directamente desde el SDK.
+
+## Actualizaciones {#updates}
+
+### Páginas de elementos más rápidas y fiables en Scout {#faster-and-more-reliable-item-pages-in-scout}
+
+Las páginas de elementos de [Scout](/es/products/scout) esperan ahora a la copia de seguridad de IPFS antes de mostrarse, verifican la disponibilidad de IPFS antes de que un usuario envíe una transacción (lo que evita envíos defectuosos) y guardan en caché las propiedades de IPFS entre recargas para que las páginas sean más rápidas y eviten recargas innecesarias.
+
+### Los enlaces del explorador de Gnosis Chain pasan a Blockscout {#gnosis-chain-explorer-links-switched-to-blockscout}
+
+[Kleros Court](/es/court/overview), [Scout](/es/products/scout) y Kleros Curate clásico enlazan ahora las transacciones y direcciones de Gnosis Chain a `gnosis.blockscout.com` en lugar de a Gnosisscan, lo que restablece los enlaces al explorador en todos los productos.
+
+### Redacción más clara del modal de reclamación en Court {#clearer-claim-modal-wording-in-court}
+
+El modal de reclamación de recompensas de [Kleros Court](/es/court/overview) revisa el texto del enlace a la transacción para que quede más claro adónde lleva el enlace.
+
+### Orden de las pestañas de la página de recompensas de staking en Court {#staking-rewards-page-tab-order-in-court}
+
+La página pública de recompensas de staking de [Kleros Court](/es/court/overview) reordena sus pestañas según los comentarios de los usuarios y lee ahora las instantáneas de recompensas desde un manifiesto, de modo que los datos de recompensas que ven los usuarios se entregan de forma más fiable.
+
+### Mejor control del inicio de sesión en Dispute Resolver {#improved-sign-in-gating-in-dispute-resolver}
+
+El flujo de creación de disputas de [Dispute Resolver](/es/developers/products/dispute-resolver/overview) refuerza el control de Sign-In With Ethereum (SIWE) en el formulario de creación y en el resumen, para que las solicitudes de autenticación aparezcan en el momento adecuado.
+
+## Corrección de errores {#bug-fixes}
+
+**Valores de fallo en el historial de disputas de Court**: [Kleros Court](/es/court/overview) gestiona ahora correctamente los valores de fallo reservados y no estándar en la sección del historial de rondas: los valores de fallo se normalizan, la sección se reinicia cuando cambia la propiedad del fallo y los errores al obtener el texto de la respuesta ya no rompen la vista. Los usuarios ven la etiqueta de fallo correcta en las rondas anteriores en lugar de espacios en blanco o valores erróneos.
+
+**Fallo decodificado en la cronología de evidencias de Court**: [Court](/es/court/overview) corrige la decodificación del fallo que se muestra en la cronología de evidencias, de modo que los usuarios ven el resultado legible en lugar de valores sin procesar.
+
+**Consulta de sorteo obsoleta en Kleros V2**: se corrige una consulta de sorteo obsoleta en la [aplicación web de Kleros V2](/es/products/overview) para que los datos del sorteo de jurados se mantengan sincronizados al pasar de una disputa a otra.

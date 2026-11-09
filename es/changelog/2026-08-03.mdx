@@ -1,0 +1,64 @@
+---
+title: "3 de agosto de 2026"
+description: "Modal de confirmación de voto en Court V2, ruta de Axelar en el SDK de VeaShi, Scout Snap v1.4.1 y RPC de respaldo en Scout y Curate clásico."
+---
+
+## Nuevas funciones {#new-features}
+
+### Modal de confirmación de voto en Kleros V2 {#vote-confirmation-modal-in-kleros-v2}
+
+Los jurados de la [aplicación web de Kleros V2](/es/products/overview) ven ahora un modal de confirmación antes de enviar un voto clásico o un commit en Case Details. Este paso adicional ayuda a evitar envíos accidentales. Disponible en inglés, español y francés.
+
+### Ruta de Axelar en el SDK de VeaShi {#axelar-route-in-the-veashi-sdk}
+
+El [puente Vea](/es/developers/crosschain/vea-bridge) añade un transporte Axelar GMP a `veashi-sdk`, con nuevos contratos `AxelarAdapter` y `AxelarReporter` desplegados en Base ↔ Ethereum / Arbitrum y en sus testnets. Los integradores pueden ahora elegir Axelar como ruta junto a los puentes existentes.
+
+### Consulta `isSubscribed` en `@kleros/kleros-app` {#issubscribed-query-in-@kleros/kleros-app}
+
+`@kleros/kleros-app` v3.1.0 expone una nueva utilidad `fetchIsSubscribed` conectada a `AtlasProvider`, que permite a los integradores comprobar mediante la API de Atlas si el usuario actual está suscrito a las notificaciones de Kleros.
+
+### Scout Snap v1.4.1 {#scout-snap-v1-4-1}
+
+La página de inicio de [Kleros Scout](/es/products/scout) instala ahora `@kleros/scout-snap` v1.4.1 (antes v1.3.1), de modo que los nuevos usuarios obtienen la última versión del Snap de MetaMask.
+
+## Actualizaciones {#updates}
+
+### MetaEvidence más rápido y robusto en Court {#faster-more-resilient-metaevidence-in-court}
+
+[Kleros Court](/es/court/overview) añade una capa de caché de MetaEvidence con una validación más estricta, de modo que las tarjetas de casos, los detalles de los casos, las listas de casos en curso y el historial de rondas cargan más rápido y gestionan correctamente los datos de evidencias mal formados.
+
+### Las recompensas de staking pasan a rewards.kleros.io {#staking-rewards-moved-to-rewards-kleros-io}
+
+Se ha retirado la página de recompensas de staking de la aplicación [Kleros Court](/es/court/overview). La página de inicio de Court enlaza ahora con `rewards.kleros.io`, el destino canónico de las recompensas de staking.
+
+### RPC público de respaldo en Curate clásico y Scout {#public-rpc-fallback-in-curate-classic-and-scout}
+
+Kleros Curate clásico (GTCR) recurre ahora a endpoints RPC públicos cuando no se puede acceder a Alchemy, lo que mantiene las listas operativas durante las caídas del proveedor. [Scout](/es/products/scout) incorpora el mismo respaldo para sus búsquedas de ENS.
+
+### Se elimina la integración con Galxe de Scout {#galxe-integration-removed-from-scout}
+
+Se ha eliminado de [Scout](/es/products/scout) la integración con las misiones de Galxe, que ya no funcionaba.
+
+### Notificaciones de propuestas más claras de los bots de Zodiac {#clearer-proposal-notifications-from-zodiac-bots}
+
+Las plantillas de notificación de los bots del [módulo Zodiac de Kleros](/es/products/governor) (correo electrónico, Slack, Telegram) indican ahora explícitamente cuándo **no** se ejecutó la validación automática y formulan cada punto de la lista de comprobación como una acción ("Verify…", "Confirm…"), lo que reduce el riesgo de suponer que una propuesta se validó automáticamente cuando no fue así.
+
+### Lista de redes de Escrow V2 {#escrow-v2-network-list}
+
+La aplicación web de [Escrow V2](/es/products/escrow) ya no ofrece Gnosis Chain en el selector de redes; solo están disponibles las redes compatibles actualmente.
+
+## Corrección de errores {#bug-fixes}
+
+**Resolución de ENS en Scout**: [Scout](/es/products/scout) restablece la resolución de nombres ENS, que había dejado de funcionar porque mainnet no estaba configurada, y añade un RPC público de respaldo para que las búsquedas sigan funcionando cuando el proveedor principal no está disponible.
+
+**Fin del periodo de negociación de futarquía**: la interfaz de [Foresight](/es/products/foresight) consulta ahora el estado del periodo de negociación cada pocos segundos en lugar de depender de un único temporizador, de modo que los mercados pasan de forma fiable a su estado posterior a la negociación cuando termina el plazo, incluso tras suspender la pestaña o si el reloj se desfasa.
+
+**Número preciso de traders únicos en Foresight**: la estadística de "unique traders" de los mercados de [Foresight](/es/products/foresight) se calcula ahora a partir de los swaps de los pools de Swapr en todos los pares de mercado UP/DOWN, lo que da un recuento preciso de direcciones distintas en lugar de una aproximación basada en los principales poseedores de tokens.
+
+**Sin mensajes engañosos sobre la justificación del voto en Kleros V2**: cuando falta la justificación de un voto, la [aplicación web de Kleros V2](/es/products/overview) muestra ahora un estado neutro en lugar de afirmar un motivo concreto.
+
+**Notificaciones duplicadas de los bots de Zodiac**: los bots del [módulo Zodiac](/es/products/governor) eliminan los duplicados de las notificaciones por evento en la cadena, de modo que los suscriptores ya no reciben correos, mensajes de Slack o de Telegram repetidos cuando se vuelve a procesar un evento.
+
+**Plantilla de enlace de Reality obsoleta**: se corrige el valor predeterminado de `REALITY_LINK_TEMPLATE` en el `.env.example` de los bots de Zodiac, de modo que los nuevos despliegues que copian el ejemplo obtienen desde el principio enlaces de [Reality.eth](/es/products/reality) que funcionan.
+
+**Ruta Lightbulb Base-Sepolia de VeaShi**: se ha vuelto a desplegar la ruta de demostración Lightbulb en Arbitrum Sepolia ↔ Base Sepolia; los archivos de direcciones del [SDK de VeaShi](/es/developers/crosschain/vea-bridge) incorporan el nuevo despliegue automáticamente.

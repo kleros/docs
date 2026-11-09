@@ -1,0 +1,46 @@
+---
+title: "Descripción general del protocolo V1"
+description: "Índice de la documentación de Kleros V1: Court, Curate, Escrow, Governor y Dispute Resolver en Ethereum L1, además de aplicaciones retiradas como Linguo, Moderate y Tokens."
+---
+
+# Documentación del protocolo V1 {#v1-protocol-documentation}
+
+Esta sección documenta el protocolo Kleros V1 y sus productos, junto con las aplicaciones retiradas. V1 es el protocolo probado en producción en Ethereum L1 y sigue activo para integraciones Web3.
+
+<Note>
+Cada uno de los productos V1 siguientes tiene una versión V2 disponible en Arbitrum.
+</Note>
+
+---
+
+## Productos V1 {#v1-products}
+
+| Producto | Estado | Versión V2 |
+|---------|--------|------------|
+| [Court V1](/es/legacy/court-v1) | Producción | [Court V2](/es/court/overview) en Arbitrum |
+| [Curate V1](/es/legacy/curate-v1) | Producción | [Curate V2](/es/products/curate) en Arbitrum |
+| [Escrow V1](/es/legacy/escrow-v1) | Producción | [Escrow V2](/es/products/escrow) en Arbitrum |
+| [Governor V1](/es/legacy/governor-v1) | Producción | [Governor V2](/es/products/governor) en Arbitrum |
+| [Resolver V1](/es/legacy/resolver-v1) | Integrado en Court V2 | Integrado en la interfaz de Court V2 |
+
+---
+
+## Productos retirados {#retired-products}
+
+Estos productos ya no se mantienen activamente:
+
+| Producto | Descripción | Estado |
+|---------|-------------|--------|
+| [Moderate](/es/legacy/retired/moderate) | Bot de moderación para Telegram que usaba Kleros Court | Retirado |
+| [Linguo](/es/legacy/retired/linguo) | Mercado de traducciones descentralizado | Retirado |
+| [Tokens](/es/legacy/retired/tokens) | Interfaz de envío y listado de tokens | Sustituido por el registro de tokens de Curate |
+
+---
+
+## Qué cambia en V2 {#what-v2-changes}
+
+- Desplegado en Arbitrum en lugar de en Ethereum L1
+- Arquitectura modular de dispute kits
+- Compatibilidad entre cadenas mediante el puente VEA
+- Las evidencias y las apelaciones las gestiona el tribunal en lugar del contrato arbitrable
+- Privacidad del voto mediante la integración con Shutter (en desarrollo)

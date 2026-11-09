@@ -1,0 +1,37 @@
+---
+title: "Sortition Module"
+description: "Referencia del Sortition Module: sorteo de jurados ponderado por PNK, stakes en un árbol de sumas, fases de staking, generación y sorteo, e integración del RNG en Kleros V2."
+---
+
+
+
+Gestiona la selección de jurados mediante un sorteo aleatorio ponderado por stake. Utiliza una estructura de datos de árbol de sumas para una selección proporcional eficiente.
+
+**Versión**: 0.9.0 | **Proxy**: UUPS actualizable
+
+## Sistema de fases {#phase-system}
+
+El sortition module funciona por fases:
+
+1. **Staking**: los jurados pueden actualizar sus stakes. No se realizan sorteos.
+2. **Generating**: se solicita un número a la fuente de números aleatorios.
+3. **Drawing**: se sortean los jurados de las disputas usando el número aleatorio generado.
+
+Los stakes enviados durante las fases Generating o Drawing quedan en cola y se aplican cuando se reanuda la fase de staking.
+
+## Métodos clave {#key-methods}
+
+### `createDisputeHook(uint256 _disputeID, uint256 _roundID)` {#createdisputehookuint256-_disputeid-uint256-_roundid}
+KlerosCore lo llama cuando se crea una disputa. Prepara los parámetros del sorteo.
+
+### `draw(uint256 _disputeID, uint256 _roundID, uint256 _nonce) → address` {#drawuint256-_disputeid-uint256-_roundid-uint256-_nonce-→-address}
+Sortea un jurado para la disputa según los pesos del PNK en staking y el número aleatorio.
+
+### `setStake(address _account, uint96 _courtID, uint256 _newStake, bool _alreadyTransferred) → (uint256, uint256, uint256, bool)` {#setstakeaddress-_account-uint96-_courtid-uint256-_newstake-bool-_alreadytransferred-→-uint256-uint256-uint256-bool}
+Actualiza el stake de un jurado en el árbol de sumas.
+
+## Árbol de stakes {#stake-tree}
+
+Utiliza un árbol de sumas de sorteo en el que cada hoja representa el stake de un jurado en un tribunal. La probabilidad de sorteo es proporcional al stake: un jurado con el 10% del total de PNK en staking en un tribunal tiene un 10% de probabilidad de ser sorteado en cada puesto de jurado.
+
+[Ver el código fuente](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/SortitionModule.sol)

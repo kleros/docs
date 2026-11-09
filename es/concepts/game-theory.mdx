@@ -1,0 +1,108 @@
+---
+title: "Teoría de juegos"
+description: "Cómo la coordinación en puntos de Schelling, la redistribución del stake de PNK y la escalada de apelaciones hacen que votar con honestidad sea la estrategia dominante para los jurados de Kleros Court."
+---
+
+# Teoría de juegos e incentivos {#game-theory-&-incentives}
+
+Kleros está diseñado para que votar con honestidad sea la **estrategia dominante** para los jurados. Esta página explica los fundamentos de la teoría de juegos que hacen funcionar la resolución descentralizada de disputas.
+
+---
+
+## El mecanismo del punto de Schelling {#the-schelling-point-mechanism}
+
+Kleros se basa en la idea de Thomas Schelling de que las personas que no pueden comunicarse tienden a coordinarse en "puntos focales", la respuesta más obvia o natural a una pregunta.
+
+En Kleros, los jurados se seleccionan al azar, no pueden comunicarse y deben votar de forma independiente. Saben que:
+- Los demás jurados también intentan responder con honestidad
+- Votar con la mayoría genera recompensas
+- Votar en contra de la mayoría hace perder PNK
+
+En estas condiciones, la estrategia racional de cada jurado es votar por lo que cree que es la **respuesta objetivamente correcta**, porque es la respuesta que espera que elijan también los demás jurados honestos. La respuesta honesta se convierte en el punto de Schelling.
+
+---
+
+## La estructura de incentivos {#the-incentive-structure}
+
+Kleros utiliza dos tipos de incentivos económicos:
+
+### Tasas de arbitraje (ETH) {#arbitration-fees-eth}
+
+Quienes crean las disputas pagan tasas que se reparten entre los jurados coherentes. Si votas con la respuesta ganadora final, recibes una parte del total de tasas de esa ronda:
+
+```
+jurorFeeReward = totalFees / numberOfCoherentVotes
+```
+
+### Redistribución de PNK {#pnk-redistribution}
+
+Los jurados incoherentes pierden una parte de su PNK en staking (determinada por el parámetro `alpha`). Este PNK se redistribuye entre los jurados coherentes:
+
+```
+jurorPNKReward = totalPenalties / numberOfCoherentVotes
+```
+
+La combinación crea un sistema en el que el voto honesto se recompensa desde **dos fuentes independientes**, mientras que el voto deshonesto se penaliza.
+
+---
+
+## Resistencia a los ataques {#attack-resistance}
+
+### El problema del ataque del 51% {#the-51%-attack-problem}
+
+Para controlar el resultado de una disputa, un atacante tendría que controlar la mayoría de los jurados sorteados. Como los jurados se sortean en proporción al PNK en staking, esto requiere controlar la mayoría del PNK en staking en el tribunal correspondiente.
+
+Esto resulta caro por tres motivos:
+
+**Defensa por la liquidez del mercado**: PNK es un token creado con un propósito específico. A medida que un atacante compra PNK, la oferta escasea y el precio sube bruscamente. A diferencia de un ataque con ETH (que tiene una liquidez global profunda), comprar suficiente PNK para dominar un tribunal se vuelve cada vez más caro.
+
+**Escalada de apelaciones**: incluso si un atacante gana una ronda, la parte honesta puede apelar. Cada apelación duplica aproximadamente el jurado, lo que obliga al atacante a controlar una mayoría cada vez mayor. El coste de sostener un ataque crece exponencialmente con cada ronda.
+
+**El efecto de la "voz solitaria de la razón"**: si todos los demás jurados de una ronda votaran de forma deshonesta, un único jurado honesto que votara correctamente recibiría *todas* las penalizaciones y tasas de esa ronda. Esto crea un fuerte incentivo para que al menos algunos participantes voten con honestidad incluso en condiciones de ataque.
+
+### Compra de votos y colusión {#vote-buying-and-collusion}
+
+Kleros V2 aborda la manipulación de votos mediante varios mecanismos:
+
+**Votos ocultos**: la votación commit-reveal impide que los jurados demuestren cómo votaron, lo que hace inaplicable la compra de votos (el jurado sobornado puede simplemente mentir sobre su voto confirmado).
+
+**Protección frente al fraude de jurados**: cualquiera que detecte que un jurado reveló su voto antes de la fase de reveal puede impugnarlo y reclamar una parte de su stake.
+
+**Selección aleatoria**: como los jurados se sortean al azar, un atacante no puede predecir ni controlar qué jurados son seleccionados, lo que dificulta el soborno selectivo.
+
+---
+
+## Por qué los jurados honestos ganan a largo plazo {#why-honest-jurors-win-long-term}
+
+Un jurado honesto que vota sistemáticamente por la respuesta veraz ganará, a lo largo de muchas disputas, más de lo que pierde. El sistema está diseñado para que:
+
+- En promedio, los jurados honestos sean coherentes (coincidan con la mayoría)
+- Las tasas y el PNK redistribuidos de los jurados incoherentes vayan a los coherentes
+- El rendimiento esperado del voto honesto supere al del voto aleatorio o estratégico
+
+Esto no significa que los jurados honestos nunca pierdan: pueden quedar en minoría en una ronda concreta. Pero el sistema de apelaciones garantiza que las minorías persistentes puedan escalar hasta que prevalezca la respuesta veraz.
+
+---
+
+## Limitaciones y reconocimientos honestos {#limitations-and-honest-acknowledgments}
+
+**Kleros no garantiza resultados perfectos.** Garantiza que votar con honestidad es económicamente óptimo según los supuestos de teoría de juegos del protocolo. En la práctica:
+
+- Las disputas pequeñas con pocos jurados tienen una mayor varianza
+- Los jurados pueden carecer de conocimientos para disputas muy técnicas (por eso existen los tribunales especializados)
+- Las disputas con evidencias genuinamente ambiguas pueden no tener un punto de Schelling claro
+
+El sistema mitiga estos problemas mediante la especialización de los tribunales, las apelaciones y el tamaño del jurado, que crece exponencialmente a lo largo de las rondas.
+
+---
+
+## Lecturas adicionales {#further-reading}
+
+<CardGroup cols={2}>
+  <Card title="Yellow paper de Kleros" icon="file" href="https://kleros.io/yellowpaper.pdf">
+    Análisis formal de los mecanismos de incentivos, los sistemas de votación y la resistencia a los ataques (secciones 4.7-4.11)
+  </Card>
+  <Card title="Resolución de disputas" icon="scale-balanced" href="/es/concepts/dispute-resolution">
+    El proceso general de resolución de disputas
+  </Card>
+</CardGroup>

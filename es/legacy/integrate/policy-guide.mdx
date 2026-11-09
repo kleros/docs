@@ -1,0 +1,51 @@
+---
+title: "Guía de redacción de políticas"
+description: "Guía para redactar políticas de disputa para quienes integran Kleros: qué incluir, estructura, ejemplos y buenas prácticas para que los jurados tomen decisiones claras en los casos de Court."
+---
+
+# Guía de redacción de políticas {#policy-writing-guide}
+
+La política de disputa es el documento principal que se presenta a los jurados cuando evalúan un caso. Funciona como una norma legal: define las reglas que los jurados aplican a las evidencias y los argumentos que se les presentan.
+
+Los jurados usan tres categorías de información para decidir su voto:
+
+1. Las **evidencias** presentadas por las partes en disputa y por terceros
+2. La **política de disputa** redactada por quien integra Kleros (tú)
+3. La **política del tribunal** que gestiona el caso (si las dos anteriores no bastan)
+
+Una política de disputa bien redactada conduce a una resolución más rápida, menos apelaciones y resultados más predecibles.
+
+---
+
+## Qué incluir {#what-to-include}
+
+| Sección | Descripción |
+| --- | --- |
+| **Partes** | ¿Quiénes son las partes implicadas? ¿Cómo se identifican? |
+| **Objeto** | ¿Cuál es la naturaleza del servicio, producto o acuerdo? |
+| **Condiciones** | ¿Qué condiciones concretas deben cumplirse para cada opción de fallo? |
+| **Requisitos de las evidencias** | ¿Qué tipos de evidencias deben considerar los jurados? ¿En qué formato deben estar? |
+| **Casos límite** | ¿Qué ocurre en las situaciones ambiguas? ¿Cuál es el fallo por defecto? |
+| **Definiciones** | Define cualquier término técnico o lenguaje específico del ámbito |
+
+---
+
+## Consejos {#tips}
+
+- Sé específico. Las políticas vagas dan lugar a fallos incoherentes y a más apelaciones.
+- Cubre los escenarios hipotéticos. Piensa en qué ocurre cuando las evidencias faltan, están incompletas o son contradictorias.
+- Indica explícitamente el fallo por defecto. Si los jurados no pueden determinar la respuesta correcta a partir de las evidencias, ¿qué deben elegir?
+- Pon a prueba tu política pidiendo a alguien que no conozca tu proyecto que la lea y explique cómo fallaría en un escenario de ejemplo.
+- Revisa las políticas de los tribunales existentes de Kleros en [court.kleros.io](https://court.kleros.io) como ejemplo.
+
+---
+
+## Almacenamiento de las políticas {#policy-storage}
+
+Las políticas se suben a IPFS y se registran en la cadena mediante el contrato `PolicyRegistry`. Los tribunales hijos heredan las políticas de sus tribunales padre, de modo que las políticas del General Court se aplican como respaldo en todas partes.
+
+---
+
+## Obtén ayuda {#get-help}
+
+El equipo de Kleros tiene experiencia redactando políticas para casos de uso de oráculos, registros de curación y disputas de escrow. Escribe a [integrations@kleros.io](mailto:integrations@kleros.io) para obtener revisión y orientación.

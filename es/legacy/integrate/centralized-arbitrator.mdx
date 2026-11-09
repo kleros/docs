@@ -1,0 +1,54 @@
+---
+title: "Árbitro centralizado"
+description: "Guía heredada de V1 del panel del árbitro centralizado: despliega un árbitro de prueba para depurar las aplicaciones arbitrables antes de conectarlas a KlerosLiquid V1 en Ethereum."
+---
+
+# Árbitro centralizado {#centralized-arbitrator}
+
+[centralizedarbitrator.kleros.io](https://centralizedarbitrator.kleros.io)
+
+El panel del árbitro centralizado permite a cualquiera desplegar y operar rápidamente un árbitro centralizado desde una interfaz gráfica. Sirve como herramienta de pruebas y depuración para las aplicaciones arbitrables que se integran con Kleros Court.
+
+---
+
+## Cómo funciona {#how-it-works}
+
+1. Accede al [panel](https://centralizedarbitrator.kleros.io) y conecta una billetera MetaMask en la red de destino.
+2. Elige entre:
+   - **Deploy new**: tu dirección de Ethereum pasa a ser la propietaria que puede establecer los fallos y modificar la tasa de arbitraje.
+   - **Select existing**: introduce la dirección de un árbitro centralizado desplegado anteriormente.
+3. Establece o modifica la tasa de arbitraje según sea necesario.
+4. Sigue las disputas que llegan desde tu aplicación arbitrable, fíltralas por estado y emite los fallos directamente desde la interfaz.
+
+---
+
+## Compatibilidad de redes {#network-compatibility}
+
+El árbitro centralizado puede usarse en la red principal de Ethereum y en las testnets de Ethereum. Contacta con el equipo de Kleros para solicitar compatibilidad con otras testnets.
+
+---
+
+## Caso de uso {#use-case}
+
+El flujo de trabajo habitual es:
+
+1. Despliega un árbitro centralizado en una testnet
+2. Haz que tu contrato arbitrable apunte a la dirección de este árbitro
+3. Crea disputas de prueba desde tu aplicación
+4. Emite los fallos manualmente desde el panel para verificar que tu contrato los gestiona correctamente
+5. Cuando estés conforme, cambia la dirección del árbitro de tu contrato a Kleros Court (KlerosCore)
+
+Así puedes probar bajo tu control el ciclo de vida completo de una disputa (creación, evidencias, fallo, apelación) antes de pasar a producción con el arbitraje descentralizado.
+
+---
+
+## Recursos {#resources}
+
+<CardGroup cols={2}>
+  <Card title="Abrir el árbitro centralizado" icon="rocket" href="https://centralizedarbitrator.kleros.io">
+    centralizedarbitrator.kleros.io
+  </Card>
+  <Card title="Construye una aplicación arbitrable" icon="code" href="/es/developers/arbitrable-apps/arbitrable-overview">
+    Guía de integración en la pestaña Desarrolladores
+  </Card>
+</CardGroup>

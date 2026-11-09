@@ -1,0 +1,20 @@
+---
+title: "ModeratedEvidenceModule"
+description: "Referencia del contrato ModeratedEvidenceModule: envío de evidencias con fianza, periodos de impugnación y protección frente al spam para las disputas de Kleros V2 en cadenas L2."
+hidden: true
+---
+
+Ofrece protección frente al spam en el envío de evidencias mediante un mecanismo de impugnación con fianza. En las cadenas L2, donde el gas es barato, el spam de evidencias es un problema real: este módulo exige depósitos que pueden impugnarse.
+
+## Cómo funciona {#how-it-works}
+
+1. Quien envía la evidencia la publica junto con un depósito
+2. Durante el periodo de moderación, cualquiera puede impugnar la evidencia
+3. Si se impugna, se crea una disputa para determinar si la evidencia es spam
+4. Quienes envían spam pierden su depósito; las evidencias legítimas se aceptan
+
+## Caso de uso {#use-case}
+
+Resulta especialmente útil para las disputas en Arbitrum, donde los costes de gas son lo bastante bajos como para que actores maliciosos inunden una disputa con evidencias irrelevantes para confundir a los jurados.
+
+[Ver el código fuente](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/evidence/ModeratedEvidenceModule.sol)

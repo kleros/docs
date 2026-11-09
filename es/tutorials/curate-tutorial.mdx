@@ -1,0 +1,87 @@
+---
+title: "Tutorial de Curate"
+description: "Guía paso a paso de Kleros Curate V1: crea una lista, regístrala en la List of Lists y envía o impugna elementos."
+---
+
+# Tutorial de Curate {#curate-tutorial}
+
+<Warning>
+**Classic Curate está en proceso de retirada.** Los contratos de Classic Curate siguen desplegados y sin cambios, por lo que las listas Classic existentes siguen funcionando: todavía se pueden enviar, impugnar y consultar elementos. Kleros no lanzará nuevos registros en Classic Curate, y se está desactivando la creación de listas Classic desde los frontends de Kleros. **Light Curate y Stake Curate no se ven afectados** y siguen siendo totalmente compatibles; las nuevas listas, incluidos los registros Kleros Verified que aparecen en la página de inicio de la [aplicación Curate](https://curate.kleros.io), se crean en Light Curate.
+</Warning>
+
+Este tutorial explica cómo crear listas en Kleros Curate V1 y cómo enviar e impugnar elementos en ellas. Solo Classic Curate está en proceso de retirada: crea las nuevas listas en Light Curate.
+
+Las listas de Curate se despliegan como contratos inteligentes. La plataforma utiliza una estructura jerárquica en la que las listas de nivel superior pueden contener sublistas.
+
+---
+
+## Crea una lista {#create-a-list}
+
+<Note>
+Se está desactivando la creación de listas de Classic Curate desde los frontends de Kleros. Crea las nuevas listas en Light Curate.
+</Note>
+
+Accede a la página de creación de listas mediante el botón **Create a List** de la cabecera.
+
+<Steps>
+  <Step title="Establece los parámetros básicos">
+    - **Título**: el nombre de tu lista (por ejemplo, "Hip Hop Legends")
+    - **Descripción**: un breve resumen del propósito de la lista
+    - **Criterios de aceptación**: información fundamental que especifica qué envíos se aceptan o se rechazan
+    - **Nombre del elemento**: la etiqueta para cada envío (por ejemplo, "Hip Hop Legend")
+    - **Configuración de depósitos**: una configuración mediante controles deslizantes que equilibra el coste de envío con el control de calidad
+    - **Selección del tribunal**: elige el tribunal de arbitraje según la complejidad y el valor de la lista
+  </Step>
+  <Step title="Configura los parámetros avanzados (opcional)">
+    Los usuarios avanzados pueden establecer cada depósito por separado:
+
+    - Depósito de envío
+    - Depósito de retirada
+    - Depósito de impugnación de un envío
+    - Depósito de impugnación de una retirada
+  </Step>
+  <Step title="Define los campos de la lista">
+    Añade campos personalizados para los envíos (texto, imágenes y otros tipos). Activa **Index** en un campo para que se pueda buscar.
+  </Step>
+  <Step title="Parámetros de la lista de insignias (opcional)">
+    Un sistema opcional por niveles permite que los envíos obtengan insignias adicionales según criterios específicos.
+  </Step>
+  <Step title="Despliega">
+    Paga las tasas de despliegue del contrato desde tu billetera para lanzar la lista.
+  </Step>
+</Steps>
+
+
+---
+
+## Regístrala en la List of Lists {#register-in-the-list-of-lists}
+
+<Note>
+La List of Lists funciona ahora en Light Curate. Los registros Kleros Verified que aparecen en la página de inicio de Curate pasaron de Classic a Light Curate en agosto de 2026, con nuevas direcciones de contrato.
+</Note>
+
+Envía la lista desplegada al registro principal haciendo clic en **Submit List** y pagando un depósito de confirmación. Así se mostrará en la página de inicio de Curate.
+
+---
+
+## Envía e impugna elementos {#submit-&-challenge-items}
+
+- **Envíos**: los usuarios depositan fondos para añadir elementos a una lista. El depósito se devuelve si el elemento se acepta.
+- **Impugnaciones**: cualquiera puede disputar un envío describiendo cómo incumple la política de la lista. Los jurados de Kleros arbitran la disputa y la parte ganadora recibe el depósito de la perdedora (menos las tasas de arbitraje).
+
+<Tip>
+Redacta con cuidado tus criterios de aceptación antes de desplegar. Los jurados fallan sobre las impugnaciones según la política de tu lista, así que unos criterios ambiguos dan lugar a resultados impredecibles.
+</Tip>
+
+---
+
+## ¿Qué sigue? {#what’s-next}
+
+<CardGroup cols={2}>
+  <Card title="Página del producto Curate" icon="list-check" href="/es/products/curate">
+    Cómo funciona Curate y sus variantes
+  </Card>
+  <Card title="Construye con Curate" icon="code" href="/developers/products/curate">
+    Contratos inteligentes de Curate y estándares para integradores
+  </Card>
+</CardGroup>
