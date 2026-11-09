@@ -597,6 +597,132 @@
                   "es/reference/architecture/sortition-module-spec",
                   "es/reference/architecture/vea-overview"
                 ]
+              },
+              {
+                "group": "Aplicaciones arbitrables",
+                "pages": [
+                  "es/developers/arbitrable-apps/arbitrable-overview",
+                  {
+                    "group": "Construir sobre V1",
+                    "pages": [
+                      "es/developers/arbitrable-apps/erc-792",
+                      "es/developers/arbitrable-apps/erc-1497",
+                      "es/developers/arbitrable-apps/v1-arbitrable-apps",
+                      "es/developers/arbitrable-apps/centralized-arbitrator",
+                      "es/developers/arbitrable-apps/arbitrable-proxy"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Productos",
+                "pages": [
+                  "es/developers/products/overview",
+                  "es/developers/products/court/overview",
+                  "es/developers/products/foresight/overview",
+                  "es/developers/products/governor/overview",
+                  "es/developers/products/scout/overview",
+                  "es/developers/products/dispute-resolver/overview"
+                ]
+              },
+              {
+                "group": "Subgraph y datos",
+                "pages": [
+                  "es/developers/subgraph/overview"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Referencia",
+            "icon": "book-bookmark",
+            "groups": [
+              {
+                "group": "Descripción general",
+                "pages": [
+                  "es/reference/overview"
+                ]
+              },
+              {
+                "group": "Arquitectura",
+                "pages": [
+                  "es/reference/architecture/v2-architecture",
+                  "es/reference/architecture/arbitrator-v2",
+                  "es/reference/architecture/sortition-module-spec",
+                  "es/reference/architecture/vea-overview"
+                ]
+              },
+              {
+                "group": "Contratos (V2)",
+                "pages": [
+                  "es/reference/contracts/deployment-addresses",
+                  "es/reference/contracts/kleros-core",
+                  "es/reference/contracts/dispute-kit-classic",
+                  "es/reference/contracts/sortition-module",
+                  "es/reference/contracts/gateways",
+                  "es/reference/contracts/kleros-governor",
+                  "es/reference/contracts/policy-registry",
+                  "es/reference/contracts/dispute-template-registry",
+                  "es/reference/contracts/moderated-evidence-module"
+                ]
+              },
+              {
+                "group": "Contratos (V1)",
+                "pages": [
+                  "es/reference/contracts/deployment-addresses-v1"
+                ]
+              },
+              {
+                "group": "Formatos de datos (V2)",
+                "pages": [
+                  "es/reference/data-formats/dispute-templates",
+                  "es/reference/data-formats/evidence-format",
+                  "es/reference/data-formats/policy-format",
+                  "es/reference/data-formats/court-specification",
+                  "es/reference/data-formats/cross-chain-evidence"
+                ]
+              },
+              {
+                "group": "SDK (V2)",
+                "pages": [
+                  "es/reference/sdk/kleros-sdk"
+                ]
+              }
+            ]
+          },
+          {
+            "dropdown": "Registro de cambios",
+            "icon": "clock-rotate-left",
+            "groups": [
+              {
+                "group": "Registro de cambios",
+                "pages": [
+                  "es/changelog/2026-11-02",
+                  "es/changelog/2026-10-26",
+                  "es/changelog/2026-10-12",
+                  "es/changelog/2026-10-05",
+                  "es/changelog/2026-09-28",
+                  "es/changelog/2026-09-21",
+                  "es/changelog/2026-09-14",
+                  "es/changelog/2026-09-07",
+                  "es/changelog/2026-08-31",
+                  "es/changelog/2026-08-24",
+                  "es/changelog/2026-08-17",
+                  "es/changelog/2026-08-10",
+                  "es/changelog/2026-08-03",
+                  "es/changelog/2026-07-27",
+                  "es/changelog/2026-07-13",
+                  "es/changelog/2026-07-06",
+                  "es/changelog/2026-06-29",
+                  "es/changelog/2026-06-15",
+                  "es/changelog/2026-05-25",
+                  "es/changelog/2026-05-19",
+                  "es/changelog/2026-05-12",
+                  "es/changelog/2026-05-05",
+                  "es/changelog/2026-04-28",
+                  "es/changelog/2026-04-21",
+                  "es/changelog/2026-04-14"
+                ]
               }
             ]
           }

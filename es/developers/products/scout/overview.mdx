@@ -1,0 +1,64 @@
+---
+title: "Scout"
+description: "Referencia para desarrolladores de Kleros Scout, el frontend del ecosistema de registros curados de etiquetas de direcciones: registros, etiquetas y patrones de consulta."
+---
+
+Esta página documenta los detalles técnicos de Scout. No incluye una guía de integración.
+
+---
+
+## Qué es Scout {#what-is-scout}
+
+- Una interfaz frontend para el ecosistema de registros curados de etiquetas de direcciones de Kleros
+- Alcanzó su versión definitiva en mayo de 2026: el conjunto de funciones previsto está completo y el foco está ahora en hacer crecer la base de datos unificada
+- Más de 2,6 millones de direcciones en la cadena curadas a mayo de 2026
+- Registros: Tokens, CDN, ATQ (Address Tags Query) y registros de etiqueta única
+
+---
+
+## Arquitectura técnica {#technical-architecture}
+
+- Construido sobre los contratos inteligentes de Curate (Light Curate / GTCR en la cadena)
+- Datos indexados mediante GTCR Indexer y Envio HyperIndex
+- Las subidas a IPFS pasan por el flujo SIWE de Atlas
+- Los envíos exigen iniciar sesión en el momento del envío; hasta entonces, las imágenes se conservan en el navegador
+- El tamaño de las imágenes de los envíos está limitado en todos los registros; el registro de tokens exige un máximo de 1 MB y un mínimo de 128×128 para los logotipos
+- La detección de duplicados en ATQ evita los envíos duplicados de etiquetas de direcciones
+- Las disputas se envían al tribunal correcto mediante el enrutamiento al JavaScript Court
+- La sección de evidencias está fuera del modal de envío para que se puedan consultar las evidencias mientras se envía
+
+---
+
+## Cadenas compatibles {#chain-support}
+
+Ethereum Mainnet, Linea, Avalanche C-Chain, zkSync, Scroll, Gnosis, Celo, Base, Solana, Arbitrum One, OP Mainnet, MegaETH, Polygon, PulseChain, Robinhood Chain, Hyperliquid (HyperEVM) y Arc Mainnet.
+
+---
+
+## Socios que usan los datos de Scout {#partners-using-scout-data}
+
+- OpenScan y RouteScan (exploradores de bloques)
+- MonarchLend
+- MetaMask Snap (Scout Snap v1.3.8)
+
+---
+
+## GTCR Indexer {#gtcr-indexer}
+
+- El esquema (v0.1.7) incluye los hashes de las transacciones de impugnación, las fechas de impugnación y los hashes de las transacciones de apelación
+- Se mantiene una rama de Envio junto a la rama principal
+
+---
+
+## Gobernanza {#governance}
+
+- La KIP-87 creó un nuevo Curation Court en Gnosis con votación oculta (junio de 2026)
+- Está previsto que los registros de Scout migren al nuevo tribunal
+
+---
+
+## Enlaces {#links}
+
+- Aplicación: [scout-app.kleros.io](https://scout-app.kleros.io/home)
+- Repositorio: [github.com/kleros/scout](https://github.com/kleros/scout)
+- GTCR Indexer: [github.com/kleros/gtcr-indexer](https://github.com/kleros/gtcr-indexer)

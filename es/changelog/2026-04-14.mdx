@@ -1,0 +1,95 @@
+---
+title: "14 de abril de 2026"
+description: "Exportación de las recompensas de staking de PNK, créditos e incorporación en Foresight, verificación de propuestas de Zodiac, rediseño de Scout y correcciones de errores en Court, Curate y Escrow."
+---
+
+## Nuevas funciones {#new-features}
+
+### Exporta las recompensas de staking de PNK {#export-pnk-staking-rewards}
+
+Ya puedes exportar tus recompensas mensuales de staking de PNK desde [Kleros Court](/es/court/overview) como archivo descargable. Un nuevo botón en la página de inicio te da acceso rápido a tu historial de recompensas, con paginación, para que te resulte fácil seguir tus ganancias a lo largo del tiempo.
+
+### Créditos en Foresight {#foresight-credits}
+
+[Foresight](/es/products/foresight) admite ahora los créditos de Seer como método de pago, también a través de las billeteras de negociación. Puedes usar tus créditos mensuales de Seer para participar en las sesiones de predicción sin necesidad de depositar colateral adicional. También hay disponible un nuevo enlace para conseguir xDAI directamente en la interfaz.
+
+### Exporta las predicciones a CSV {#export-predictions-to-csv}
+
+Ya puedes exportar tu historial de predicciones de Foresight como archivo CSV con marcas de tiempo en UTC, lo que facilita seguir y analizar tu participación en las distintas sesiones.
+
+### Guías de incorporación de Foresight {#foresight-onboarding-guides}
+
+Nuevas guías paso a paso acompañan a quienes usan por primera vez la interfaz de [Foresight](/es/products/foresight) y explican cómo funcionan las predicciones, la mecánica de pérdidas y ganancias y la cronología de la sesión. En cada predicción se muestra además una guía avanzada con contenido estratégico más profundo para ayudarte a mejorar.
+
+### Verificación automática de propuestas de Zodiac {#automatic-zodiac-proposal-verification}
+
+Los bots del [Zodiac Reality Module](/es/products/reality) verifican ahora automáticamente que las nuevas propuestas de gobernanza tienen preguntas válidas de Reality.eth. Si la pregunta en la cadena de una propuesta no es la esperada, recibirás una notificación con los detalles del problema, de modo que los errores se detectan antes de que termine el periodo de impugnación.
+
+### Identidad de Ethereum en los perfiles de los jurados {#ethereum-identity-on-juror-profiles}
+
+Las páginas de perfil de los jurados de [Kleros Court](/es/court/overview) muestran ahora las identidades de Ethereum vinculadas en varias cadenas, como Arbitrum, Base y Optimism. Puedes ver la presencia de un jurado en distintas cadenas y seguirlo mediante el Ethereum Follow Protocol (EFP) directamente desde su perfil.
+
+### Compatibilidad con el dispute kit universitario {#university-dispute-kit-support}
+
+Court admite ahora el dispute kit Classic University, lo que amplía la gama de mecanismos especializados de resolución de disputas disponibles. Quienes administran los tribunales pueden seleccionar este kit al configurar los parámetros del tribunal, y los jurados pueden hacer commit, votar, revelar y apelar con el flujo del kit universitario.
+
+### Dispute kit de Protección al Consumidor de Argentina {#argentina-consumer-protection-dispute-kit}
+
+Ya está disponible un nuevo dispute kit restringido para los casos de Protección al Consumidor de Argentina. Permite una resolución de disputas adaptada al derecho del consumo argentino, con controles de acceso basados en roles para los participantes cualificados.
+
+## Actualizaciones {#updates}
+
+### Cálculo del APY corregido en Court {#corrected-apy-calculation-in-court}
+
+El APY de staking que se muestra en [Kleros Court](/es/court/overview) usa ahora el suministro de PNK ajustado para un cálculo más preciso, de modo que las tasas que ves reflejan mejor la rentabilidad real del staking.
+
+### Mejoras en las predicciones por lotes en Foresight {#batch-prediction-improvements-in-foresight}
+
+Las sesiones de predicción grandes de [Foresight](/es/products/foresight) procesan ahora las transacciones en bloques configurables, de modo que es menos probable que alcances los límites de gas al predecir sobre muchos elementos a la vez. Los mercados que no devuelven una cotización se omiten de forma controlada en lugar de bloquear todo el lote.
+
+### Pulido de los gráficos y la interfaz de Foresight {#foresight-chart-and-ui-polish}
+
+Los gráficos de predicción incluyen ahora puntos de datos destacados para facilitar la lectura, un mejor espaciado en el margen derecho y una escala de tiempo corregida. Tus predicciones también se conservan si recargas la página a mitad de la sesión.
+
+### Compatibilidad de Zodiac con subdominios ENS y plugins {#zodiac-ens-subdomain-and-plugin-support}
+
+Los bots de Zodiac admiten ahora subdominios ENS y varios esquemas JSON del plugin SafeSnap, lo que amplía la compatibilidad con distintas configuraciones de DAO.
+
+### Rediseño de la página de inicio de Scout {#scout-homepage-redesign}
+
+La página de inicio de [Scout](/es/products/scout) se ha renovado con una sección principal rediseñada, una tipografía mejorada y logotipos de socios actualizados, entre ellos Openscan y Routescan. El diseño entre las secciones de últimos casos y actividad reciente está ahora más equilibrado, y un nuevo botón "show more" facilita recorrer los casos.
+
+### Mejor gestión de los datos de IPFS en Scout {#improved-ipfs-data-handling-in-scout}
+
+Cuando los datos de un registro almacenados en IPFS no están disponibles temporalmente, [Scout](/es/products/scout) muestra ahora un mensaje claro de "IPFS data unavailable" en lugar de fallar sin avisar.
+
+### Enlaces al explorador de bloques en la cronología de Escrow {#block-explorer-links-in-escrow-timeline}
+
+La cronología de las transacciones de [Escrow](/es/products/escrow) incluye ahora enlaces directos al explorador de bloques correspondiente para cada evento. Puedes hacer clic para verificar la actividad en la cadena de los pagos, las disputas y los acuerdos sin salir de la interfaz.
+
+### Visor de políticas de Escrow {#escrow-policy-viewer}
+
+Escrow incluye ahora un desplegable de políticas que te permite explorar y consultar las políticas de resolución de disputas directamente en la aplicación. El visor de archivos también se ha mejorado para facilitar la lectura.
+
+### Scout siempre visible en la navegación {#scout-always-visible-in-navigation}
+
+[Scout](/es/products/scout) se muestra ahora siempre en la barra de navegación de Court, lo que facilita acceder a la información de seguridad curada por la comunidad mientras exploras los casos.
+
+### Nuevo despliegue de los tokens SBT en Arbitrum {#sbt-token-redeployment-on-arbitrum}
+
+Los contratos de SBT (Soulbound Token) de la experiencia de Protección al Consumidor de Argentina y de las credenciales de abogado se han vuelto a desplegar en Arbitrum con mejoras.
+
+## Corrección de errores {#bug-fixes}
+
+- **Modal de cambio de red de Court**: el modal que te pide cambiar a la red correcta funciona ahora bien incluso sin una billetera conectada y se puede cerrar como es de esperar.
+- **Ventanas de conexión de billetera en Court**: ya no aparecen ventanas innecesarias de conexión de billetera al explorar los casos.
+- **Redirecciones de Dispute Resolver a Court**: los enlaces de [Dispute Resolver](/legacy/resolver-v1) a Court especifican ahora correctamente la cadena, lo que evita que llegues a la red equivocada.
+- **Reinicio de predicciones en Foresight**: las predicciones ya no se reinician inesperadamente tras un envío correcto.
+- **Legibilidad del modo oscuro en Foresight**: la guía avanzada tiene ahora el estilo correcto en el modo oscuro.
+- **Estimación del gas en Foresight**: los márgenes de gas tienen ahora un límite para evitar tasas de transacción inesperadamente altas.
+- **Fiabilidad de la visualización de registros en Curate**: en [Curate](/es/products/curate), un único elemento de registro mal formado ya no impide que se carguen los demás elementos válidos. La lista de elementos gestiona ahora los errores de forma controlada para que siempre veas los elementos disponibles.
+- **Precisión de las fechas de impugnación en Scout**: las fechas de impugnación de las cronologías de los elementos de [Scout](/es/products/scout) se muestran ahora correctamente.
+- **Formato de los valores en Escrow**: los importes pequeños de tokens se muestran ahora correctamente en lugar de redondearse a cero.
+- **Comprobaciones del rol de vendedor en Escrow**: la interfaz refleja ahora correctamente las acciones y condiciones específicas del vendedor.
+- **Correcciones de la auditoría de los contratos inteligentes de Court**: se han aplicado varias mejoras procedentes de una auditoría de seguridad a los contratos principales de resolución de disputas, como una lógica de reparto de recompensas simplificada y una gestión de eventos más eficiente.
+- **Mejoras en la seguridad de tipos de Court**: se han resuelto casos límite en los que valores opcionales de las cronologías de las disputas, las tarjetas de evidencias y los detalles de la votación podían provocar errores.

@@ -1,0 +1,36 @@
+---
+title: "17 de agosto de 2026"
+description: "Nuevos tribunales Commerce y Agentic Commerce en Kleros V2, Curate clásico renovado con Permanent GTCR y borradores locales de justificaciones en Court."
+---
+
+## Nuevas funciones {#new-features}
+
+### Tribunales Commerce y Agentic Commerce en Kleros V2 {#commerce-and-agentic-commerce-courts-in-kleros-v2}
+
+Dos nuevos tribunales están activos en la red principal de [Kleros V2](/es/products/overview): el **Commerce Court**, para disputas comerciales de pequeña escala, y el **Agentic Commerce Court**, para interacciones comerciales entre agentes de IA, con tiempos de resolución cortos y en el que se espera que los jurados sean agentes de IA.
+
+### Página de inicio de Curate clásico renovada con Permanent GTCR {#revamped-curate-classic-homepage-with-permanent-gtcr}
+
+La interfaz de [Kleros Curate](/es/products/curate) clásico (GTCR) estrena nuevas páginas de inicio de registros verificados y añade una fábrica **Permanent GTCR** específica junto a la fábrica estándar existente. Los usuarios pueden ahora descubrir listas verificadas en páginas de inicio curadas y desplegar registros estándar o permanentes (basados en stake) directamente desde la aplicación.
+
+### Borradores locales de justificaciones en Kleros Court {#local-justification-drafts-in-kleros-court}
+
+[Kleros Court](/es/court/overview) guarda ahora automáticamente en local la justificación de tu voto por disputa en los tribunales con votos ocultos (commit y reveal). Puedes empezar a redactar la justificación durante el periodo de commit y revisarla o enviarla al revelar tu voto. Los borradores se almacenan solo en el dispositivo y se borran una vez enviado el voto.
+
+## Actualizaciones {#updates}
+
+### Interfaz de justificación más limpia en Court {#cleaner-justification-ui-in-court}
+
+Se ha eliminado la leyenda que aparecía junto al cuadro de justificación de [Kleros Court](/es/court/overview) en la página de detalles del caso, para un diseño de votación más compacto.
+
+### PoH Governor incluido en la lista blanca de Court {#poh-governor-whitelisted-in-court}
+
+La dirección del Proof of Humanity Governor figura ahora en la lista blanca de contratos arbitrables de [Kleros Court](/es/court/overview), de modo que los casos que proceden de ese governor se muestran con los metadatos previstos.
+
+### Lecturas de datos más fiables en Dispute Resolver {#more-reliable-data-reads-in-dispute-resolver}
+
+[Dispute Resolver](/es/developers/products/dispute-resolver/overview) dirige ahora las lecturas de los antiguos endpoints de Infura codificados de forma fija a través de los RPC de solo lectura de Kleros dentro de los iframes de visualización de evidencias. Los datos de los casos siguen cargándose aunque el endpoint público original esté limitado o no esté disponible.
+
+## Corrección de errores {#bug-fixes}
+
+**Enlace correcto a las preguntas frecuentes en la advertencia sobre billeteras de contrato inteligente de Court**: el banner "smart contract wallet not recommended" de [Kleros Court](/es/court/overview) apunta ahora a la entrada actual de las preguntas frecuentes sobre cuentas de contrato inteligente, en sustitución de un enlace obsoleto que devolvía un error 404 tras la reestructuración de la documentación.

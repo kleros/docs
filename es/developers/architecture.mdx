@@ -24,10 +24,10 @@ graph TB
 | **PolicyRegistry** | Almacenamiento de las políticas de los tribunales |
 | **Contratos arbitrables** | Implementan ERC-792 para crear disputas y recibir fallos, y ERC-1497 para aportar el contexto de la disputa |
 
-V1 utiliza los estándares ERC-792 (arbitraje) y ERC-1497 (evidencias), aleatoriedad basada en blockhash, votación por pluralidad con commit-reveal y un árbol jerárquico de subtribunales. Para ver las direcciones de los contratos de V1, consulta [Direcciones de despliegue](/reference/contracts/deployment-addresses-v1).
+V1 utiliza los estándares ERC-792 (arbitraje) y ERC-1497 (evidencias), aleatoriedad basada en blockhash, votación por pluralidad con commit-reveal y un árbol jerárquico de subtribunales. Para ver las direcciones de los contratos de V1, consulta [Direcciones de despliegue](/es/reference/contracts/deployment-addresses-v1).
 
 <Warning>
-Un contrato arbitrable de V1 debe implementar [ERC-1497](/developers/arbitrable-apps/erc-1497) además de ERC-792. En concreto, debe emitir un evento `MetaEvidence` y vincular las disputas a él con un evento `Dispute`. La interfaz de Court se basa en `MetaEvidence` para mostrar a los jurados la disputa y sus opciones de fallo. Un contrato arbitrable que nunca emite `MetaEvidence` produce disputas que no se pueden resolver correctamente.
+Un contrato arbitrable de V1 debe implementar [ERC-1497](/es/developers/arbitrable-apps/erc-1497) además de ERC-792. En concreto, debe emitir un evento `MetaEvidence` y vincular las disputas a él con un evento `Dispute`. La interfaz de Court se basa en `MetaEvidence` para mostrar a los jurados la disputa y sus opciones de fallo. Un contrato arbitrable que nunca emite `MetaEvidence` produce disputas que no se pueden resolver correctamente.
 </Warning>
 
 ## Visión general del sistema V2 {#v2-system-overview}

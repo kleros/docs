@@ -1,0 +1,25 @@
+---
+title: "DisputeTemplateRegistry"
+description: "Referencia del contrato DisputeTemplateRegistry: registra, recupera y versiona las plantillas de disputa que definen las preguntas, las opciones y los metadatos que ven los jurados."
+---
+
+
+
+Almacena las plantillas de disputa que definen la pregunta, las opciones de respuesta y los metadatos que se presentan a los jurados. Al crear disputas, se hace referencia a las plantillas por su ID.
+
+## Métodos {#methods}
+
+### `setDisputeTemplate(string _templateTag, string _templateData, string _templateDataMappings) → uint256` {#setdisputetemplatestring-_templatetag-string-_templatedata-string-_templatedatamappings-→-uint256}
+Registra una nueva plantilla de disputa. Devuelve el ID de la plantilla.
+
+- `_templateTag`: etiqueta opcional para la categorización
+- `_templateData`: cadena JSON de la plantilla (consulta el [formato de las plantillas de disputa](/es/reference/data-formats/dispute-templates))
+- `_templateDataMappings`: asignación JSON para rellenar datos dinámicos
+
+## Eventos {#events}
+
+| Evento | Descripción |
+|---|---|
+| `DisputeTemplate(templateId, templateTag, templateData, templateDataMappings)` | Nueva plantilla registrada |
+
+[Ver el código fuente](https://github.com/kleros/kleros-v2/blob/dev/contracts/src/arbitration/DisputeTemplateRegistry.sol)

@@ -1,0 +1,21 @@
+---
+title: "Estándar de evidencias entre cadenas"
+description: "Estándar de evidencias entre cadenas: envío e indexación de los eventos de evidencia en la cadena externa del contrato arbitrable cuando KlerosCore está en Arbitrum One."
+---
+
+
+
+Cuando las disputas se crean entre cadenas (por ejemplo, contrato arbitrable en Ethereum y KlerosCore en Arbitrum), las evidencias pueden enviarse desde la cadena externa. Los eventos de evidencia se emiten en la cadena externa y el frontend del tribunal los indexa.
+
+## Mecanismo {#mechanism}
+
+El envío de evidencias en las disputas entre cadenas sigue el mismo formato que en las de una sola cadena, pero los eventos se emiten en la cadena externa en la que reside el contrato arbitrable. El frontend del tribunal indexa los eventos de evidencia tanto de la cadena principal como de las cadenas externas admitidas.
+
+## Enviar evidencias entre cadenas {#submitting-evidence-cross-chain}
+
+```solidity
+// On the foreign chain, through the Arbitrable contract
+arbitrableContract.submitEvidence(disputeID, evidenceURI);
+```
+
+La URI de la evidencia apunta a un JSON de evidencia alojado en IPFS que sigue el [formato de evidencias](/es/reference/data-formats/evidence-format) estándar.

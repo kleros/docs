@@ -1,0 +1,37 @@
+---
+title: "DisputeKitClassic"
+description: "Referencia de DisputeKitClassic: sorteo de jurados proporcional al PNK, votación por pluralidad, commit-reveal, financiación de apelaciones e incentivos de reparto igualitario para los jurados."
+---
+
+
+
+Dispute kit predeterminado con sorteo proporcional al PNK, votación por pluralidad (con commit-reveal opcional) e incentivos de reparto igualitario. Todos los tribunales lo admiten como respaldo.
+
+## Métodos para jurados {#juror-methods}
+
+### `castCommit(uint256 _coreDisputeID, uint256[] _voteIDs, bytes32 _commit)` {#castcommituint256-_coredisputeid-uint256-_voteids-bytes32-_commit}
+Envía el compromiso de voto durante el periodo de commit (solo en tribunales con votos ocultos).
+
+### `castVote(uint256 _coreDisputeID, uint256[] _voteIDs, uint256 _choice, uint256 _salt, string _justification)` {#castvoteuint256-_coredisputeid-uint256-_voteids-uint256-_choice-uint256-_salt-string-_justification}
+Emite o revela un voto. En los tribunales con votos ocultos, la opción y la sal deben coincidir con el compromiso.
+
+## Métodos de apelación {#appeal-methods}
+
+### `fundAppeal(uint256 _coreDisputeID, uint256 _choice) payable` {#fundappealuint256-_coredisputeid-uint256-_choice-payable}
+Financia una apelación. Los ganadores pagan 1× el coste y los perdedores 2×. Los perdedores disponen de la mitad del periodo de financiación. La apelación sigue adelante cuando se financian dos opciones.
+
+### `withdrawFeesAndRewards(uint256 _coreDisputeID, address _beneficiary, uint256 _coreRoundID, uint256 _choice) → uint256` {#withdrawfeesandrewardsuint256-_coredisputeid-address-_beneficiary-uint256-_coreroundid-uint256-_choice-→-uint256}
+Retira las tasas de apelación y las recompensas tras la resolución.
+
+## Eventos {#events}
+
+| Evento | Descripción |
+|---|---|
+| `VoteCommitted` | Compromiso enviado |
+| `Justification` | Justificación del voto registrada |
+| `Contribution` | Contribución a la financiación de una apelación |
+| `ChoiceFunded` | Opción de apelación totalmente financiada |
+
+**Versión**: 2.0.0 | **Proxy**: UUPS actualizable
+ 
+[Ver el código fuente](https://github.com/kleros/kleros-v2/blob/master/contracts/src/arbitration/dispute-kits/DisputeKitClassicBase.sol)

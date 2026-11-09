@@ -1,0 +1,48 @@
+---
+title: "Especificación de los tribunales"
+description: "Especificación de los tribunales de Kleros V2: estructura del árbol jerárquico, minStake, feeForJuror, votos ocultos, timesPerPeriod y otros parámetros de los tribunales en la cadena."
+---
+
+
+
+Los tribunales se organizan en un árbol jerárquico con el General Court como raíz. Cada tribunal tiene parámetros configurables almacenados en la cadena en KlerosCore.
+
+## Parámetros de los tribunales {#court-parameters}
+
+```typescript
+{
+  name: string;               // Documentation-only (set in PolicyRegistry)
+  id: number;                 // Unique court identifier
+  parent: number;             // Parent court ID (root references itself)
+  hiddenVotes: boolean;       // Whether votes use commit-reveal
+  minStake: string;          // Minimum PNK to stake (wei)
+  feeForJuror: string;       // Juror fee per dispute (wei)
+  alpha: string;             // Stake weight (basis points)
+  jurorsForCourtJump: string; // Juror threshold for appeal to parent
+  timesPerPeriod: number[];   // [evidence, commit, vote, appeal] in seconds
+}
+```
+
+## Reglas de la jerarquía {#hierarchy-rules}
+
+- El ID de tribunal 0 está reservado para el futuro **Forking Court**
+- El ID de tribunal 1 es el **General Court** (raíz actual)
+- Cada tribunal que no sea la raíz debe tener un padre válido
+- Los tribunales hijos heredan de sus padres los dispute kits admitidos
+- Las apelaciones que superan `jurorsForCourtJump` escalan al tribunal padre
+
+## Ejemplo {#example}
+
+```json
+{
+  "name": "General Court",
+  "id": 1,
+  "parent": 1,
+  "hiddenVotes": true,
+  "minStake": "2300000000000000000000",
+  "feeForJuror": "5000000000000000",
+  "alpha": "10000",
+  "jurorsForCourtJump": "511",
+  "timesPerPeriod": [280800, 583200, 583200, 388800]
+}
+```

@@ -1,0 +1,33 @@
+---
+title: "5 de octubre de 2026"
+description: "Court obtiene en la cadena las opciones de respuesta de Reality.eth y avisa a los jurados de las discrepancias, Foresight muestra el volumen nocional por mercado y se corrige la ruta de VeaShi de Arbitrum a Tempo."
+---
+
+## Nuevas funciones {#new-features}
+
+### Opciones de respuesta de Reality.eth verificadas en Court {#verified-reality-eth-answer-options-in-court}
+
+[Kleros Court](/es/court/overview) busca ahora en la cadena las preguntas de [Reality.eth](/es/products/reality) y sus plantillas para construir las opciones de respuesta de estos casos. Ya no depende del script de visualización del contrato arbitrable. Esto impide que unos parámetros de pregunta manipulados cambien las opciones que ven los jurados.
+
+Court también muestra un aviso en la página del caso cuando:
+
+- Otras interfaces muestran opciones de respuesta distintas. Vota según las opciones que muestra Court.
+- Los parámetros de la pregunta están mal formados, o las opciones no se pudieron verificar o determinar. Lee la pregunta con atención. En caso de duda, niégate a arbitrar.
+
+### Desglose del volumen nocional en Foresight {#notional-volume-breakdown-in-foresight}
+
+La cabecera de [Foresight](/es/products/foresight) muestra ahora el volumen nocional de todos los mercados. Haz clic en él para abrir un desglose por mercado y por resultado, en sDAI y en USD.
+
+## Actualizaciones {#updates}
+
+### Valores en USD en la cabecera de Foresight {#usd-values-in-the-foresight-header}
+
+La liquidez total de la cabecera de [Foresight](/es/products/foresight) se muestra ahora en USD, igual que el volumen. Ambos valores esperan al precio de sDAI antes de aparecer. Los precios de la leyenda del gráfico muestran ahora dos decimales.
+
+### Actualización de las bibliotecas de Reality.eth {#reality-eth-library-updates}
+
+Dispute Resolver, el Kleros SDK y los [proxies entre cadenas de Reality.eth](/es/products/reality) usan ahora bibliotecas de Reality.eth actualizadas.
+
+## Corrección de errores {#bug-fixes}
+
+**Ruta de VeaShi de Arbitrum a Tempo**: la ruta de Arbitrum a Tempo de `@kleros/veashi-sdk` apunta ahora a la dirección correcta. Consulta las [direcciones de despliegue de VeaShi](/developers/crosschain/vea-deployment-addresses).
