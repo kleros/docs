@@ -460,6 +460,61 @@
                 ]
               },
               {
+                "group": "Productos",
+                "pages": [
+                  "es/products/overview",
+                  "es/products/curate",
+                  "es/products/stake-curate",
+                  "es/products/escrow",
+                  "es/products/governor",
+                  {
+                    "group": "Scout",
+                    "pages": [
+                      "es/products/scout",
+                      "es/products/scout-earn",
+                      "es/products/scout-partnerships",
+                      "es/products/scout-snap",
+                      "es/products/scout-faq"
+                    ]
+                  },
+                  "es/products/reality",
+                  "es/products/safesnap",
+                  "es/products/proof-of-humanity",
+                  "es/products/foresight",
+                  {
+                    "group": "Productos retirados",
+                    "pages": [
+                      "es/legacy/retired/moderate",
+                      "es/legacy/retired/linguo",
+                      "es/legacy/retired/tokens"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Tutoriales",
+                "pages": [
+                  {
+                    "group": "Guía para jurados",
+                    "pages": [
+                      "es/tutorials/juror-tutorial-v1",
+                      "es/tutorials/juror-tutorial-v2"
+                    ]
+                  },
+                  "es/tutorials/escrow-tutorial",
+                  "es/tutorials/curate-tutorial",
+                  "es/tutorials/scout-tutorial",
+                  {
+                    "group": "Proof of Humanity",
+                    "pages": [
+                      "es/tutorials/poh-register-and-vouch",
+                      "es/tutorials/poh-remove-and-challenge",
+                      "es/tutorials/poh-transferring-a-profile"
+                    ]
+                  }
+                ]
+              },
+              {
                 "group": "Conceptos",
                 "pages": [
                   "es/concepts/dispute-resolution",
