@@ -1,0 +1,417 @@
+---
+title: "Contratos inteligentes"
+description: "Referencia de los contratos inteligentes de Kleros Escrow V2: estructuras de las transacciones, ciclo de vida de las disputas, gestión de los decimales de los tokens y funciones de integración."
+
+---
+
+<Note>
+Los contratos de V2 gestionan ahora correctamente los tokens que no tienen 18 decimales (USDC = 6 decimales, USDT = 6 decimales). El documento de la política de disputa General Escrow se finalizó y se subió a IPFS (marzo de 2026).
+</Note>
+
+## Estructuras de datos principales {#core-data-structures}
+
+### Estructura Transaction {#transaction-struct}
+
+```solidity
+struct Transaction {
+    address payable buyer;          // Payment sender
+    address payable seller;         // Payment recipient
+    uint256 amount;                 // Remaining escrow amount
+    uint256 settlementBuyer;        // Buyer's proposed settlement amount
+    uint256 settlementSeller;       // Seller's proposed settlement amount
+    uint256 deadline;               // Initial delivery deadline
+    uint256 disputeID;              // Kleros dispute identifier
+    uint256 buyerFee;               // Arbitration fees paid by buyer
+    uint256 sellerFee;              // Arbitration fees paid by seller
+    uint256 lastFeePaymentTime;     // Last interaction timestamp
+    Status status;                  // Current transaction state
+    IERC20 token;                   // Token contract (address(0) for ETH)
+}
+```
+
+### Enumeración Status {#status-enumeration}
+
+```solidity
+enum Status {
+    NoDispute,               // Initial state
+    WaitingSettlementBuyer,  // Waiting for buyer settlement response
+    WaitingSettlementSeller, // Waiting for seller settlement response
+    WaitingBuyer,            // Waiting for buyer arbitration fee
+    WaitingSeller,           // Waiting for seller arbitration fee
+    DisputeCreated,          // Active Kleros dispute
+    TransactionResolved      // Final state
+}
+```
+
+### Enumeraciones Party y Resolution {#party-&-resolution-enumerations}
+
+```solidity
+enum Party {
+    None,   // No winner (split decision)
+    Buyer,  // Buyer wins dispute
+    Seller  // Seller wins dispute
+}
+
+enum Resolution {
+    TransactionExecuted,  // Normal completion
+    TimeoutByBuyer,       // Seller didn't pay arbitration fees
+    TimeoutBySeller,      // Buyer didn't pay arbitration fees
+    RulingEnforced,       // Dispute resolved by jurors
+    SettlementReached     // Settlement accepted by parties
+}
+```
+
+---
+
+## Crear transacciones {#creating-transactions}
+
+### Transacción en ETH nativo {#native-eth-transaction}
+
+```solidity
+function createNativeTransaction(
+    uint256 _deadline,              // Unix timestamp for automatic execution
+    string memory _transactionUri,  // Data URI for transaction metadata
+    address payable _buyer,         // Payment sender address
+    address payable _seller         // Payment recipient address
+) external payable returns (uint256 transactionID)
+```
+
+### Transacción en tokens ERC20 {#erc20-token-transaction}
+
+```solidity
+function createERC20Transaction(
+    uint256 _amount,                // Token amount (in token's base units)
+    IERC20 _token,                  // ERC20 token contract address
+    uint256 _deadline,              // Unix timestamp for automatic execution
+    string memory _transactionUri,  // Data URI for transaction metadata
+    address payable _buyer,         // Payment sender address
+    address payable _seller         // Payment recipient address
+) external returns (uint256 transactionID)
+```
+
+<Warning>
+Ambas funciones aplican límites de importe por token mediante el modificador `shouldNotExceedCap`. Las transacciones que superan el límite se revierten con el error `AmountExceedsCap()`.
+</Warning>
+
+---
+
+## Gestionar las transacciones {#managing-transactions}
+
+### Funciones de pago {#payment-functions}
+
+```solidity
+// Buyer releases payment to seller
+function pay(uint256 _transactionID, uint256 _amount) external
+
+// Seller reimburses buyer
+function reimburse(uint256 _transactionID, uint256 _amountReimbursed) external
+
+// Execute transaction after deadline
+function executeTransaction(uint256 _transactionID) external
+```
+
+<Info>
+**Comportamientos clave:**
+- `pay()` y `reimburse()` pueden llamarse varias veces con importes parciales
+- Cuando se paga o se reembolsa el importe completo, el estado cambia a `TransactionResolved`
+- `executeTransaction()` transfiere todos los fondos restantes al vendedor una vez vencido el plazo
+- Las tres funciones exigen que el estado sea `NoDispute`; de lo contrario, se revierten con `TransactionDisputed()`
+</Info>
+
+---
+
+## Sistema de acuerdos {#settlement-system}
+
+### Funciones de acuerdo {#settlement-functions}
+
+```solidity
+// Propose settlement amount (seller receives this amount, buyer gets remainder)
+function proposeSettlement(uint256 _transactionID, uint256 _amount) external
+
+// Accept the other party's proposed settlement
+function acceptSettlement(uint256 _transactionID) external
+```
+
+### Flujo del acuerdo {#settlement-flow}
+
+<Steps>
+  <Step title="Inicia la propuesta">
+    Cualquiera de las partes propone un importe de acuerdo con `proposeSettlement()`.
+  </Step>
+  <Step title="Cambio de estado">
+    El estado cambia a `WaitingSettlementBuyer` o `WaitingSettlementSeller`.
+  </Step>
+  <Step title="Respuesta">
+    La otra parte puede aceptar el acuerdo o proponer una contraoferta.
+  </Step>
+  <Step title="Contraofertas">
+    Las contraofertas reinician `lastFeePaymentTime` y cambian el estado de espera.
+  </Step>
+  <Step title="Opción de disputa">
+    La parte que no propuso el acuerdo puede abrir una disputa de inmediato pagando la tasa de arbitraje. La parte que lo propuso debe esperar a que transcurra `settlementTimeout` antes de poder abrir una disputa.
+  </Step>
+</Steps>
+
+<Note>
+**Aceptación del acuerdo:** al aceptarse, los fondos se reparten de inmediato. El vendedor recibe el importe de acuerdo propuesto y el comprador, el resto. En los tokens ERC20, la biblioteca SafeERC20 garantiza que ambas transferencias se realicen de forma atómica.
+</Note>
+
+---
+
+## Gestión de las disputas {#dispute-management}
+
+### Funciones de las tasas de arbitraje {#arbitration-fee-functions}
+
+```solidity
+// Pay arbitration fee as buyer
+function payArbitrationFeeByBuyer(uint256 _transactionID) external payable
+
+// Pay arbitration fee as seller
+function payArbitrationFeeBySeller(uint256 _transactionID) external payable
+
+// Claim win if seller doesn't pay fee
+function timeOutByBuyer(uint256 _transactionID) external
+
+// Claim win if buyer doesn't pay fee
+function timeOutBySeller(uint256 _transactionID) external
+```
+
+### Proceso de creación de la disputa {#dispute-creation-process}
+
+```mermaid
+sequenceDiagram
+    participant Buyer as Comprador
+    participant Contract as Contrato
+    participant Seller as Vendedor
+    participant Kleros
+    
+    Buyer->>Contract: payArbitrationFeeByBuyer()
+    Contract-->>Buyer: Estado: WaitingSeller
+    Seller->>Contract: payArbitrationFeeBySeller()
+    Contract->>Kleros: createDispute()
+    Kleros-->>Contract: disputeID
+    Contract-->>Seller: Estado: DisputeCreated
+```
+
+### Cálculo de las tasas {#fee-calculation}
+
+```solidity
+uint256 arbitrationCost = arbitrator.arbitrationCost(arbitratorExtraData);
+```
+
+<Warning>
+**Reglas de tiempo límite:**
+- Quienes proponen un acuerdo deben esperar `settlementTimeout` antes de pagar las tasas
+- Si una de las partes no paga dentro de `feeTimeout`, la otra parte gana por defecto
+- La parte ganadora recibe todos los fondos depositados y el reembolso de su tasa
+</Warning>
+
+---
+
+## Funciones de consulta {#query-functions}
+
+### Consultas de transacciones {#transaction-queries}
+
+```solidity
+// Get count of all transactions
+function getTransactionCount() external view returns (uint256)
+
+// Get detailed transaction information
+function transactions(uint256 _index) external view returns (
+    address payable buyer,
+    address payable seller,
+    uint256 amount,
+    uint256 settlementBuyer,
+    uint256 settlementSeller,
+    uint256 deadline,
+    uint256 disputeID,
+    uint256 buyerFee,
+    uint256 sellerFee,
+    uint256 lastFeePaymentTime,
+    Status status,
+    IERC20 token
+)
+```
+
+### Cálculo de los pagos {#payout-calculation}
+
+```solidity
+// Get payout distribution for different outcomes
+function getPayouts(
+    uint256 _transactionID,
+    Party _winningParty
+) public view returns (
+    uint256 buyerPayout,
+    uint256 buyerPayoutToken,
+    uint256 sellerPayout,
+    uint256 sellerPayoutToken
+)
+```
+
+**Lógica de los pagos:**
+
+| Ganador | El comprador recibe | El vendedor recibe |
+|--------|----------------|-----------------|
+| **Comprador** | Reembolso de la tasa + importe - acuerdo del vendedor (si lo hay) | La propuesta de acuerdo del vendedor |
+| **Vendedor** | El resto tras el acuerdo del vendedor | Reembolso de la tasa + acuerdo (o importe completo) |
+| **Ninguno** | Mitad de las tasas + mitad del importe | Mitad de las tasas + mitad del importe |
+
+### Otras consultas {#other-queries}
+
+```solidity
+// Check per-token amount cap (0 means unlimited)
+function amountCaps(IERC20 _token) external view returns (uint256)
+
+// Get current arbitrator contract
+function arbitrator() external view returns (IArbitratorV2)
+
+// Get current governor address
+function governor() external view returns (address)
+
+// Get arbitration fee timeout
+function feeTimeout() external view returns (uint256)
+
+// Get settlement response timeout
+function settlementTimeout() external view returns (uint256)
+
+// Get dispute ID to transaction ID mapping
+function disputeIDtoTransactionID(uint256 _disputeID) external view returns (uint256)
+```
+
+---
+
+## Funciones del governor {#governor-functions}
+
+<Note>
+Todas las funciones del governor están restringidas a la dirección del governor actual.
+</Note>
+
+```solidity
+// Change contract governor
+function changeGovernor(address _governor) external onlyByGovernor
+
+// Update arbitrator contract address
+function changeArbitrator(IArbitratorV2 _arbitrator) external onlyByGovernor
+
+// Modify arbitrator extra data (court ID, juror count)
+function changeArbitratorExtraData(bytes calldata _arbitratorExtraData) external onlyByGovernor
+
+// Update arbitration fee payment timeout
+function changeFeeTimeout(uint256 _feeTimeout) external onlyByGovernor
+
+// Update settlement response timeout
+function changeSettlementTimeout(uint256 _settlementTimeout) external onlyByGovernor
+
+// Set per-token amount cap (0 for unlimited, address(0) for native ETH)
+function changeAmountCap(IERC20 _token, uint256 _amountCap) external onlyByGovernor
+
+// Update dispute template and data mappings
+function changeDisputeTemplate(
+    string memory _templateData,
+    string memory _templateDataMappings
+) external onlyByGovernor
+
+// Update template registry contract
+function changeTemplateRegistry(IDisputeTemplateRegistry _templateRegistry) external onlyByGovernor
+```
+
+---
+
+## Eventos {#events}
+
+### Eventos de transacciones {#transaction-events}
+
+```solidity
+event NativeTransactionCreated(
+    uint256 indexed _transactionID,
+    string _transactionUri,
+    address indexed _buyer,
+    address indexed _seller,
+    uint256 _amount,
+    uint256 _deadline
+)
+
+event ERC20TransactionCreated(
+    uint256 indexed _transactionID,
+    string _transactionUri,
+    address indexed _buyer,
+    address indexed _seller,
+    IERC20 _token,
+    uint256 _amount,
+    uint256 _deadline
+)
+```
+
+### Eventos de gestión {#management-events}
+
+```solidity
+// Payment event
+event Payment(uint256 indexed _transactionID, uint256 _amount, address _party)
+
+// Fee payment notification
+event HasToPayFee(uint256 indexed _transactionID, Party _party)
+
+// Settlement proposal
+event SettlementProposed(uint256 indexed _transactionID, Party _party, uint256 _amount)
+
+// Transaction resolution
+event TransactionResolved(uint256 indexed _transactionID, Resolution indexed _resolution)
+
+// Dispute creation
+event DisputeRequest(
+    IArbitratorV2 indexed _arbitrator, 
+    uint256 _disputeID, 
+    uint256 indexed _externalDisputeID, 
+    uint256 _templateId, 
+    string _template
+)
+```
+
+---
+
+## Formato de los metadatos de las transacciones {#transaction-metadata-format}
+
+Las transacciones almacenan los metadatos en la cadena mediante data URI. La estructura JSON de los metadatos:
+
+```json
+{
+  "title": "Transaction Title",
+  "description": "Detailed description of the deliverables and terms",
+  "extraDescriptionUri": "ipfs://QmAttachmentDocumentHash"
+}
+```
+
+Para las transacciones de cripto a cripto:
+
+```json
+{
+  "title": "Cross-chain Token Swap",
+  "description": "ETH to SOL exchange",
+  "otherChain": "Solana",
+  "otherChainAddress": "SolanaWalletAddress", 
+  "otherAsset": "SOL",
+  "otherAmount": "5"
+}
+```
+
+### Crear data URI {#creating-data-uris}
+
+```javascript
+const metadata = {
+  title: "Website Development Project",
+  description: "Build responsive website with React",
+  extraDescriptionUri: "ipfs://QmDocumentHash"
+};
+
+const dataUri = `data:application/json;base64,${btoa(JSON.stringify(metadata))}`;
+
+// Use this dataUri when creating the transaction
+await createNativeTransaction(deadline, dataUri, buyerAddress, sellerAddress);
+```
+
+<Tip>
+**Pautas para los metadatos:**
+- Los metadatos se almacenan directamente en la cadena mediante data URI, lo que elimina las dependencias de IPFS
+- Mantén concisos los metadatos principales, ya que la codificación base64 aumenta el tamaño de la transacción
+- Usa `extraDescriptionUri` para los adjuntos grandes o los documentos de evidencia
+</Tip>
