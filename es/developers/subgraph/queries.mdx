@@ -1,0 +1,275 @@
+---
+title: "Ejemplos de consultas"
+description: "Ejemplos de consultas GraphQL habituales en los subgraphs de Kleros V2 para obtener tribunales, disputas, jurados, rondas, votos, evidencias y plantillas de disputa en Arbitrum."
+---
+
+# Ejemplos de consultas {#query-examples}
+
+Consultas GraphQL habituales para obtener datos de los subgraphs de Kleros.
+
+---
+
+## Consultas core de V2 (Arbitrum) {#v2-core-queries-arbitrum}
+
+<Note>
+Usa siempre el endpoint de la **red descentralizada** para las consultas en producción. Obtén el ID del subgraph en las páginas de Studio indicadas en [Endpoints del subgraph](/es/developers/subgraph/endpoints) y construye la URL como `https://gateway.thegraph.com/api/{API_KEY}/subgraphs/id/{SUBGRAPH_ID}`.
+</Note>
+
+### Obtener los tribunales {#fetch-courts}
+Campos clave: `minStake` (en wei), `feeForJuror` (recompensa del jurado por voto), `timesPerPeriod` (array con las duraciones de las 4 fases en segundos).
+
+```graphql
+{
+  courts(first: 20, orderBy: id) {
+    id
+    hiddenVotes
+    minStake
+    alpha
+    feeForJuror
+    jurorsForCourtJump
+    timesPerPeriod
+    parent { id }
+    policy { policy }
+    numberDisputes
+    numberStakedJurors
+    stakedJurors {
+      id
+    }
+  }
+}
+```
+
+### Obtener las disputas recientes {#fetch-recent-disputes}
+Campos clave: `externalDisputeID` (el ID de tu aplicación), `templateId` (enlaza con DisputeTemplateRegistry), `ruled` (finalizada), `currentRuling` (opción de fallo activa).
+
+```graphql
+{
+  disputes(first: 10, orderBy: createdAtBlock, orderDirection: desc) {
+    id
+    arbitrated { id }
+    court { id }
+
+    period
+    ruled
+    currentRuling
+    tied
+    overridden
+    lastPeriodChange
+    nbRounds
+    nbChoices
+    externalDisputeID
+    templateId
+    rounds {
+      nbVotes
+      totalFeesForJurors
+      drawnJurors { juror { id } }
+    }
+  }
+}
+```
+### Obtener una disputa por su ID externo {#fetch-dispute-by-external-id}
+
+Usa `externalDisputeID` para relacionar una disputa en la cadena con el ID interno de tu aplicación (emitido en `DisputeRequest`):
+
+```graphql
+query GetDisputeByExternalID($externalId: BigInt!) {
+  disputes(where: { externalDisputeID: $externalId }) {
+    id
+    period
+    ruled
+    currentRuling
+    tied
+    templateId
+  }
+}
+```
+
+### Obtener los stakes de un jurado para una dirección concreta {#fetch-juror-stakes-for-a-specific-address}
+
+```graphql
+{
+  jurorTokensPerCourts(where: { juror: "0xYOUR_ADDRESS_LOWERCASE" }) {
+    court { id }
+    staked
+    locked
+  }
+}
+```
+### Obtener los sorteos activos de un jurado {#fetch-juror’s-active-draws}
+
+```graphql
+query GetJurorDraws($juror: String!) {
+  draws(where: { juror: $juror, vote_not: null }, first: 20) {
+    dispute { id period currentRuling }
+    round { id nbVotes }
+    vote { choice }
+  }
+}
+```
+
+---
+
+## Consultas de Curate (V1) {#curate-queries-v1}
+
+### Obtener los elementos registrados de una lista de Light Curate {#fetch-registered-items-from-a-light-curate-list}
+
+```graphql
+{
+  litems(
+    first: 10
+    where: {
+      status: Registered
+      registryAddress: "0xYOUR_LIST_ADDRESS_LOWERCASE"
+    }
+    orderBy: latestRequestResolutionTime
+    orderDirection: desc
+  ) {
+    itemID
+    data
+    props {
+      type
+      label
+      description
+      value
+    }
+  }
+}
+```
+
+### Obtener los elementos en periodo de impugnación {#fetch-items-in-challenge-period}
+
+```graphql
+{
+  litems(
+    first: 10
+    where: {
+      status_in: [RegistrationRequested, ClearingRequested]
+      registryAddress: "0xYOUR_LIST_ADDRESS_LOWERCASE"
+      disputed: false
+    }
+    orderBy: latestRequestSubmissionTime
+    orderDirection: asc
+  ) {
+    itemID
+    status
+    props {
+      label
+      value
+    }
+    requests(first: 1, orderBy: submissionTime, orderDirection: desc) {
+      submissionTime
+      requester
+    }
+  }
+}
+```
+
+### Obtener los detalles de un elemento con su historial de solicitudes {#fetch-item-details-with-request-history}
+
+```graphql
+query ItemDetails($id: ID!) {
+  item(id: $id) {
+    data
+    requests(orderBy: submissionTime, orderDirection: desc) {
+      requestType
+      disputed
+      disputeID
+      submissionTime
+      resolved
+      requester
+      challenger
+      rounds(orderBy: creationTime, orderDirection: desc) {
+        appealPeriodStart
+        appealPeriodEnd
+        ruling
+        hasPaidRequester
+        hasPaidChallenger
+      }
+    }
+  }
+}
+```
+
+Los ID de los elementos en el subgraph usan el formato `<itemID>@<listAddress>`:
+
+```typescript
+const compoundId = `${itemID}@${tcrAddress.toLowerCase()}`;
+const result = useQuery(ITEM_DETAILS_QUERY, { variables: { id: compoundId } });
+```
+
+---
+
+## Registros de etiquetas de direcciones (Gnosis Chain) {#address-tag-registries-gnosis-chain}
+
+Consulta por lotes para obtener las etiquetas de direcciones de los tres registros de etiquetas de direcciones de Kleros en Gnosis Chain:
+
+```graphql
+{
+  contractDomainTags: litems(
+    where: {
+      status_in: [Registered, ClearingRequested]
+      registryAddress: "0x CONTRACT_DOMAIN_TAG_REGISTRY"
+    }
+    first: 1000
+  ) {
+    props { label value }
+  }
+  addressTags: litems(
+    where: {
+      status_in: [Registered, ClearingRequested]
+      registryAddress: "0x ADDRESS_TAG_REGISTRY"
+    }
+    first: 1000
+  ) {
+    props { label value }
+  }
+}
+```
+
+Subgraph: [legacy-curate-gnosis](https://thegraph.com/explorer/subgraphs/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8) en Graph Explorer (ID del subgraph `9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8`)
+
+---
+
+## Proof of Humanity {#proof-of-humanity}
+
+### Comprobar el estado de registro {#check-registration-status}
+
+```graphql
+{
+  submission(id: "0xADDRESS_LOWERCASE") {
+    registered
+    name
+    creationTime
+    status
+    requests(first: 1, orderBy: creationTime, orderDirection: desc) {
+      evidence {
+        URI
+      }
+    }
+  }
+}
+```
+
+Como alternativa, llama directamente a `isRegistered(address)` en el contrato de PoH en `0xC5E9dDebb09Cd64DfaCab4011A0D5cEDaf7c9BDb`.
+
+---
+
+## Consejos {#tips}
+
+- Las direcciones deben estar en **minúsculas** en todas las consultas. El subgraph las almacena como bytes y no entiende las direcciones con checksum.
+- Los elementos con estado `ClearingRequested` siguen registrados hasta que se finaliza la solicitud de retirada. Inclúyelos al obtener los elementos "activos".
+- El servicio alojado de The Graph tiene un **límite de 1000 elementos** por consulta. Para los registros con más elementos, pagina con `skip` o `id_gt`.
+- Las entidades de Light Curate llevan el prefijo `l` (por ejemplo, `litems`, `lrequests`). Classic Curate usa entidades sin prefijo (`items`, `requests`).
+
+---
+
+## Lecturas adicionales {#further-reading}
+
+<CardGroup cols={2}>
+  <Card title="Endpoints del subgraph" icon="link" href="/es/developers/subgraph/endpoints">
+    Lista completa de las URL de los subgraphs
+  </Card>
+  <Card title="Integración con Light Curate" icon="list-check" href="/es/developers/products/curate/light-curate">
+    Guía completa de Light Curate para desarrolladores
+  </Card>
+</CardGroup>

@@ -1,0 +1,61 @@
+---
+title: "KIP"
+description: "Descubre cómo los poseedores de PNK redactan, debaten y ratifican las propuestas de mejora de Kleros (KIP) para cambiar parámetros, contratos y políticas del protocolo."
+---
+
+# Propuestas de mejora de Kleros (KIP) {#kleros-improvement-proposals-kips}
+
+Una **KIP** es el mecanismo formal mediante el cual se proponen, debaten y ratifican los cambios en el protocolo Kleros. Cualquier poseedor de PNK o miembro de la comunidad puede redactar una KIP.
+
+---
+
+## Proceso de una KIP {#kip-process}
+
+<Steps>
+  <Step title="Borrador">
+    El autor crea una nueva publicación en la categoría **Votes** del [Foro de Kleros](https://forum.kleros.io). La publicación debe incluir un título claro (por ejemplo, "KIP-XX: Título descriptivo"), un resumen, la motivación, una especificación detallada y los pasos de implementación.
+  </Step>
+  <Step title="Debate">
+    La comunidad revisa la propuesta y aporta comentarios. El autor debe responder a las preguntas, atender las inquietudes y revisar la propuesta según sea necesario. No hay un periodo de debate fijo: la propuesta debe iterarse hasta que cuente con un apoyo razonable de la comunidad.
+  </Step>
+  <Step title="Votación">
+    Cuando la propuesta se considera lista, se publica en [Snapshot](https://snapshot.box/#/s:kleros.eth) para una votación formal. Los poseedores de PNK votan durante el plazo especificado. El poder de voto es proporcional al saldo de PNK en la altura de bloque especificada.
+  </Step>
+  <Step title="Ejecución">
+    Si la votación se aprueba, quien la propuso (o cualquier miembro de la comunidad) envía la lista de transacciones correspondiente a Kleros Governor para su ejecución en la cadena.
+  </Step>
+</Steps>
+
+---
+
+## ¿Qué hace que una KIP sea buena? {#what-makes-a-good-kip}
+
+Una KIP sólida suele incluir:
+
+- Un **resumen** conciso (1 o 2 frases que describan el cambio)
+- La **motivación**, que explica por qué es necesario el cambio
+- Una **especificación** con valores exactos de parámetros, direcciones de contratos o detalles de implementación
+- Un **análisis de impacto** que cubra riesgos, costes y beneficios
+- Un **plan de implementación** que describa cómo se ejecutará técnicamente el cambio
+
+---
+
+## KIP destacadas {#notable-kips}
+
+| KIP | Título | Impacto |
+|-----|-------|--------|
+| **KIP-30** | Migrate Governance to Snapshot | Trasladó la votación de Aragon a la votación sin gas de Snapshot |
+| **KIP-66** | Staking Rewards | Introdujo incentivos de staking adicionales para los jurados de V2 (implementados en los contratos, activación pendiente) |
+| **KIP-76** | Futarchy-Based Governance for PNK Minting | Introdujo la evaluación por futarquía para las propuestas que implican emisión de PNK |
+| **KIP-80** | Parameter Updates (October 2025) | Actualizó los parámetros de los tribunales para la beta de V2 |
+| **KIP-84** | Increase TWAP Window for Futarchy Test | Ajustó los parámetros de evaluación por futarquía |
+
+<Tip>
+Consulta la lista completa de KIP en la [categoría Votes del Foro de Kleros](https://forum.kleros.io/c/votes/5).
+</Tip>
+
+---
+
+## Resolución de disputas en la gobernanza {#dispute-resolution-in-governance}
+
+Si después de aprobarse una votación se envían a Governor varias listas de transacciones contradictorias, el propio Kleros Court resuelve la disputa. Los jurados determinan qué lista implementa correctamente lo que votó la comunidad. Esto convierte a Kleros en uno de los pocos protocolos en los que el mecanismo de resolución de disputas también protege su propia gobernanza.

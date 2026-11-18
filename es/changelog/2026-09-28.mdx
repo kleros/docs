@@ -1,0 +1,30 @@
+---
+title: "28 de septiembre de 2026"
+description: "Los enlaces a casos de Court conservan su red, Curate y Scout admiten direcciones de Arc Mainnet, Foresight muestra el importe total negociado y Court V2 corrige la retirada de recompensas de apelación y los bots keeper."
+---
+
+## Nuevas funciones {#new-features}
+
+### Enlaces a casos específicos de cada red en Court {#network-specific-case-links-in-court}
+
+Las páginas de casos de [Kleros Court](/es/court/overview) conservan ahora la red en la URL. Cuando compartes el enlace a un caso, se abre en la cadena correcta, como Ethereum o Gnosis. Si tu billetera está en otra red, Court te pide que cambies en lugar de mostrar el caso equivocado.
+
+### Compatibilidad con Arc Mainnet en Curate y Scout {#arc-mainnet-support-in-curate-and-scout}
+
+[Curate](/es/products/curate) y [Scout](/es/products/scout) reconocen ahora las direcciones de Arc Mainnet (ID de cadena 5042). Puedes enviar y explorar entradas de Arc, con enlaces al explorador de bloques de Arc.
+
+### Importe total negociado en Foresight {#total-traded-amount-in-foresight}
+
+La billetera de negociación de [Foresight](/es/products/foresight) muestra ahora un valor **Total Traded** junto a tu saldo de sDAI. Suma el sDAI que has comprometido en predicciones durante esta sesión. Los depósitos realizados en xDAI o en Foresight Credits cuentan una vez convertidos a sDAI.
+
+## Actualizaciones {#updates}
+
+### Carga más rápida de los gráficos en Foresight {#faster-chart-loading-in-foresight}
+
+El gráfico de mercado de [Foresight](/es/products/foresight) muestra ahora un marcador mientras carga. Los datos en caché aparecen de inmediato y se actualizan a medida que llegan los precios nuevos, de modo que la página ya no se queda vacía en la primera carga.
+
+## Corrección de errores {#bug-fixes}
+
+**Retirada de recompensas de apelación en apelaciones de una sola parte**: en Kleros Court V2, el botón para retirar las recompensas de apelación funciona ahora cuando solo una de las partes financió una [apelación](/es/court/appeals). Quienes contribuyeron pueden recuperar sus fondos de estos casos.
+
+**Correcciones del bot keeper en Court V2**: el bot keeper retira ahora correctamente las contribuciones a las apelaciones en nombre de quienes contribuyeron. También puede reanudar el sorteo de jurados a mitad de la fase de sorteo, de modo que las disputas ya no se bloquean si el bot arranca a mitad de fase.

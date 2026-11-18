@@ -1,0 +1,93 @@
+---
+title: "Integración con Safe Zodiac"
+description: "Integra Kleros Court como árbitro para la gobernanza de DAO con Gnosis Safe, Snapshot, el Zodiac Reality Module y el contrato proxy Reality.eth-Kleros."
+---
+
+# Integración con Safe Zodiac {#safe-zodiac-integration}
+
+Esta guía explica cómo hacer que la gobernanza de tu DAO sea totalmente descentralizada con Gnosis Safe, Snapshot, Zodiac y Kleros Court.
+
+---
+
+## Componentes {#components}
+
+| Componente | Función |
+| --- | --- |
+| [Gnosis Safe](https://gnosis-safe.io/) | Billetera multifirma que gestiona la tesorería y los contratos de la DAO |
+| [Snapshot](https://snapshot.org/) | Plataforma de señalización de votos fuera de la cadena |
+| [Zodiac Reality Module](https://zodiac.gnosisguild.org/) | Permite la ejecución en la cadena y sin confianza de los votos fuera de la cadena mediante Reality.eth |
+| [Kleros Court](https://court.kleros.io) | Arbitra las propuestas impugnadas mediante el proxy Reality.eth-Kleros |
+
+Esto crea una separación de poderes: los poseedores de tokens votan (legislativo), la multifirma ejecuta (ejecutivo) y Kleros arbitra las propuestas impugnadas (judicial).
+
+---
+
+## Configuración {#setup}
+
+### Requisitos previos {#prerequisites}
+
+- Una multifirma de Gnosis Safe
+- Un dominio ENS para el espacio de Snapshot de tu DAO
+
+### Pasos {#steps}
+
+1. **Configura el Zodiac Reality Module** siguiendo la [documentación de Zodiac](https://zodiac.gnosisguild.org/). Al establecer los parámetros, selecciona **Kleros** en el campo del árbitro.
+2. **Añade el plugin SafeSnap a Snapshot** siguiendo la [guía de integración de Snapshot](https://zodiac.gnosisguild.org/).
+3. **Prueba las propuestas**: crea propuestas ejecutables en Snapshot y procésalas cuando termine la votación.
+
+<Warning>
+Si no se establece ningún árbitro, Reality.eth resuelve las propuestas impugnadas a favor de la fianza más alta enviada, sin arbitraje de terceros. Establece siempre Kleros como árbitro.
+</Warning>
+
+---
+
+## Añadir Kleros a una DAO existente {#adding-kleros-to-an-existing-dao}
+
+Si tu DAO ya usa Zodiac pero no se ha establecido ningún árbitro:
+
+1. Ve al módulo Zodiac en la interfaz de Gnosis Safe
+2. En "Write Contract", selecciona `setArbitrator`
+3. Pega la dirección del contrato Realitio Arbitration Proxy:
+   - **Red principal de Ethereum**: `0xf72CfD1B34a91A64f9A98537fe63FBaB7530AdcA`
+4. Ejecuta la transacción
+
+Este proxy es compatible con la interfaz de Reality.eth y añade funciones como la financiación colectiva de las apelaciones.
+
+---
+
+## Documento de requisitos de la DAO {#dao-requirements-document}
+
+Configura un registro `daorequirements` en el ENS de tu DAO para definir los criterios de aceptación de las propuestas. Los jurados consultan este documento al arbitrar las propuestas impugnadas.
+
+1. Redacta un documento de aceptación (texto plano, PDF o similar)
+2. Súbelo a IPFS
+3. En el frontend de ENS, añade un registro de texto con la clave `daorequirements` y como valor el identificador de IPFS
+
+Como referencia: el [registro ENS de gnosis.eth](https://app.ens.domains/gnosis.eth) tiene un registro `daorequirements` que apunta a un archivo de texto plano con los criterios de aceptación.
+
+Sin un documento `daorequirements`, las propuestas impugnadas pueden resolverse como "No" (los requisitos no pueden cumplirse si no existe ningún documento).
+
+---
+
+## Eliminar a los firmantes de Gnosis Safe {#removing-gnosis-safe-signers}
+
+Para que la DAO sea totalmente descentralizada, elimina a los firmantes de la multifirma de modo que solo el módulo Zodiac pueda interactuar con el Safe:
+
+1. Ve a Settings > Owners en la interfaz de Safe
+2. Elimina a todos los firmantes excepto a uno
+3. Sustituye al firmante restante por la dirección del módulo Zodiac
+
+A partir de ese momento, la única forma de interactuar con el Safe de la DAO es mediante propuestas de gobernanza a través del módulo Zodiac.
+
+---
+
+## Recursos {#resources}
+
+<CardGroup cols={2}>
+  <Card title="Documentación de Zodiac" icon="book" href="https://zodiac.gnosisguild.org/">
+    Guía completa de configuración de Zodiac
+  </Card>
+  <Card title="Artículo del blog sobre la gobernanza de Kleros" icon="newspaper" href="https://blog.kleros.io/kleros-x-safesnap/">
+    Contexto sobre la integración de Kleros + SafeSnap
+  </Card>
+</CardGroup>

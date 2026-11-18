@@ -1,0 +1,99 @@
+---
+title: "KlerosCore"
+description: "Referencia del contrato KlerosCore: métodos createDispute, arbitrationCost, financiación de apelaciones, sorteo de jurados, transiciones de periodo y ejecución de fallos."
+---
+
+
+
+Contrato árbitro central de Kleros V2. Gestiona la creación de disputas, el sorteo de jurados, las transiciones de periodo, las apelaciones y la ejecución de los fallos.
+
+**Versión**: 0.10.0 | **Proxy**: UUPS actualizable
+
+## Métodos clave {#key-methods}
+
+### `createDispute(uint256 _numberOfChoices, bytes _extraData) payable → uint256` {#createdisputeuint256-_numberofchoices-bytes-_extradata-payable-→-uint256}
+Crea una nueva disputa. Quien llama debe enviar suficiente ETH (o ERC-20 aprobado) para cubrir el coste del arbitraje. `extraData` codifica el `courtID` de destino (como `uint96`) y `minJurors` (como `uint256`).
+
+### `arbitrationCost(bytes _extraData) view → uint256` {#arbitrationcostbytes-_extradata-view-→-uint256}
+Devuelve la tasa de arbitraje actual (en ETH) para la configuración de tribunal y jurados indicada.
+
+### `appeal(uint256 _disputeID, uint256 _numberOfChoices, bytes _extraData) payable` {#appealuint256-_disputeid-uint256-_numberofchoices-bytes-_extradata-payable}
+Gestiona las apelaciones, incluidos los saltos de tribunal y de dispute kit.
+
+### `execute(uint256 _disputeID, uint256 _round, uint256 _iterations)` {#executeuint256-_disputeid-uint256-_round-uint256-_iterations}
+Reparte los stakes de PNK y las tasas entre los jurados según la coherencia de sus votos.
+
+### `executeRuling(uint256 _disputeID)` {#executerulinguint256-_disputeid}
+Finaliza la disputa y llama a `rule()` en el contrato arbitrable.
+
+### `currentRuling(uint256 _disputeID) view → (uint256 ruling, bool tied, bool overridden)` {#currentrulinguint256-_disputeid-view-→-uint256-ruling-bool-tied-bool-overridden}
+Devuelve el fallo actual y su estado:
+
+| Valor devuelto | Tipo | Descripción |
+|--------|------|-------------|
+| `ruling` | `uint256` | Opción ganadora actual. `0` significa "Negarse a arbitrar" o que todavía no hay mayoría. |
+| `tied` | `bool` | `true` cuando dos o más opciones tienen los mismos votos. Una disputa empatada tendrá por defecto el fallo `0` si el periodo de apelación vence sin resolverse. Diseña siempre tus contratos para gestionar explícitamente el fallo `0`. |
+| `overridden` | `bool` | `true` cuando el tribunal padre cambió el fallo en apelación. Útil para supervisión o analítica: la llamada final a `rule()` en tu contrato arbitrable ya refleja el valor modificado. |
+
+### `setStake(uint96 _courtID, uint256 _newStake)` {#setstakeuint96-_courtid-uint256-_newstake}
+Staking de los jurados: requiere una aprobación previa de PNK. En el despliegue Neo, el staking también exige que el jurado posea el NFT `KlerosV2NeoEarlyUser`.
+ 
+## Parámetros de inicialización {#initialization-parameters}
+ 
+El contrato se inicializa con los siguientes parámetros clave (relevantes para integradores y propuestas de gobernanza):
+ 
+| Parámetro | Descripción |
+|---|---|
+| `_governor` | Dirección con plenos derechos de gobernanza (pausa, actualización, cambios de parámetros) |
+| `_guardian` | Dirección de emergencia: solo puede pausar |
+| `_pinakion` | Dirección del contrato del token PNK |
+| `_jurorProsecutionModule` | Dirección autorizada para ejecutar penalizaciones a jurados fuera del flujo normal de las disputas |
+| `_disputeKit` | Dispute kit inicial registrado en el tribunal raíz |
+| `_sortitionModuleAddress` | Dirección del contrato SortitionModule |
+| `_wNative` | Dirección del token nativo envuelto (WETH en Arbitrum): se usa para las conversiones de tasas en ERC-20 |
+
+## Roles de gobernanza {#governance-roles}
+
+- **Governor**: pausar y reanudar, cambiar parámetros, actualizar y cambiar roles
+- **Guardian**: solo puede pausar (respuesta de emergencia)
+
+Durante la pausa, el staking y las recompensas quedan bloqueados. La creación de disputas, la votación y las apelaciones continúan.
+
+## Compatibilidad con tasas en ERC-20 {#erc-20-fee-support}
+ 
+V2 permite pagar las tasas de arbitraje en tokens ERC-20 aceptados (por ejemplo, WETH, DAI) además de en ETH:
+ 
+```solidity
+// Pay arbitration fees with ERC-20
+IERC20 feeToken = IERC20(wethAddress);
+uint256 cost = arbitrator.arbitrationCost(extraData, feeToken);
+feeToken.approve(address(arbitrator), cost);
+arbitrator.createDispute(choices, extraData, feeToken, cost);
+```
+ 
+<Warning>
+La compatibilidad con tasas en ERC-20 solo está disponible al interactuar directamente con KlerosCore en Arbitrum. El `ForeignGateway` (que se usa para el arbitraje entre cadenas desde Ethereum o Gnosis) **no** admite tasas en ERC-20: a través del gateway solo se acepta ETH.
+</Warning>
+ 
+## Dispute kits {#dispute-kits}
+ 
+El General Court admite los cuatro dispute kits. El kit activo se selecciona mediante `extraData` al crear la disputa. Kits actuales en Arbitrum One:
+ 
+| ID del kit | Nombre | Descripción |
+|---|---|---|
+| 1 | DisputeKitClassic | Votación por pluralidad estándar |
+| 2 | DisputeKitShutter | Commit-reveal con cifrado Shutter |
+| 3 | DisputeKitGated | Restringido mediante un token de elegibilidad (SBT) |
+| 4 | DisputeKitGatedShutter | Restringido + commit-reveal con Shutter |
+
+## Eventos {#events}
+
+| Evento | Descripción |
+|---|---|
+| `DisputeCreation` | Nueva disputa creada |
+| `AppealDecision` | Disputa apelada |
+| `CourtJump` | Disputa escalada al tribunal padre |
+| `Ruling` | Fallo final ejecutado |
+| `TokenAndETHShift` | Recompensa o penalización aplicada a un jurado |
+
+[Ver el código fuente](https://github.com/kleros/kleros-v2/blob/master/contracts/src/arbitration/KlerosCore.sol)

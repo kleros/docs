@@ -1,0 +1,33 @@
+---
+title: "Especificación del Sortition Module"
+description: "Especificación del Sortition Module de Kleros V2: selección de jurados ponderada por PNK, estructura de datos del árbol de sumas, fases de staking, fuente de RNG y cambios de stake aplazados."
+---
+
+
+
+El Sortition Module se encarga de la selección de jurados mediante sorteos aleatorios ponderados según el PNK en staking.
+
+## Sistema de fases {#phase-system}
+
+1. **Fase de staking**: los jurados actualizan sus stakes. Los cambios de stake surten efecto **de inmediato** y actualizan el árbol de sumas de sorteo en tiempo real.
+2. **Fase de generación**: se solicita un número aleatorio a la fuente de RNG. Los cambios de stake enviados durante esta fase se **aplazan**: no afectarán a la ronda de sorteo actual.
+3. **Fase de sorteo**: los jurados se sortean usando el número aleatorio y los pesos de stake del final de la fase de staking. Los cambios de stake siguen aplazados.
+ 
+<Warning>
+Los cambios de stake realizados durante las fases de generación o de sorteo quedan en cola y solo surten efecto al inicio de la siguiente fase de staking. La interfaz de Court muestra si los stakes están "Current" (vigentes) o "Delayed" (aplazados).
+</Warning>
+
+## Mecanismo de sorteo {#drawing-mechanism}
+
+Utiliza un árbol de sumas de sorteo en el que cada hoja representa el stake de un jurado. La probabilidad de sorteo es proporcional al stake:
+
+- Un jurado con el 10% del total de PNK en staking en un tribunal tiene aproximadamente un 10% de probabilidad en cada sorteo
+- Varios sorteos por disputa (uno por puesto de jurado)
+- El mismo jurado puede ser sorteado varias veces (y obtiene varios votos)
+
+## Gestión del stake {#stake-management}
+
+- Los stakes se organizan por tribunal en el árbol
+- Los jurados pueden hacer staking en varios tribunales a la vez (sujeto al límite `MAX_STAKE_PATHS`)
+- Requisito de stake mínimo por tribunal (`minStake`)
+- Los cambios de stake pueden aplazarse durante la fase de sorteo
