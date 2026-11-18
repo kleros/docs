@@ -1,0 +1,52 @@
+---
+title: "Foresight"
+description: "Descripción general para desarrolladores de Kleros Foresight V2, un motor de decisiones basado en mercados de predicción: tokens condicionales, resolución de mercados y conexiones con el arbitraje."
+---
+
+Kleros Foresight es un producto de V2 sin equivalente en V1. Esta página solo documenta los detalles técnicos.
+
+---
+
+## Qué es Kleros Foresight {#what-is-kleros-foresight}
+
+- Recibió oficialmente el nombre de Kleros Foresight en febrero de 2026 (antes se llamaba Futarchy UI)
+- Una plataforma de mercados de predicción para la toma de decisiones, en la que los resultados de los mercados se resuelven mediante el arbitraje de Kleros
+- Usa un marco de tokens condicionales en Gnosis Chain con pools AMM basados en Swapr
+- Admite tanto DAI como Foresight Credits para participar
+
+---
+
+## Arquitectura {#architecture}
+
+- Construido sobre un marco de tokens condicionales
+- Sistema de billeteras de negociación para depositar y retirar DAI, acuñar y fusionar tokens de predicción y canjearlos tras la resolución del mercado
+- Predicciones por lotes mediante la subida de CSV, con un ejecutor de operaciones para las operaciones por lotes
+- La división de transacciones reparte los lotes grandes de predicciones en varias transacciones para no superar los límites de gas
+- Obtención de precios en la cadena para los mercados sin entradas en el subgraph
+- La lógica de resolución de los mercados usa el arbitraje de Kleros
+
+---
+
+## Experimentos {#experiments}
+
+- La ronda 1 del experimento de películas se lanzó en marzo de 2026: los participantes predicen las puntuaciones en percentil del CTO para 16 películas
+- La ronda 2 del experimento de películas se lanzó en junio de 2026
+
+---
+
+## Capacidades técnicas {#technical-capabilities}
+
+- Canje por lotes
+- Visualización de pérdidas y ganancias a través de la API
+- Exportación de las predicciones a CSV con marcas de tiempo en UTC
+- Sistema de Foresight Credits
+- Respuestas resueltas mostradas en el control deslizante y en las tarjetas de los mercados
+- Cálculo del valor de canje con una comprobación previa
+- Notificaciones por correo electrónico cuando se resuelve un mercado, procesadas mediante el flujo de Atlas por producto con una baja específica de Foresight
+
+---
+
+## Enlaces {#links}
+
+- Aplicación: [foresight.kleros.io](https://foresight.kleros.io/)
+- Repositorio: [github.com/kleros/futarchy-ui](https://github.com/kleros/futarchy-ui)

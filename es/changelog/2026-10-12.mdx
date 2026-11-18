@@ -1,0 +1,29 @@
+---
+title: "12 de octubre de 2026"
+description: "Las recompensas de staking de PNK de septiembre ya se pueden reclamar, Court y Dispute Resolver solo ejecutan scripts de casos revisados, Dispute Resolver verifica en la cadena las opciones de respuesta de Reality.eth y se aclara la redacción de las recompensas de apelación."
+---
+
+## Nuevas funciones {#new-features}
+
+### Recompensas de staking de septiembre disponibles para reclamar {#september-staking-rewards-available-to-claim}
+
+Las recompensas de staking de PNK de septiembre de 2026 ya están disponibles en [Kleros Court](/es/court/overview). Abre el modal de reclamación en Ethereum o en Gnosis para cobrarlas.
+
+### Opciones de respuesta de Reality.eth verificadas en Dispute Resolver {#verified-reality-eth-answer-options-in-dispute-resolver}
+
+[Dispute Resolver](/es/developers/products/dispute-resolver/overview) construye ahora las opciones de respuesta de los casos de [Reality.eth](/es/products/reality) a partir de la pregunta en la cadena y de su plantilla, igual que Court. Unos parámetros de pregunta manipulados ya no pueden cambiar las opciones que ves.
+
+Dispute Resolver también muestra un aviso en la página del caso cuando:
+
+- Otras interfaces muestran opciones de respuesta distintas. Vota según las opciones que muestra Dispute Resolver.
+- Los parámetros de la pregunta están mal formados, o las opciones no se pudieron verificar o determinar. Lee la pregunta con atención. En caso de duda, niégate a arbitrar.
+
+## Actualizaciones {#updates}
+
+### Court y Dispute Resolver solo ejecutan scripts de casos revisados {#only-reviewed-case-scripts-run-in-court-and-dispute-resolver}
+
+[Kleros Court](/es/court/overview) y [Dispute Resolver](/es/developers/products/dispute-resolver/overview) solo ejecutan ahora los scripts de visualización de casos que Kleros ha revisado. Esto protege tu billetera de los scripts maliciosos adjuntos a un caso. Si un caso usa un script que no se ha revisado, Court considera sus datos no válidos y te aconseja negarte a arbitrar hasta que se revise el script.
+
+## Corrección de errores {#bug-fixes}
+
+**Redacción de las recompensas de apelación en Dispute Resolver**: la tarjeta de financiación de apelaciones ya no muestra una estimación engañosa de "Return of Investment". Ahora explica que las recompensas solo se aplican si ambas partes están financiadas y tu opción gana. Si no se produce la apelación, se te reembolsa tu contribución. Consulta [Apelaciones](/es/court/appeals).

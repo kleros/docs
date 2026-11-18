@@ -1,0 +1,108 @@
+---
+title: "Stake Curate"
+description: "Stake Curate mantiene los elementos de un registro en cumplimiento bloqueando depósitos permanentes, de modo que quienes envían siguen siendo responsables y quienes impugnan ganan recompensas de forma indefinida."
+---
+
+# Stake Curate {#stake-curate}
+
+<Note>
+Stake Curate forma parte de la familia de productos [Curate](/es/products/curate). Utiliza Kleros Court V1 en Gnosis Chain para resolver disputas.
+</Note>
+
+**Stake Curate** es una herramienta de verificación que ofrece un seguimiento continuo del cumplimiento mediante incentivos económicos permanentes. A diferencia del Curate tradicional, en el que los depósitos se devuelven tras la verificación, Stake Curate bloquea los depósitos de forma indefinida, lo que crea incentivos continuos tanto para que quienes envían sigan cumpliendo como para que quienes impugnan vigilen la calidad.
+
+<Info>
+**Estado del lanzamiento**: desplegado en Gnosis Chain en agosto de 2025. Primera implementación importante con DAMM Capital en septiembre de 2025.
+</Info>
+
+---
+
+## Cómo funciona {#how-it-works}
+
+### Participantes {#actors}
+
+1. **Quienes envían**: proponen elementos y adjuntan un depósito permanente como garantía de responsabilidad
+2. **Quienes impugnan o curan**: vigilan el cumplimiento e impugnan los elementos que no cumplen para ganar recompensas
+
+### Enviar elementos {#submitting-items}
+
+<Steps>
+  <Step title="Revisa la política">
+    Comprueba los requisitos de cumplimiento del registro.
+  </Step>
+  <Step title="Envío + depósito">
+    Realiza un depósito en tokens ERC20 (puedes depositar más del mínimo para disuadir las impugnaciones).
+  </Step>
+  <Step title="Periodo de aceptación">
+    La comunidad revisa el envío.
+  </Step>
+  <Step title="Verificado">
+    El elemento aparece como verificado y conforme.
+  </Step>
+  <Step title="Seguimiento continuo">
+    El elemento puede impugnarse indefinidamente. El depósito actúa a la vez como recompensa para quienes impugnan y como incentivo para que quien lo envió siga cumpliendo.
+  </Step>
+</Steps>
+
+### Impugnar elementos {#challenging-items}
+
+Quienes impugnan deben aportar:
+- **Stake de impugnación (ERC20)**: un porcentaje del stake actual del elemento. Se pierde si la impugnación fracasa.
+- **Tasa de arbitraje (ETH)**: cubre los costes de resolución de la disputa.
+
+Si la impugnación prospera, quien impugnó recupera su depósito y gana todo el stake del elemento. Si fracasa, el stake de quien impugnó se suma al depósito del elemento, lo que encarece las impugnaciones futuras (**protección progresiva**).
+
+---
+
+## Funciones clave {#key-features}
+
+- **Depósitos permanentes**: bloqueados indefinidamente, lo que crea incentivos continuos de cumplimiento
+- **Protección progresiva**: cada impugnación fallida aumenta el stake del elemento y disuade los ataques frívolos
+- **Retirada segura**: un proceso de retirada con retardo permite a la comunidad impugnar antes de que se devuelvan los fondos
+- **Cumplimiento impulsado por incentivos**: no se necesita financiación externa para mantener la calidad de forma continua
+
+---
+
+## Stake Curate frente a Curate tradicional {#stake-curate-vs-traditional-curate}
+
+| Aspecto | Curate tradicional | Stake Curate |
+|---|---|---|
+| **Depósito** | Se devuelve tras la verificación | Bloqueado indefinidamente |
+| **Seguimiento** | Sin incentivos continuos | Incentivos económicos permanentes |
+| **Coste de impugnación** | Solo tasas de arbitraje | Stake + tasas de arbitraje |
+| **Ideal para** | Verificación puntual | Elementos que requieren un cumplimiento continuo |
+| **Tras la verificación** | Sin consecuencias económicas por incumplimiento | Quien envió se arriesga a perder todo su depósito |
+
+---
+
+## Casos de uso {#use-cases}
+
+- **Moderación de contenidos**: registros de creadores verificados, listas blancas de redes sociales
+- **Verificación de credenciales**: revistas académicas, certificaciones profesionales
+- **Seguimiento financiero**: cumplimiento de la estrategia de fondos, transparencia de la tesorería
+- **Garantía de calidad**: registros de seguridad de software, autenticidad de productos
+- **Juegos y comunidades**: registros antitrampas, listas de streamers verificados
+
+---
+
+## Crear un registro {#creating-a-registry}
+
+Quienes crean un registro tienen control total sobre:
+- Los importes de depósito y el tipo de token
+- El porcentaje de depósito de quien impugna
+- El periodo de espera para la retirada
+- El número de jurados en las disputas
+- La política del registro y la autoridad para actualizarla
+
+---
+
+## Más información {#learn-more}
+
+<CardGroup cols={2}>
+  <Card title="Artículo completo del blog" href="https://blog.kleros.io/cut-compliance-costs-with-stake-curate-the-high-quality-verification-tool/" icon="newspaper">
+    Explicación detallada con ejemplos y diagramas de flujo
+  </Card>
+  <Card title="Producto Curate" href="/es/products/curate" icon="list-check">
+    Conoce el producto Curate tradicional
+  </Card>
+</CardGroup>
