@@ -1,0 +1,21 @@
+---
+title: "November 16, 2026"
+description: "Court shows the losing side's appeal deadline below the case timeline, and the Vea validator writes JSON logs by default."
+---
+
+## Updates
+
+### Losing side's appeal deadline in Court
+
+During the appeal period, case pages in [Kleros Court](/court/overview) now show the losing side's deadline as a notice below the timeline instead of inside the Appeal step.
+
+- **Countdown**: The notice counts down to the losing side's deadline and reminds you that the winning side has until the end of the period. Once the deadline passes, it says the losing side's deadline has concluded.
+- **Unrecognized contracts**: When Court can't read the deadline, the notice says the losing side may have less time to fund an appeal than the full period.
+- **After the period**: The notice disappears when the appeal period ends.
+- **Decision box**: The court's ruling line is now highlighted in yellow.
+
+See [Appeals](/court/appeals).
+
+### JSON logs for the Vea validator
+
+The [Vea](/developers/crosschain/vea-bridge) validator now writes one JSON object per line to stdout by default, as the relayer does, so log shippers and `docker logs` consumers can parse it. Set `LOCAL_DEPLOY=true` to get the colored, human-readable logs in a terminal. Deployed validators need no configuration change.
