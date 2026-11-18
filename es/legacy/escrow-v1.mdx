@@ -1,0 +1,44 @@
+---
+title: "Escrow V1"
+description: "Documentación de Kleros Escrow V1: contrato inteligente de escrow descentralizado en la red principal de Ethereum, con resolución de disputas de Kleros Court y compatibilidad con tokens ERC-20."
+---
+
+# Escrow V1 {#escrow-v1}
+
+<Note>
+Escrow V1 está probado en producción en Ethereum L1 y sigue activo para integraciones Web3. Hay una versión V2 disponible: [Escrow V2](/es/products/escrow) en Arbitrum.
+</Note>
+
+Kleros Escrow V1 es la plataforma de escrow descentralizada original en la red principal de Ethereum. Permitía a dos partes bloquear fondos en un contrato inteligente, con Kleros Court disponible como mecanismo de resolución de disputas si las partes no estaban de acuerdo.
+
+---
+
+## Compatibilidad de tokens {#token-support}
+
+<Danger>
+**Los tokens ERC-20 no estándar no son compatibles.** Tokens como USDT, BNB y OMG **no son compatibles** con Kleros Escrow V1. Estos tokens usan implementaciones de transferencia no estándar que pueden hacer que las transacciones fallen o que los fondos queden bloqueados.
+</Danger>
+
+Escrow V1 solo admite ETH y tokens ERC-20 estándar. Los tokens no estándar suelen tener una o varias de estas características:
+
+- **Sin valor de retorno en `transfer`/`transferFrom`** (por ejemplo, USDT, BNB, OMG)
+- Mecanismos de **comisión en la transferencia** que reducen el importe recibido
+- Ajustes de suministro por **rebase**
+- Transferencias **pausables** que un administrador puede congelar
+
+Los tokens no estándar son compatibles con [Escrow V2](/es/products/escrow), que incluye la gestión de `SafeERC20` y comprobaciones de seguridad automáticas para una compatibilidad más amplia con tokens.
+
+---
+
+## Diferencias clave con V2 {#key-differences-from-v2}
+
+| Función | V1 | V2 |
+|---------|----|----|
+| Red | Red principal de Ethereum | Arbitrum One |
+| Compatibilidad de tokens | Solo ETH | ETH + cualquier token ERC-20 |
+| ERC-20 no estándar | No compatibles | Compatibles mediante SafeERC20 |
+| Acuerdo | Básico | Propuesta / contrapropuesta estructurada |
+| Comisiones de la plataforma | Ninguna | Ninguna |
+| Evidencias y apelaciones | Las gestiona el contrato de escrow | Las gestiona el tribunal |
+
+V2 introdujo la negociación estructurada de acuerdos y la compatibilidad con varios tokens, y trasladó la gestión de las evidencias y las apelaciones al tribunal, lo que simplificó el contrato de escrow. Consulta [Escrow V2](/es/products/escrow) para ver la documentación actual.

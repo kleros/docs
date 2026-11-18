@@ -1,0 +1,52 @@
+---
+title: "Court V1"
+description: "Documentación de Kleros Court V1: el protocolo de arbitraje original KlerosLiquid en la red principal de Ethereum y en Gnosis Chain, activo para integraciones Web3."
+---
+
+# Court V1 {#court-v1}
+
+<Note>
+Court V1 es el protocolo probado en producción en Ethereum L1 y sigue activo para integraciones Web3. Hay una versión V2 disponible: [Court V2](/es/court/overview) en Arbitrum.
+</Note>
+
+Kleros Court V1 es el protocolo descentralizado de resolución de disputas original, desplegado en la red principal de Ethereum en 2018. Su contrato inteligente principal era **KlerosLiquid**, que combinaba en un solo contrato el staking de los jurados, la selección aleatoria, la votación y la gestión de las disputas.
+
+---
+
+## Características clave {#key-characteristics}
+
+- **Red**: red principal de Ethereum (también desplegado en Gnosis Chain / xDAI)
+- **Contrato**: KlerosLiquid (monolítico: toda la lógica en un solo contrato)
+- **Staking de PNK**: el PNK permanecía en la billetera del jurado durante el staking
+- **RNG**: generación de números aleatorios basada en blockhash
+- **Votación**: commit-reveal con agregación por pluralidad
+- **Estándares**: ERC-792 (arbitraje) y ERC-1497 (evidencias)
+- **Tribunales**: árbol jerárquico de subtribunales con el General Court como raíz
+
+---
+
+## Comparación entre V1 y V2 {#v1-vs-v2-comparison}
+
+| Función | V1 | V2 |
+|---------|----|----|
+| Red | Red principal de Ethereum | Arbitrum One |
+| Arquitectura | Monolítica (KlerosLiquid) | Modular (KlerosCore + SortitionModule + DisputeKits) |
+| Evidencias | Las gestionan los contratos arbitrables | Las gestiona el tribunal |
+| Apelaciones | Las gestionan los contratos arbitrables | Las gestiona el tribunal |
+| RNG | Blockhash | Chainlink VRF con respaldo |
+| Entre cadenas | Una sola cadena | Multicadena mediante el puente VEA |
+| Costes de gas | Altos | Bajos |
+
+---
+
+## Estructura de tribunales de V1 {#v1-court-structure}
+
+V1 tenía un árbol jerárquico de tribunales similar al de V2, con el General Court como raíz y subtribunales especializados como Blockchain Non-Technical, English Language, Onboarding y otros. Hacer staking en un tribunal hijo incluía automáticamente al jurado en todos los tribunales padre.
+
+---
+
+## Recursos de V1 {#v1-resources}
+
+- **Aplicación de Court V1**: antes en court.kleros.io (ahora redirige a V2)
+- **Contrato**: KlerosLiquid en la red principal de Ethereum
+- **Estándar ERC-792**: consulta la [documentación de ERC-792](/es/developers/arbitrable-apps/erc-792)

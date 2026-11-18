@@ -1,0 +1,38 @@
+---
+title: "Formato de las evidencias"
+description: "Especificación del formato de las evidencias de Kleros V2: esquema JSON con los campos title, description, fileURI, fileTypeExtension y fileHash para almacenamiento en IPFS o Arweave."
+---
+
+
+
+En Kleros V2, las evidencias se almacenan fuera de la cadena (IPFS/Arweave) y se referencian en la cadena mediante URI.
+
+## Estructura JSON de una evidencia {#evidence-json-structure}
+
+```json
+{
+  "title": "Delivery Confirmation",
+  "description": "Screenshot showing the package was delivered on time",
+  "fileURI": "/ipfs/QmFileHash...",
+  "fileTypeExtension": "png",
+  "fileHash": "0x..."
+}
+```
+
+## Campos {#fields}
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `title` | string | Sí | Título breve de la evidencia |
+| `description` | string | Sí | Descripción de lo que muestra la evidencia |
+| `fileURI` | string | No | URI del archivo de la evidencia |
+| `fileTypeExtension` | string | No | Extensión del archivo (pdf, png, etc.) |
+| `fileHash` | string | No | Hash del archivo para verificar su integridad |
+
+## Envío {#submission}
+
+Las evidencias se envían llamando al método correspondiente del contrato arbitrable o del módulo de evidencias y pasando la URI de IPFS del JSON de la evidencia.
+
+## Evidencias moderadas {#moderated-evidence}
+
+El contrato `ModeratedEvidenceModule` ofrece protección frente al spam en el envío de evidencias mediante un mecanismo de impugnación con fianza. Resulta especialmente útil para las disputas en cadenas L2, donde los costes de gas son bajos y el spam es barato.

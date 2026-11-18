@@ -1,0 +1,94 @@
+---
+title: "Integración con Curate Classic"
+description: "Guía para desarrolladores sobre la integración con Kleros Curate Classic (V1) con almacenamiento en la cadena: contratos, ciclo de vida de los elementos y gestión de las disputas."
+---
+
+# Curate Classic: integración para desarrolladores {#curate-classic-integration-for-devs}
+
+<Note>
+Esta página trata Curate Classic (V1) con almacenamiento en la cadena. Para el más reciente Light Curate con almacenamiento basado en subgraph, consulta [Integración con Light Curate](/es/developers/products/curate/light-curate). Para Curate V2, consulta la [sección de Curate para desarrolladores](/es/developers/products/curate/overview).
+</Note>
+
+<Warning>
+**Classic Curate está en proceso de retirada.** Los contratos de Classic Curate siguen desplegados y sin cambios, por lo que las listas Classic existentes siguen funcionando: todavía se pueden enviar, impugnar y consultar elementos. Kleros no lanzará nuevos registros en Classic Curate, y se está desactivando la creación de listas Classic desde los frontends de Kleros. **Light Curate y Stake Curate no se ven afectados** y siguen siendo totalmente compatibles; las nuevas listas, incluidos los registros Kleros Verified que aparecen en la página de inicio de la [aplicación Curate](https://curate.kleros.io), se crean en Light Curate.
+</Warning>
+
+---
+
+## Descripción general {#overview}
+
+Curate Classic es la versión original de Kleros Curate. Todos los datos de los elementos (salvo los archivos y las imágenes) se almacenan en la cadena, en el almacenamiento del contrato. Esto significa que otros contratos pueden consultar directamente al TCR los valores de los campos, pero los costes de despliegue y de funcionamiento son más altos.
+
+Características clave:
+- Los datos de los elementos se almacenan en la cadena como bytes codificados
+- Requiere `@kleros/gtcr-encoder` para codificar y decodificar los elementos
+- El cliente debe sincronizarse descargando y decodificando todos los elementos
+- Costes de gas más altos (almacenamiento O(n))
+- Otros contratos pueden leer directamente los campos de los elementos
+
+---
+
+## Leer datos {#reading-data}
+
+### Con el subgraph {#using-the-subgraph}
+
+Usa la entidad `items` (no `litems`, que es para Light Curate):
+
+```graphql
+{
+  items(
+    first: 10
+    where: {
+      status: Registered
+      registryAddress: "0xYOUR_REGISTRY_LOWERCASE"
+    }
+  ) {
+    itemID
+    data
+    status
+  }
+}
+```
+
+El campo `data` contiene bytes codificados. Decodifícalos con `@kleros/gtcr-encoder`.
+
+### Con el codificador {#using-the-encoder}
+
+```bash
+npm install @kleros/gtcr-encoder
+```
+
+```javascript
+const { gtcrDecode } = require("@kleros/gtcr-encoder");
+const columns = [/* column definitions from the TCR meta evidence */];
+const decodedItem = gtcrDecode({ columns, values: item.data });
+```
+
+---
+
+## Escribir datos {#writing-data}
+
+### Enviar un elemento {#submitting-an-item}
+
+Codifica los campos del elemento y llama a `addItem()` en el contrato GeneralizedTCR con el depósito exigido.
+
+### Impugnar un elemento {#challenging-an-item}
+
+Llama a `challengeRequest()` en el contrato con un depósito. La impugnación crea una disputa en Kleros Court.
+
+### Ejecutar solicitudes {#executing-requests}
+
+Llama a `executeRequest()` una vez transcurrido el periodo de impugnación sin ninguna impugnación.
+
+---
+
+## Recursos {#resources}
+
+<CardGroup cols={2}>
+  <Card title="Contratos de Curate Classic" icon="github" href="https://github.com/kleros/tcr">
+    Código fuente
+  </Card>
+  <Card title="Subgraph" icon="database" href="https://thegraph.com/explorer/subgraphs/A5oqWboEuDezwqpkaJjih4ckGhoHRoXZExqUbja2k1NQ">
+    Subgraph legacy-curate-mainnet en Graph Explorer
+  </Card>
+</CardGroup>

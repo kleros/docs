@@ -1,0 +1,69 @@
+---
+title: "Flujo de desarrollo"
+description: "Cómo quienes contribuyen a Kleros siguen las tareas con GitHub Issues, crean ramas de funcionalidad, revisan pull requests y publican versiones en los repositorios de protocolo y frontend."
+---
+
+
+
+Flujo de trabajo general para contribuir a los repositorios de Kleros.
+
+---
+
+## Seguimiento de tareas {#task-tracking}
+
+Kleros usa GitHub Issues para el seguimiento de tareas. Cada issue sigue un ciclo de vida:
+
+1. **Open**: se crea y se describe el issue
+2. **Assigned**: un colaborador se hace cargo
+3. **In Progress**: el trabajo se realiza en una rama de funcionalidad
+4. **In Review**: se ha enviado la pull request y está pendiente de revisión
+5. **Done**: se ha fusionado en la rama de destino
+
+En el monorepo kleros-v2, los issues pueden organizarse por paquetes (contracts, web, subgraph, bots, SDK).
+
+---
+
+## Ramas {#branching}
+
+| Rama | Propósito |
+| --- | --- |
+| `master` o `main` | Rama de versiones estables |
+| `dev` | Rama de desarrollo (kleros-v2 usa `dev` por defecto) |
+| `feat/<name>` | Ramas de funcionalidad |
+| `fix/<name>` | Ramas de corrección de errores |
+| `docs/<name>` | Ramas de documentación |
+
+Crea las ramas de funcionalidad a partir de la rama de desarrollo. Después de la fusión, crea una rama nueva a partir de la rama de desarrollo actualizada en lugar de reutilizar la rama ya fusionada.
+
+---
+
+## Pull requests {#pull-requests}
+
+- Una PR por funcionalidad o corrección
+- Incluye una descripción clara de qué cambió y por qué
+- Haz referencia al número del issue de GitHub
+- Asegúrate de que las comprobaciones de CI pasan antes de solicitar la revisión
+- Solicita la revisión de al menos un miembro del equipo
+
+---
+
+## Commits {#commits}
+
+Los repositorios de Kleros usan [Conventional Commits](https://conventionalcommits.org/):
+
+```
+feat: add appeal funding to dispute kit
+fix: correct extraData encoding for court ID
+docs: update deployment addresses
+chore: bump dependencies
+```
+
+El repositorio kleros-v2 lo aplica mediante commitlint.
+
+---
+
+## Versiones {#releases}
+
+Las versiones se etiquetan en Git y se publican en npm cuando corresponde (por ejemplo, `@kleros/kleros-v2-contracts`, `@kleros/kleros-sdk`).
+
+Los despliegues de contratos inteligentes siguen un proceso aparte. Consulta [Flujo de contratos inteligentes](/es/contributing/smart-contract-workflow).

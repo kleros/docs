@@ -1,0 +1,42 @@
+---
+title: "Dispute Resolver"
+description: "Descripción general para desarrolladores de la aplicación Dispute Resolver de V1 (resolve.kleros.io) para crear disputas en Kleros Court V1 sin desplegar un contrato arbitrable personalizado."
+---
+
+Dispute Resolver (antes "Resolve") es una aplicación web de V1 en [resolve.kleros.io](https://resolve.kleros.io) que permite a los usuarios crear disputas directamente en Kleros Court V1, sin construir un contrato arbitrable personalizado. Los usuarios definen la pregunta, las opciones y las evidencias de la disputa y, después, la envían a Court para su resolución. Internamente, las disputas se crean mediante el [ArbitrableProxy](/es/developers/arbitrable-apps/arbitrable-proxy) de V1. La presentación de evidencias y la gestión de las apelaciones se realizan desde la interfaz de Dispute Resolver.
+
+<Note>
+**"Dispute Resolver" hace referencia a cosas distintas en V1 y V2:**
+
+- **V1 (esta página):** la aplicación independiente Dispute Resolver en resolve.kleros.io, respaldada por el contrato ArbitrableProxy de Kleros Court V1. La interfaz `IDisputeResolver` de V1 ([paquete de NPM](https://www.npmjs.com/package/@kleros/dispute-resolver-interface-contract)) permite a los contratos arbitrables personalizados de V1 usar esta aplicación para las evidencias y la financiación de las apelaciones.
+- **V2:** no hay una aplicación aparte. La creación de disputas está integrada en la interfaz de [Court V2](/es/court/overview) y respaldada por el contrato `DisputeResolver` de V2 (consulta [Descripción general de las aplicaciones arbitrables](/es/developers/arbitrable-apps/arbitrable-overview) y [Direcciones de despliegue](/es/reference/contracts/deployment-addresses)).
+</Note>
+
+---
+
+## Notas técnicas {#technical-notes}
+
+- **Subida de archivos**: las subidas de evidencias pasan por Atlas hasta IPFS, con un mensaje informativo de SIWE en el paso de subida
+- **Visualización de evidencias**: la interfaz normaliza los datos de evidencias de PoH (incluidos los envíos antiguos y los datos que no son objetos). Desde octubre de 2026, Dispute Resolver y Court solo ejecutan los scripts de visualización de casos que Kleros ha revisado. Si un caso usa un script que no se ha revisado, sus datos se consideran no válidos y se aconseja a los jurados negarse a arbitrar hasta que se revise el script
+- **MetaEvidence**: se obtiene mediante un enfoque basado en una API
+- **Casos de Realitio**: las opciones de respuesta se construyen a partir de la pregunta de Reality.eth en la cadena y de su plantilla, igual que en Court. Aparece un aviso en la página del caso cuando otras interfaces muestran opciones distintas, o cuando los parámetros de la pregunta están mal formados o las opciones no se pueden verificar
+- **Creación de disputas**: el formulario de creación de disputas valida los datos antes del envío
+
+---
+
+## Redes compatibles {#supported-networks}
+
+Dispute Resolver solo puede crear y gestionar disputas en las cadenas en las que está **desplegado Kleros Court V1** (un árbitro local más un Arbitrable Proxy):
+
+| Red | Tipo | Creación de disputas |
+| --- | --- | --- |
+| Ethereum Mainnet | Producción | ✅ Compatible |
+| Gnosis Chain | Producción | ✅ Compatible |
+| Sepolia | Testnet | ✅ Compatible |
+| Gnosis Chiado | Testnet | ✅ Compatible |
+
+<Warning>
+  El selector de redes también muestra otras cadenas, como Polygon, Arbitrum One, Optimism, Base (y Base Sepolia), zkSync Era, Unichain y Redstone, que proceden de una configuración de redes compartida de Kleros. Son entradas entre cadenas **sin Court V1 ni Arbitrable Proxy desplegados**, por lo que aparecen en la lista, pero crear una disputa en ellas no funciona. Usa una de las redes compatibles indicadas arriba.
+</Warning>
+
+Para ver el historial de cambios, consulta el [registro de cambios](/changelog) y las [actualizaciones para desarrolladores del blog de Kleros](https://blog.kleros.io/tag/developer/).

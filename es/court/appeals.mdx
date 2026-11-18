@@ -1,0 +1,271 @@
+---
+title: "Apelaciones"
+description: "Cómo financiar apelaciones en Kleros Court: financiación asimétrica, fórmulas del coste de apelación, duplicación de jurados, saltos a tribunales padre y pago de recompensas de apelación."
+sidebarTitle: "Apelaciones"
+
+---
+
+
+
+El sistema de apelaciones es una función esencial de Kleros Court que garantiza la equidad y permite corregir errores. Cualquier parte, e incluso terceros, puede impugnar un fallo financiando una apelación. [Más información aquí](https://blog.kleros.io/kleros-decentralized-token-listing-appeal-fees/)
+
+<Note>
+La mecánica de las apelaciones es esencialmente la misma en V1 y V2. Las mejoras específicas de V2 (como los saltos de Dispute Kit) se indican donde aparecen más abajo.
+</Note>
+
+---
+
+## Cómo funcionan las apelaciones {#how-appeals-work}
+
+<Steps>
+
+<Step title="Fallo inicial">
+  Después de que los jurados votan, se alcanza un fallo preliminar basado en la decisión de la mayoría. Este fallo entra en el **periodo de apelación**.
+</Step>
+
+<Step title="Financiación de la apelación">
+  Durante el periodo de apelación, cualquiera puede financiar una apelación:
+  - **Impugnante**: financia para revocar el fallo (2× el coste de apelación)
+  - **Ganador**: financia para defender el fallo (1× el coste de apelación)
+</Step>
+
+<Step title="Contrafinanciación">
+  Si una parte financia, la otra tiene la oportunidad de contrafinanciar. Si solo una parte financia por completo, esa parte gana por defecto.
+</Step>
+
+<Step title="Nueva ronda">
+  Si ambas partes financian, comienza una nueva ronda con más jurados. El proceso se repite hasta que se agotan las apelaciones o dejan de financiarse.
+</Step>
+
+<Step title="Fallo definitivo">
+  Cuando ya no se financian más apelaciones (o vence el periodo de apelación), el fallo vigente se vuelve definitivo y se ejecuta.
+</Step>
+
+</Steps>
+
+---
+
+## Requisitos de financiación de las apelaciones {#appeal-funding-requirements}
+
+El sistema de apelaciones utiliza una financiación asimétrica para crear los incentivos adecuados:
+
+| Parte | Financiación requerida | Justificación |
+| --- | --- | --- |
+| **Parte impugnante** | 2× el coste de apelación | Una barrera más alta desalienta las apelaciones frívolas |
+| **Parte ganadora** | 1× el coste de apelación | Menor coste para defender fallos legítimos |
+
+### Cálculo del coste de apelación {#calculating-appeal-cost}
+
+```
+appealCost = feeForJuror × ((currentJurors × 2) + 1)
+```
+
+<Accordion title="Ejemplo de coste de apelación">
+**Escenario:** la ronda actual tiene 3 jurados a 0,05 ETH cada uno.
+
+La siguiente ronda tendrá: (3 × 2) + 1 = **7 jurados**
+
+**Costes de apelación:**
+- Impugnante: 0,05 ETH × 7 × 2 = **0,70 ETH**
+- Ganador: 0,05 ETH × 7 × 1 = **0,35 ETH**
+</Accordion>
+
+---
+
+## Plazos de financiación {#funding-deadlines}
+
+<Warning>
+El momento es fundamental en las apelaciones. Si se te pasa el plazo, pierdes la oportunidad.
+</Warning>
+
+| Parte | Plazo |
+| --- | --- |
+| **Impugnante** | Solo la primera mitad del periodo de apelación |
+| **Ganador** | Todo el periodo de apelación |
+
+Esta asimetría genera urgencia para los impugnantes y, al mismo tiempo, da a los ganadores tiempo suficiente para responder.
+
+---
+
+## Progresión de jurados {#juror-progression}
+
+Con cada ronda de apelación, el número de jurados aumenta:
+
+```
+Round 1:  3 jurors
+Round 2:  7 jurors    (3×2 + 1)
+Round 3:  15 jurors   (7×2 + 1)
+Round 4:  31 jurors   (15×2 + 1)
+Round 5:  63 jurors   (31×2 + 1)
+...
+```
+
+Este crecimiento exponencial garantiza que:
+- Los casos importantes reciban una revisión exhaustiva
+- El coste de las apelaciones repetidas aumente considerablemente
+- Con el tiempo, un jurado lo suficientemente grande alcance un consenso estable
+
+---
+
+## Saltos de tribunal {#court-jumps}
+
+Cuando el número de jurados supera un umbral, la disputa "salta" a un tribunal padre:
+
+### Cómo funcionan los saltos de tribunal {#how-court-jumps-work}
+
+<Steps>
+
+<Step title="Se alcanza el umbral">
+  La disputa requiere más jurados que el parámetro `jurorsForCourtJump` (por ejemplo, 511 jurados).
+</Step>
+
+<Step title="Escalada">
+  La disputa pasa automáticamente al tribunal padre en la jerarquía.
+</Step>
+
+<Step title="Nuevos parámetros">
+  La disputa adopta los parámetros y el grupo de jurados del tribunal padre.
+</Step>
+
+<Step title="Resolución continuada">
+  Ahora se encargan del caso jurados del tribunal padre, más amplio.
+</Step>
+
+</Steps>
+
+### Mejoras de V2 {#v2-enhancements}
+
+Kleros V2 introduce mejoras importantes en los saltos de tribunal:
+
+<CardGroup cols={2}>
+
+<Card title="Saltos de Dispute Kit" icon="puzzle-piece">
+  Si un tribunal padre no admite el dispute kit actual, la disputa puede cambiar a un kit compatible, incluidos tipos de preguntas complejas.
+</Card>
+
+<Card title="Ajuste dinámico de jurados" icon="sliders">
+  El número de jurados se ajusta dinámicamente según los parámetros del nuevo tribunal y los requisitos del dispute kit.
+</Card>
+
+</CardGroup>
+
+<Info>
+Estos saltos garantizan que los casos complejos o controvertidos reciban un tratamiento adecuado por parte de un jurado más amplio y menos especializado.
+</Info>
+
+---
+
+## Recompensas de apelación {#appeal-rewards}
+
+Financiar una apelación puede ser rentable, pero las recompensas solo se aplican si **ambas partes están totalmente financiadas** y tu opción gana:
+
+### Si tu parte gana {#if-your-side-wins}
+
+Cuando financias la parte ganadora de una apelación:
+
+- Se te devuelve tu financiación
+- Recibes como beneficio una parte de la financiación de la parte perdedora
+- Las recompensas son proporcionales a tu contribución
+
+### Si tu parte pierde {#if-your-side-loses}
+
+- Pierdes tu financiación
+- Se reparte entre quienes financiaron a la parte ganadora
+
+### Si no se produce la apelación {#if-no-appeal-takes-place}
+
+Si la apelación no se produce, por ejemplo porque la otra parte no está totalmente financiada, se te reembolsa tu contribución.
+
+<Tip>
+Financiar apelaciones es una forma de financiación colectiva de la justicia. Varios contribuyentes pueden financiar juntos a una parte y compartir proporcionalmente las recompensas o las pérdidas.
+</Tip>
+
+---
+
+## Consideraciones estratégicas {#strategic-considerations}
+
+### Para las partes en disputa {#for-disputants}
+
+- **Evalúa la solidez**: apela solo si tienes pruebas sólidas de que el fallo fue erróneo
+- **Ten en cuenta los costes**: cada ronda es más cara que la anterior
+- **Calcula el momento de tu financiación**: los impugnantes deben actuar en la primera mitad del periodo de apelación
+
+### Para financiadores externos {#for-third-party-funders}
+
+- **Revisa las evidencias**: estudia el caso antes de financiar a cualquiera de las partes
+- **Evalúa la probabilidad**: considera la probabilidad de que el fallo cambie
+- **Diversifica el riesgo**: financia varias apelaciones para repartir el riesgo
+
+### Para los jurados {#for-jurors}
+
+- **Espera apelaciones**: las disputas con mucho en juego suelen apelarse
+- **Saltos de tribunal**: puedes ser sorteado para casos que saltaron desde subtribunales
+- **Mayor complejidad**: los casos apelados suelen ser más controvertidos
+
+---
+
+## Diagrama del flujo de apelación {#appeal-flow-diagram}
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     INITIAL RULING                          │
+│                    (3 jurors vote)                          │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     APPEAL PERIOD                           │
+│   Challenger funds (2×) ◄──────► Winner funds (1×)          │
+└─────────────────────────┬───────────────────────────────────┘
+                          │
+            ┌─────────────┼─────────────┐
+            │             │             │
+            ▼             ▼             ▼
+     ┌──────────┐  ┌──────────┐  ┌──────────┐
+     │  Both    │  │  Only    │  │ Neither  │
+     │  Fund    │  │ One Funds│  │  Funds   │
+     └────┬─────┘  └────┬─────┘  └────┬─────┘
+          │             │             │
+          ▼             ▼             ▼
+     ┌──────────┐  ┌──────────┐  ┌──────────┐
+     │  NEW     │  │ Funded   │  │ Current  │
+     │  ROUND   │  │ Side     │  │ Ruling   │
+     │(7 jurors)│  │  Wins    │  │ Executed │
+     └──────────┘  └──────────┘  └──────────┘
+```
+
+---
+
+## ¿Qué sigue? {#what’s-next}
+
+<CardGroup cols={3}>
+
+<Card title="Jerarquía de tribunales" icon="sitemap" href="/es/court/court-hierarchy">
+  Comprende cómo se organizan los tribunales
+</Card>
+
+<Card title="Cómo funciona" icon="cogs" href="/es/court/how-it-works">
+  El proceso completo de resolución de disputas
+</Card>
+
+<Card title="Financia una apelación" icon="hand-holding-dollar" href="https://court.kleros.io">
+  Explora los casos activos con apelaciones abiertas
+</Card>
+
+</CardGroup>
+
+---
+
+## Enlaces rápidos {#quick-links}
+
+<CardGroup cols={2}>
+
+<Card title="Calculadora de apelaciones" icon="calculator" href="https://v2.kleros.builders/">
+  Estima los costes de apelación de las disputas activas
+</Card>
+
+<Card title="Apelaciones activas" icon="gavel" href="https://v2.kleros.builders/">
+  Consulta las disputas que están en periodo de apelación
+</Card>
+
+</CardGroup>
