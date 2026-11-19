@@ -24,6 +24,7 @@ This page documents technical details for Scout. It does not include an integrat
 - Submissions require sign-in at the time of submission; images are persisted in the browser until then
 - Submission image size is capped on all registries; the tokens registry enforces a max of 1 MB and a minimum of 128×128 for logos
 - ATQ duplicate detection prevents duplicate address tag submissions
+- Since November 2026, the submit forms run the registry policy's mechanical rules in the browser (formats, length limits, deployed bytecode and token decimals, logos, CDN domain patterns, ATQ source checks and duplicates) and block submission while any rule fails
 - Disputes route to the correct court via JavaScript Court routing
 - The evidence section sits outside the submission modal so evidence can be browsed while submitting
 
