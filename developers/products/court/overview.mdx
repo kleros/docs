@@ -39,6 +39,9 @@ The Court V1 interface at [court.kleros.io](https://court.kleros.io/) supports:
 - **Staking rewards**: since August 2026, monthly KIP-66 staking rewards are shown on a dedicated site, [rewards.kleros.io](https://rewards.kleros.io), which replaced the in-app rewards page and has an **Export CSV** button. Monthly rewards are still claimed in the Court claim modal
 - **Per-court vote visibility**: public vs. hidden vote details for each court are visible at staking time
 - **Reality case display**: "Invalid" is shown instead of "Refuse to Arbitrate" for Reality cases
+- **Applied ruling**: since October 2026, the decision box of a case in its Execution period shows the ruling the arbitrable contract applied, read from the contract's own `Ruling` event. Before execution it reads "The ruling has not been executed yet." When the applied ruling differs from the court's ruling, both are shown, and when Court can confirm that only one option was fully funded for an appeal, it says that option won without a new round
+- **Losing side's appeal deadline**: during the Appeal period, a notice below the timeline counts down the losing side's shorter deadline to fund an appeal and notes that the winning side has until the period ends. For contracts Court does not recognise, it warns that the losing side may have less time than the full period
+- **Chain-specific URLs**: since October 2026, every app URL starts with the chain ID (for example `/1/cases/1000` or `/100/courts`), so a shared link opens on the chain it came from. Older links without the prefix, or with `?requiredChainId=`, still work and are rewritten
 - **Registry whitelists**: Seer Curate on Gnosis, the Kleros Tokens Registry, and the Seer Market registry
 
 For the history of changes, see the [Changelog](/changelog) and the [Kleros blog developer updates](https://blog.kleros.io/tag/developer/). For V1 contract addresses, see [Deployment Addresses V1](/reference/contracts/deployment-addresses-v1).
