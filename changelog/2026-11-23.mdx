@@ -1,0 +1,56 @@
+---
+title: "November 23, 2026"
+description: "A rebuilt Dispute Resolver, pre-submission checks and a Needs your attention panel in Scout, payout warnings for wallets that can't receive refunds, and faster Scout pages."
+---
+
+## New features
+
+### Rebuilt Dispute Resolver
+
+The [Dispute Resolver](/developers/products/dispute-resolver/overview) has been rebuilt. It keeps every page and feature of the previous app: open disputes per network, dispute details with evidence and ruling, evidence submission, appeal funding, reward withdrawal and dispute creation.
+
+- **Every dispute viewable**: A section that fails to load no longer blanks the whole page, including for disputes from badly configured arbitrable contracts.
+- **Applied ruling**: The decision shows the ruling the arbitrable contract applied, not only the court's ruling.
+- **Funding deadlines**: Each appeal card shows when its funding closes.
+- **Safer transactions**: Transactions are checked against the contract before your wallet opens.
+- **Evidence**: Evidence is shown in pages of 50, with one row per entry.
+- **New interface**: Light and dark themes, on desktop and mobile.
+
+### Pre-submission checks in Scout
+
+The submit forms in [Scout](/products/scout) now check your entry against the registry's policy while you type. A **Pre-submission checks** panel above the submit button lists the results.
+
+- **Blocking issues**: Anything that would get the item challenged blocks submission, such as missing fields, wrong address formats, length limits, no deployed contract, a mismatched token `decimals()`, an invalid logo, or a duplicate already in the registry.
+- **Quick fixes**: Mechanical fixes are offered inline, for example trimming a full URL down to its domain or removing extra spaces.
+- **Warnings**: Some issues, such as a deployment that isn't finalized yet or an EIP-7702 delegated wallet, show as warnings without blocking.
+
+### Needs your attention in Scout
+
+[Scout](/products/scout) keeps your open cases in view until they're resolved.
+
+- **My Profile**: A **Needs your attention** panel lists your open cases. Red cases need action or you lose, for example when the other side fully funded its appeal. Amber cases need a decision before a deadline, such as appealing a ruling or adding evidence before voting. Cases in progress show their time left.
+- **Item pages**: The red and amber cases for that item appear on its page, and the **My Profile** link shows a badge with their count.
+- **New evidence**: Dispute cards show how many evidence entries you haven't read yet, and unread entries are marked **New** in the Evidence tab.
+
+## Updates
+
+### Payout warnings for smart wallets
+
+Some contract wallets can't receive refunds and rewards from the arbitrable contracts, so those funds stay in the contract. Two apps now warn you before you send funds from such a wallet:
+
+- **Scout**: A red warning appears next to the submit, challenge, removal request and appeal funding buttons when the registry can't pay back to your connected wallet, such as a Safe. It doesn't block the transaction.
+- **Dispute Resolver**: Accounts upgraded through EIP-7702 to wallet code that can't receive appeal refunds and rewards see a warning above the funding cards and in the Withdraw panel.
+
+### Faster, lighter Scout pages
+
+[Scout](/products/scout) now sends far fewer requests to its indexer and RPCs. Pages refresh only as often as their data can change, and they update after your own transactions without a reload. Contract calls now refuse a wallet connected to another network and ask you to switch to Gnosis first.
+
+## Bug fixes
+
+**Executed disputes in Dispute Resolver**: Once its ruling is executed, a dispute now shows as **Executed**, with every step of the timeline concluded. Before, it still appeared to be in its Execution period.
+
+**Appeal contributions in Scout**: A typed appeal contribution is now sent exactly as typed, capped at the amount still needed. Before, some amounts were rounded down to zero.
+
+**Scout fixes**: Copied addresses keep their case, so Solana addresses work. Searches ignore surrounding spaces. A custom export range includes its last day. Countdowns no longer drift after your computer sleeps. An unknown registry in the URL shows "Page not found" instead of crashing the app, and old `/activity`, `/registry` and `/item` links redirect to the pages that replaced them.
+
+**Dates in Dispute Resolver**: Typed dates are read in the Gregorian calendar in every browser language, and date answers are funded as whole days in UTC.
