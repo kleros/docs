@@ -1,0 +1,56 @@
+---
+title: "23 de noviembre de 2026"
+description: "Un Dispute Resolver reconstruido, comprobaciones previas al envío y un panel Needs your attention en Scout, avisos de pago para carteras que no pueden recibir reembolsos y páginas de Scout más rápidas."
+---
+
+## Nuevas funciones {#new-features}
+
+### Dispute Resolver reconstruido {#rebuilt-dispute-resolver}
+
+El [Dispute Resolver](/es/developers/products/dispute-resolver/overview) se ha reconstruido. Conserva todas las páginas y funciones de la app anterior: disputas abiertas por red, detalles de la disputa con pruebas y fallo, envío de pruebas, financiación de apelaciones, retirada de recompensas y creación de disputas.
+
+- **Todas las disputas visibles**: una sección que no se carga ya no deja en blanco toda la página, incluso en disputas de contratos arbitrables mal configurados.
+- **Fallo aplicado**: la decisión muestra el fallo que aplicó el contrato arbitrable, no solo el fallo del tribunal.
+- **Plazos de financiación**: cada tarjeta de apelación muestra cuándo se cierra su financiación.
+- **Transacciones más seguras**: las transacciones se comprueban contra el contrato antes de que se abra tu cartera.
+- **Pruebas**: las pruebas se muestran en páginas de 50, con una fila por entrada.
+- **Nueva interfaz**: temas claro y oscuro, en escritorio y en móvil.
+
+### Comprobaciones previas al envío en Scout {#pre-submission-checks-in-scout}
+
+Los formularios de envío de [Scout](/es/products/scout) comprueban ahora tu entrada contra la política del registro mientras escribes. Un panel **Pre-submission checks** encima del botón de envío muestra los resultados.
+
+- **Problemas bloqueantes**: todo lo que haría que el elemento fuera impugnado bloquea el envío, como campos que faltan, formatos de dirección incorrectos, límites de longitud, ningún contrato desplegado, un `decimals()` del token que no coincide, un logotipo no válido o un duplicado que ya está en el registro.
+- **Correcciones rápidas**: las correcciones mecánicas se ofrecen en línea, por ejemplo recortar una URL completa a su dominio o eliminar espacios sobrantes.
+- **Advertencias**: algunos problemas, como un despliegue que aún no está finalizado o una cartera delegada mediante EIP-7702, se muestran como advertencias sin bloquear.
+
+### Needs your attention en Scout {#needs-your-attention-in-scout}
+
+[Scout](/es/products/scout) mantiene tus casos abiertos a la vista hasta que se resuelven.
+
+- **My Profile**: un panel **Needs your attention** muestra tus casos abiertos. Los casos en rojo requieren una acción o pierdes, por ejemplo cuando la otra parte ha financiado por completo su apelación. Los casos en ámbar requieren una decisión antes de un plazo, como apelar un fallo o añadir pruebas antes de la votación. Los casos en curso muestran el tiempo restante.
+- **Páginas de elementos**: los casos en rojo y ámbar de un elemento aparecen en su página, y el enlace **My Profile** muestra una insignia con su número.
+- **Pruebas nuevas**: las tarjetas de disputa muestran cuántas entradas de pruebas aún no has leído, y las entradas no leídas se marcan como **New** en la pestaña Evidence.
+
+## Actualizaciones {#updates}
+
+### Avisos de pago para carteras inteligentes {#payout-warnings-for-smart-wallets}
+
+Algunas carteras de contrato no pueden recibir reembolsos ni recompensas de los contratos arbitrables, por lo que esos fondos se quedan en el contrato. Dos apps te avisan ahora antes de que envíes fondos desde una cartera así:
+
+- **Scout**: aparece una advertencia roja junto a los botones de envío, impugnación, solicitud de retirada y financiación de apelaciones cuando el registro no puede devolver fondos a tu cartera conectada, como una Safe. No bloquea la transacción.
+- **Dispute Resolver**: las cuentas actualizadas mediante EIP-7702 a un código de cartera que no puede recibir reembolsos ni recompensas de apelación ven una advertencia encima de las tarjetas de financiación y en el panel Withdraw.
+
+### Páginas de Scout más rápidas y ligeras {#faster-lighter-scout-pages}
+
+[Scout](/es/products/scout) envía ahora muchas menos solicitudes a su indexador y a sus RPC. Las páginas se actualizan solo con la frecuencia con la que pueden cambiar sus datos, y se actualizan tras tus propias transacciones sin recargar. Las llamadas a contratos rechazan ahora una cartera conectada a otra red y te piden que cambies primero a Gnosis.
+
+## Corrección de errores {#bug-fixes}
+
+**Disputas ejecutadas en Dispute Resolver**: una vez ejecutado su fallo, una disputa se muestra ahora como **Executed**, con todos los pasos de la cronología concluidos. Antes, seguía apareciendo en su periodo de ejecución.
+
+**Contribuciones a apelaciones en Scout**: una contribución a una apelación escrita a mano se envía ahora exactamente como se escribió, limitada a la cantidad que aún falta. Antes, algunas cantidades se redondeaban a cero.
+
+**Correcciones en Scout**: las direcciones copiadas conservan sus mayúsculas y minúsculas, por lo que las direcciones de Solana funcionan. Las búsquedas ignoran los espacios al principio y al final. Un rango de exportación personalizado incluye su último día. Las cuentas atrás ya no se desfasan después de que tu ordenador entre en reposo. Un registro desconocido en la URL muestra "Page not found" en lugar de bloquear la app, y los enlaces antiguos `/activity`, `/registry` y `/item` redirigen a las páginas que los sustituyeron.
+
+**Fechas en Dispute Resolver**: las fechas escritas se interpretan en el calendario gregoriano en cualquier idioma del navegador, y las respuestas de fecha se financian como días completos en UTC.
