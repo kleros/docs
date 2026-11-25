@@ -77,6 +77,10 @@ Browse active disputes filtered by phase: evidence submission, commit, voting, o
 3. View funding progress and when funding closes
 4. Enter contribution amount and confirm
 
+<Warning>
+  The appeal contracts pay refunds and rewards with a low-gas transfer. Some accounts upgraded through EIP-7702 to smart-wallet code can't receive it, and those funds stay in the contract. For such accounts, Dispute Resolver shows a warning above the funding cards and in the Withdraw panel. Fund appeals from a regular account, or switch your account back to a regular account before you withdraw.
+</Warning>
+
 When appealed, both sides need to provide funds. If only one side is fully funded, that side wins by default. If both are funded, the case goes to a new round with more jurors.
 
 ---

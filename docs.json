@@ -404,6 +404,7 @@
               {
                 "group": "Changelog",
                 "pages": [
+                  "changelog/2026-11-23",
                   "changelog/2026-11-02",
                   "changelog/2026-10-26",
                   "changelog/2026-10-12",
@@ -700,16 +701,7 @@
                   "es/ai-tools/agentic-commerce-court",
                   "es/ai-tools/agent-reputation",
                   "es/ai-tools/trivium",
-                  "es/ai-tools/mcp-server",
-                  {
-                    "group": "Dispute Service",
-                    "pages": [
-                      "es/ai-tools/dispute-service/overview",
-                      "es/ai-tools/dispute-service/http-json-rpc",
-                      "es/ai-tools/dispute-service/dispute-flow",
-                      "es/ai-tools/dispute-service/dispute-templates"
-                    ]
-                  }
+                  "es/ai-tools/mcp-server"
                 ]
               }
             ]

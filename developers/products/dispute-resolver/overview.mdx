@@ -19,7 +19,7 @@ The Dispute Resolver (formerly "Resolve") is a V1 web app at [resolve.kleros.io]
 - **File uploads**: evidence uploads go through Atlas to IPFS, with a SIWE info message at the upload step
 - **Evidence display**: the interface normalizes PoH evidence payloads (including older submissions and non-object payloads). Since October 2026, Dispute Resolver and Court only run case display scripts that Kleros has reviewed. If a case uses a script that has not been reviewed, its data is treated as invalid and jurors are advised to refuse to arbitrate until the script is reviewed
 - **MetaEvidence**: read from the arbitrable's on-chain `MetaEvidence` event. A Kleros meta-evidence API supplies the URI only when the event cannot be found. The meta-evidence URI and any dynamic script URI must be IPFS paths, otherwise the case data is shown as invalid
-- **Rulings and appeals**: the decision shows the ruling the arbitrable contract applied, and each appeal funding card shows when its funding closes
+- **Rulings and appeals**: the decision shows the ruling the arbitrable contract applied, and each appeal funding card shows when its funding closes. Once the ruling is executed, the case page shows **Executed**. Accounts upgraded through EIP-7702 to wallet code that can't receive appeal refunds and rewards see a warning above the funding cards and in the Withdraw panel
 - **Realitio cases**: answer options are built from the on-chain Reality.eth question and its template, as in Court. A notice appears on the case page when other interfaces display different options, or when the question parameters are malformed or the options cannot be verified
 - **Dispute creation**: the create-dispute form validates inputs before submission
 
