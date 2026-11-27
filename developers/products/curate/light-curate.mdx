@@ -10,7 +10,7 @@ This covers Light Curate (V1). For V2 Curate, see the [Developers Curate section
 </Note>
 
 <Warning>
-**Classic Curate is being deprecated.** The Classic Curate contracts stay deployed and unchanged, so existing Classic lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Classic Curate, and creating Classic lists through Kleros frontends is being disabled. **Light Curate and Stake Curate are not affected** and remain fully supported; new lists, including the Kleros Verified registries shown on the [Curate app](https://curate.kleros.io) homepage, are created on Light Curate.
+**Classic Curate is retired in the Curate app.** You can no longer browse, submit to, or create Classic lists in the [Curate app](https://curate.kleros.io). A Classic list's address now opens a **Classic lists are retired** page that links to the contract on the block explorer. The Classic Curate contracts stay deployed on chain, with their entries and history. **Light Curate and Stake Curate are not affected.** The Curate app calls Light Curate lists **Standard lists**, and only Standard and Stake lists can be Kleros Verified.
 </Warning>
 
 ---
@@ -316,7 +316,7 @@ Before touching MetaEvidence or deposits for an unfamiliar address:
 7. Call `addItem("/ipfs/<hash>")` with `msg.value = deposit`.
 
 <Note>
-Deploying a list does not make it visible on the Curate frontend: it must also be registered in the list of lists. Since August 2026 the list of lists (the Kleros Verified registries on the Curate homepage) runs on Light Curate, at `0x2418D887d0d0Fe03b793A6aF4321fa488226A0b5` on Gnosis and `0x2aCF59a420cA888f46d46974f62570F8a38Cd4Da` on Ethereum Mainnet.
+Deploying a list does not make it Kleros Verified on the Curate frontend: it must also be registered in the Kleros list of lists. Since August 2026 the list of lists runs on Light Curate, at `0x5f688a4bac5e2787ef1d9de325831e537ee4cffa` on Gnosis and `0x2aCF59a420cA888f46d46974f62570F8a38Cd4Da` on Ethereum Mainnet. Kleros replaced the Gnosis list of lists on November 17, 2026: the former one, `0x2418D887d0d0Fe03b793A6aF4321fa488226A0b5`, keeps working on chain but no longer grants Kleros Verified.
 </Note>
 
 ---

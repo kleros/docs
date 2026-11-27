@@ -6,10 +6,10 @@ description: "Step-by-step guide to Kleros Curate V1: create a list, register it
 # Curate Tutorial
 
 <Warning>
-**Classic Curate is being deprecated.** The Classic Curate contracts stay deployed and unchanged, so existing Classic lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Classic Curate, and creating Classic lists through Kleros frontends is being disabled. **Light Curate and Stake Curate are not affected** and remain fully supported; new lists, including the Kleros Verified registries shown on the [Curate app](https://curate.kleros.io) homepage, are created on Light Curate.
+**Classic Curate is retired in the Curate app.** You can no longer browse, submit to, or create Classic lists in the [Curate app](https://curate.kleros.io). A Classic list's address now opens a **Classic lists are retired** page that links to the contract on the block explorer. The Classic Curate contracts stay deployed on chain, with their entries and history. **Light Curate and Stake Curate are not affected.** The Curate app calls Light Curate lists **Standard lists**, and only Standard and Stake lists can be Kleros Verified.
 </Warning>
 
-This tutorial covers creating Kleros Curate V1 lists and submitting and challenging items on them. Only Classic Curate is being deprecated: create new lists on Light Curate.
+This tutorial covers creating Kleros Curate V1 lists and submitting and challenging items on them. It uses Light Curate, which the [Curate app](https://curate.kleros.io) calls **Standard lists**.
 
 Curate lists are deployed as smart contracts. The platform uses a hierarchical structure where top-level lists can contain sublists.
 
@@ -18,36 +18,26 @@ Curate lists are deployed as smart contracts. The platform uses a hierarchical s
 ## Create a List
 
 <Note>
-Creating Classic Curate lists through Kleros frontends is being disabled. Create new lists on Light Curate.
+The Curate app creates Standard (Light Curate) and Stake lists only. Classic lists can no longer be created. For Stake lists, see [Stake Curate](/products/stake-curate).
 </Note>
 
-Access the list creation page via the **Create a List** header button.
+Click **Launch a list** in the Curate app, then choose a Standard list to open the list wizard.
 
 <Steps>
-  <Step title="Set the basic parameters">
-    - **Title**: the name of your list (for example, "Hip Hop Legends")
+  <Step title="List">
+    - **Name**: the name of your list (for example, "Hip Hop Legends")
     - **Description**: a brief overview of the list's purpose
-    - **Acceptance criteria**: a critical piece of information specifying what submissions are accepted or rejected
-    - **Item name**: the label for individual submissions (for example, "Hip Hop Legend")
-    - **Deposit settings**: a slider-based configuration balancing submission cost against quality control
-    - **Court selection**: choose the arbitration court based on the list's complexity and value
+    - **List logo**: the image shown with your list
+    - **Listing policy (PDF)**: the acceptance criteria specifying what submissions are accepted or rejected
   </Step>
-  <Step title="Configure advanced parameters (optional)">
-    Power users can set each deposit individually:
-
-    - Submission deposit
-    - Removal deposit
-    - Challenge submission deposit
-    - Challenge removal deposit
+  <Step title="Deposit">
+    Set the **Submission deposit** and choose the **Court** and the **Jurors in the first round** based on the list's complexity and value. Under **Advanced options**, you can set each deposit individually (submission, removal, submission challenge, and removal challenge), the challenge period, the governor, and the appeal stakes.
   </Step>
-  <Step title="Define the list fields">
-    Add custom fields for submissions (text, images, and other types). Enable **Index** on a field to make it searchable.
-  </Step>
-  <Step title="Badge list parameters (optional)">
-    An optional tiered system allows submissions to earn additional badges based on specific criteria.
+  <Step title="Item">
+    Add the fields for submissions (text, images, and other types) and mark the fields that identify an entry as **Identifier**. Set the item name, the label for individual submissions (for example, "Hip Hop Legend").
   </Step>
   <Step title="Deploy">
-    Pay the contract deployment fees via your wallet to launch the list.
+    Deploy the list with one transaction from your wallet.
   </Step>
 </Steps>
 
@@ -57,10 +47,10 @@ Access the list creation page via the **Create a List** header button.
 ## Register in the List of Lists
 
 <Note>
-The List of Lists now runs on Light Curate. The Kleros Verified registries shown on the Curate homepage moved from Classic to Light Curate in August 2026, with new contract addresses.
+The Kleros lists of lists run on Light Curate, and only the lists registered on them are Kleros Verified. On November 17, 2026, Kleros replaced its Gnosis Chain list of lists with a new one at `0x5f688a4bac5e2787ef1d9de325831e537ee4cffa`. The former one (`0x2418d887d0d0fe03b793a6af4321fa488226a0b5`) no longer grants Kleros Verified, so submit new Gnosis lists to the new address.
 </Note>
 
-Submit your deployed list to the main Registry by clicking **Submit List** and paying a confirmation deposit. This makes it visible on the Curate homepage.
+After the deploy, click **Submit it to** followed by the list of lists' name. The Curate app opens the list of lists' submit page with your new list filled in, where you submit it and pay the deposit. Once your list is registered on the list of lists, it is Kleros Verified on the Curate app.
 
 ---
 
