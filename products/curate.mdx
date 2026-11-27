@@ -10,7 +10,7 @@ description: "Kleros Curate lets anyone build community-run lists and token regi
 # Curate
 
 <Warning>
-**Classic Curate is being deprecated.** The Classic Curate contracts stay deployed and unchanged, so existing Classic lists keep working: items can still be submitted, challenged, and queried. Kleros will not launch new registries on Classic Curate, and creating Classic lists through Kleros frontends is being disabled. **Light Curate and Stake Curate are not affected** and remain fully supported; new lists, including the Kleros Verified registries shown on the [Curate app](https://curate.kleros.io) homepage, are created on Light Curate.
+**Classic Curate is retired in the Curate app.** You can no longer browse, submit to, or create Classic lists in the [Curate app](https://curate.kleros.io). A Classic list's address now opens a **Classic lists are retired** page that links to the contract on the block explorer. The Classic Curate contracts stay deployed on chain, with their entries and history. **Light Curate and Stake Curate are not affected.** The Curate app calls Light Curate lists **Standard lists**, and only Standard and Stake lists can be Kleros Verified.
 </Warning>
 
 **Curate** is a decentralized application for creating and maintaining community-curated registries. Anyone can submit items to a list, and anyone can challenge incorrect or malicious submissions-with disputes resolved by Kleros Court.
@@ -25,8 +25,8 @@ Curate powers critical infrastructure across Web3: token lists that wallets use 
 
 Curate is a family of three variants. All three use the V1 Kleros Court for dispute resolution.
 
-- **Classic Curate** (V1) - a full Token-Curated Registry (TCR) supporting complex schemas. Best for high-value registries with custom fields. Migrated to Gnosis Chain.
-- **Light Curate** (V1) - a simplified TCR built for higher volume and lower gas costs. On Gnosis Chain.
+- **Classic Curate** (V1) - a full Token-Curated Registry (TCR) supporting complex schemas. Retired in the Curate app: its contracts stay on chain, but you can no longer browse, submit to, or create Classic lists there.
+- **Light Curate** (V1) - a simplified TCR built for higher volume and lower gas costs. On Gnosis Chain. The Curate app calls these **Standard lists**.
 - **Stake Curate** (V1 infrastructure) - continuous verification with permanent deposits, on Gnosis Chain. Deployed mid-August 2025; first implementation with DAMM Capital (September 2025). See [Stake Curate](/products/stake-curate).
 
 
@@ -150,17 +150,17 @@ Curate offers three variants across the two protocol versions:
 
 | Variant | Version | Best For | Gas Costs | Flexibility |
 |---------|---------|----------|-----------|-------------|
-| **Classic Curate** (full) | V1 | High-value registries with complex schemas | Higher | Maximum |
-| **Light Curate** | V1 | Simple registries, higher volume | Lower | Standard schemas |
+| **Classic Curate** (full) | V1 | Retired in the Curate app; contracts remain on chain | Higher | Maximum |
+| **Light Curate** (Standard lists in the Curate app) | V1 | Simple registries, higher volume | Lower | Standard schemas |
 | **Stake Curate** | V1 infra | Continuous verification with permanent deposits | - | See [Stake Curate](/products/stake-curate) |
 
-Among the V1 variants, most registries use **Light Curate** for cost efficiency. Classic Curate is used when you need custom fields or complex acceptance criteria.
+New lists in the Curate app are Standard (Light Curate) or Stake lists. Most registries use **Light Curate** for cost efficiency.
 
 ---
 
 ## Current Status
 
-**Classic Curate deprecation:** only Classic Curate is being deprecated. Its contracts remain deployed and existing Classic lists keep running, but Kleros will not launch new Classic registries and Classic list creation is being removed from Kleros frontends. Light Curate and Stake Curate are not affected. The Kleros Verified registries on the Curate homepage moved to Light Curate in August 2026, and new lists are created on Light Curate.
+**Classic Curate retirement:** Classic Curate is retired in the Curate app. Classic list, entry, and submit pages now show a **Classic lists are retired** page that links to the contract on the block explorer, and the contracts with their entries and history stay on chain. Light Curate and Stake Curate are not affected. The Kleros lists of lists, which grant the Kleros Verified badge, moved to Light Curate in August 2026, and only Standard (Light Curate) and Stake lists count as Kleros Verified. On November 17, 2026, Kleros replaced its Gnosis Chain list of lists with a new one at `0x5f688a4bac5e2787ef1d9de325831e537ee4cffa`, with the same settings. The former Gnosis list of lists (`0x2418d887d0d0fe03b793a6af4321fa488226a0b5`) keeps working on chain but no longer grants Kleros Verified. Kleros registered the Standard and Stake lists that were Verified there on the new one, so their status did not change.
 
 Following **KIP-87**, a dedicated **Curation Court with hidden voting** went live on Gnosis Chain in mid-2026. Hidden voting splits juror voting into commit-and-reveal phases so jurors can't see other votes before deciding, reducing herding on curation disputes. The Scout registries migrated to this court on **July 13, 2026**. Curate V2 development also aligned its evidence query with the kleros-core schema migration.
 
